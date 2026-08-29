@@ -1,0 +1,280 @@
+package com.yayyar.deco.feature.pos
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
+import com.yayyar.deco.core.common.Formatters
+import com.yayyar.deco.core.common.Resource
+import com.yayyar.deco.core.database.DecoDatabase
+import com.yayyar.deco.core.database.entity.CategoryEntity
+import com.yayyar.deco.core.database.entity.OrderEntity
+import com.yayyar.deco.core.database.entity.OrderItemEntity
+import com.yayyar.deco.core.database.entity.ProductEntity
+import com.yayyar.deco.core.database.entity.ProductVariantEntity
+import com.yayyar.deco.core.database.entity.ShiftEntity
+import com.yayyar.deco.core.database.model.ProductWithVariants
+import com.yayyar.deco.core.printer.PrinterManager
+import com.yayyar.deco.core.printer.ReceiptData
+import com.yayyar.deco.core.printer.ReceiptItem
+import com.yayyar.deco.core.printer.SlipShareManager
+import com.yayyar.deco.core.printer.StoreConfig
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.UUID
+
+class PosViewModel(application: Application) : AndroidViewModel(application) {
+    private val db = DecoDatabase.getInstance(application)
+    private val productDao = db.productDao()
+    private val categoryDao = db.categoryDao()
+    private val variantDao = db.variantDao()
+    private val orderDao = db.orderDao()
+    private val shiftDao = db.shiftDao()
+
+    val categories: StateFlow<List<CategoryEntity>> = categoryDao.getAllCategoriesFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val activeShift: StateFlow<ShiftEntity?> = shiftDao.getActiveShiftFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    private val _selectedCategoryId = MutableStateFlow<String?>(null)
+    val selectedCategoryId: StateFlow<String?> = _selectedCategoryId.asStateFlow()
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val catalogProducts: StateFlow<List<ProductWithVariants>> = combine(
+        productDao.getActiveProductsWithVariantsFlow(),
+        _selectedCategoryId,
+        _searchQuery
+    ) { products, catId, query ->
+        products.filter { item ->
+            val matchesCat = catId == null || item.product.categoryId == catId
+            val matchesQuery = query.isBlank() ||
+                    item.product.name.contains(query, ignoreCase = true) ||
+                    item.variants.any {
+                        (it.barcode?.contains(query, ignoreCase = true) == true) ||
+                                (it.sku?.contains(query, ignoreCase = true) == true) ||
+                                it.colorPattern.contains(query, ignoreCase = true)
+                    }
+            matchesCat && matchesQuery
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _cartState = MutableStateFlow(CartState())
+    val cartState: StateFlow<CartState> = _cartState.asStateFlow()
+
+    private val _checkoutState = MutableStateFlow<Resource<ReceiptData>?>(null)
+    val checkoutState: StateFlow<Resource<ReceiptData>?> = _checkoutState.asStateFlow()
+
+    fun selectCategory(categoryId: String?) {
+        _selectedCategoryId.value = categoryId
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun addToCart(product: ProductEntity, variant: ProductVariantEntity) {
+        _cartState.update { current ->
+            val existingIndex = current.items.indexOfFirst { it.variant.id == variant.id }
+            val newItems = current.items.toMutableList()
+            if (existingIndex >= 0) {
+                val existing = newItems[existingIndex]
+                if (existing.quantity < variant.stockQty) {
+                    newItems[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                }
+            } else {
+                if (variant.stockQty > 0) {
+                    newItems.add(CartItem(product, variant, 1))
+                }
+            }
+            current.copy(items = newItems)
+        }
+    }
+
+    fun updateCartItemQuantity(variantId: String, newQuantity: Int) {
+        _cartState.update { current ->
+            val newItems = current.items.toMutableList()
+            val index = newItems.indexOfFirst { it.variant.id == variantId }
+            if (index >= 0) {
+                if (newQuantity <= 0) {
+                    newItems.removeAt(index)
+                } else {
+                    val maxStock = newItems[index].variant.stockQty
+                    newItems[index] = newItems[index].copy(quantity = newQuantity.coerceAtMost(maxStock))
+                }
+            }
+            current.copy(items = newItems)
+        }
+    }
+
+    fun removeCartItem(variantId: String) {
+        updateCartItemQuantity(variantId, 0)
+    }
+
+    fun clearCart() {
+        _cartState.value = CartState()
+    }
+
+    fun setDiscount(type: DiscountType, value: Double) {
+        _cartState.update { it.copy(discountType = type, discountValue = value) }
+    }
+
+    fun setDeliFee(fee: Double) {
+        _cartState.update { it.copy(deliFee = fee) }
+    }
+
+    fun setCustomerInfo(name: String?, phone: String?, address: String?) {
+        _cartState.update {
+            it.copy(
+                customerName = name?.ifBlank { null },
+                customerPhone = phone?.ifBlank { null },
+                customerAddress = address?.ifBlank { null }
+            )
+        }
+    }
+
+    fun performCheckout(
+        paymentType: String,
+        cashReceived: Double = 0.0,
+        kpayAmount: Double = 0.0,
+        waveAmount: Double = 0.0,
+        paymentNotes: String? = null
+    ) {
+        val currentCart = _cartState.value
+        if (currentCart.items.isEmpty()) return
+
+        _checkoutState.value = Resource.Loading
+
+        viewModelScope.launch {
+            try {
+                val orderId = UUID.randomUUID().toString()
+                val receiptNumber = Formatters.generateReceiptNumber()
+                val shiftId = activeShift.value?.id
+
+                val grandTotal = currentCart.grandTotal
+                val changeReturned = if (paymentType == "CASH" && cashReceived > grandTotal) {
+                    cashReceived - grandTotal
+                } else 0.0
+
+                val orderEntity = OrderEntity(
+                    id = orderId,
+                    receiptNumber = receiptNumber,
+                    shiftId = shiftId,
+                    subtotal = currentCart.subtotal,
+                    discountAmount = currentCart.discountAmount,
+                    discountType = currentCart.discountType.name,
+                    deliFee = currentCart.deliFee,
+                    grandTotal = grandTotal,
+                    paymentType = paymentType,
+                    cashReceived = if (paymentType == "CASH") cashReceived else 0.0,
+                    changeReturned = changeReturned,
+                    kpayAmount = if (paymentType == "KPAY") grandTotal else kpayAmount,
+                    waveAmount = if (paymentType == "WAVEPAY") grandTotal else waveAmount,
+                    paymentNotes = paymentNotes,
+                    customerName = currentCart.customerName,
+                    customerPhone = currentCart.customerPhone,
+                    customerAddress = currentCart.customerAddress,
+                    orderStatus = "COMPLETED"
+                )
+
+                val orderItems = currentCart.items.map { item ->
+                    OrderItemEntity(
+                        id = UUID.randomUUID().toString(),
+                        orderId = orderId,
+                        variantId = item.variant.id,
+                        productName = item.product.name,
+                        variantName = item.variant.displayName,
+                        quantity = item.quantity,
+                        unitPrice = item.variant.sellPrice,
+                        totalPrice = item.totalPrice
+                    )
+                }
+
+                // Atomic transaction: Deduct stock + write order & items
+                db.withTransaction {
+                    val timestamp = System.currentTimeMillis()
+                    for (item in orderItems) {
+                        val affected = variantDao.deductStockAtomic(item.variantId, item.quantity, timestamp)
+                        if (affected == 0) {
+                            throw IllegalStateException("Insufficient stock for: ${item.productName} (${item.variantName})")
+                        }
+                    }
+                    orderDao.insertOrder(orderEntity)
+                    orderDao.insertOrderItems(orderItems)
+                }
+
+                // Update shift total sales if active shift exists
+                if (shiftId != null) {
+                    activeShift.value?.let { shift ->
+                        val updatedShift = when (paymentType) {
+                            "CASH" -> shift.copy(totalSalesCash = shift.totalSalesCash + grandTotal)
+                            "KPAY" -> shift.copy(totalSalesKpay = shift.totalSalesKpay + grandTotal)
+                            "WAVEPAY" -> shift.copy(totalSalesWave = shift.totalSalesWave + grandTotal)
+                            else -> shift.copy(
+                                totalSalesCash = shift.totalSalesCash + (cashReceived - changeReturned),
+                                totalSalesKpay = shift.totalSalesKpay + kpayAmount,
+                                totalSalesWave = shift.totalSalesWave + waveAmount
+                            )
+                        }
+                        shiftDao.updateShift(updatedShift)
+                    }
+                }
+
+                // Prepare Receipt Data Model for Printing / Sharing
+                val receiptData = ReceiptData(
+                    receiptNumber = receiptNumber,
+                    dateFormatted = Formatters.formatDateTime(System.currentTimeMillis()),
+                    customerName = currentCart.customerName,
+                    customerPhone = currentCart.customerPhone,
+                    items = currentCart.items.map {
+                        ReceiptItem(
+                            productName = it.product.name,
+                            variantName = it.variant.displayName,
+                            quantity = it.quantity,
+                            unitPrice = it.variant.sellPrice,
+                            totalPrice = it.totalPrice
+                        )
+                    },
+                    subtotal = currentCart.subtotal,
+                    discountAmount = currentCart.discountAmount,
+                    deliFee = currentCart.deliFee,
+                    grandTotal = grandTotal,
+                    paymentType = paymentType,
+                    cashReceived = cashReceived,
+                    changeReturned = changeReturned,
+                    paymentNotes = paymentNotes,
+                    storeConfig = StoreConfig()
+                )
+
+                // Reset Cart & notify success
+                clearCart()
+                _checkoutState.value = Resource.Success(receiptData)
+
+            } catch (e: Exception) {
+                _checkoutState.value = Resource.Error(e.message ?: "Checkout failed. Insufficient stock.")
+            }
+        }
+    }
+
+    fun dismissCheckoutState() {
+        _checkoutState.value = null
+    }
+
+    fun shareReceipt(receiptData: ReceiptData) {
+        SlipShareManager.shareReceiptImage(getApplication(), receiptData)
+    }
+
+    fun printThermalReceipt(receiptData: ReceiptData, deviceAddress: String? = null) {
+        viewModelScope.launch {
+            PrinterManager.printReceipt(getApplication(), receiptData, deviceAddress)
+        }
+    }
+}
