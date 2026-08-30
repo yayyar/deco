@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Checkroom
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.DrawerValue
@@ -93,6 +95,7 @@ class MainActivity : Hilt_MainActivity() {
 @Composable
 fun DecoApp() {
     var appDestination by remember { mutableStateOf<AppDestination>(AppDestination.Main(PosDestination.POS)) }
+    var isInventoryGridView by remember { mutableStateOf(false) }
 
     val posViewModel: PosViewModel = hiltViewModel()
     val inventoryViewModel: InventoryViewModel = hiltViewModel()
@@ -144,6 +147,16 @@ fun DecoApp() {
                                         contentDescription = "Open navigation menu"
                                     )
                                 }
+                            },
+                            actions = {
+                                if (current.destination == PosDestination.INVENTORY) {
+                                    IconButton(onClick = { isInventoryGridView = !isInventoryGridView }) {
+                                        Icon(
+                                            imageVector = if (isInventoryGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+                                            contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
+                                        )
+                                    }
+                                }
                             }
                         )
                     }
@@ -154,6 +167,7 @@ fun DecoApp() {
                         inventoryViewModel = inventoryViewModel,
                         shiftViewModel = shiftViewModel,
                         analyticsViewModel = analyticsViewModel,
+                        isInventoryGridView = isInventoryGridView,
                         onNavigateToProducts = { appDestination = AppDestination.ProductList },
                         onNavigateToCategories = { appDestination = AppDestination.CategoryList },
                         modifier = Modifier.padding(innerPadding)
@@ -205,6 +219,7 @@ private fun AppScreenContent(
     inventoryViewModel: InventoryViewModel,
     shiftViewModel: ShiftViewModel,
     analyticsViewModel: AnalyticsViewModel,
+    isInventoryGridView: Boolean,
     onNavigateToProducts: () -> Unit,
     onNavigateToCategories: () -> Unit,
     modifier: Modifier = Modifier
@@ -213,6 +228,7 @@ private fun AppScreenContent(
         PosDestination.POS -> PosScreen(viewModel = posViewModel, modifier = modifier)
         PosDestination.INVENTORY -> InventoryScreen(
             viewModel = inventoryViewModel,
+            isGridView = isInventoryGridView,
             onNavigateToProducts = onNavigateToProducts,
             onNavigateToCategories = onNavigateToCategories,
             modifier = modifier

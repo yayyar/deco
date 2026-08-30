@@ -19,25 +19,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Checkroom
-import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +43,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InventoryScreen(
     viewModel: InventoryViewModel,
+    isGridView: Boolean,
     onNavigateToProducts: () -> Unit,
     onNavigateToCategories: () -> Unit,
     modifier: Modifier = Modifier
@@ -59,97 +54,60 @@ fun InventoryScreen(
         allProducts.count { it.hasLowStock }
     }
 
-    var isGridView by remember { mutableStateOf(false) }
-
-    Scaffold(
-        modifier = modifier.fillMaxSize()
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Header with List/Grid view toggle
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (isGridView) {
+            // 2-Column Grid Layout
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Fashion Inventory",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "${allProducts.size} Products in ${categories.size} Categories",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                HubGridCard(
+                    title = "Products",
+                    itemCount = "${allProducts.size} Items",
+                    icon = Icons.Default.Checkroom,
+                    badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    onClick = onNavigateToProducts,
+                    modifier = Modifier.weight(1f)
+                )
 
-                FilledTonalIconButton(
-                    onClick = { isGridView = !isGridView },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
-                        contentDescription = if (isGridView) "Switch to List View" else "Switch to Grid View"
-                    )
-                }
+                HubGridCard(
+                    title = "Categories",
+                    itemCount = "${categories.size} Groups",
+                    icon = Icons.Default.Category,
+                    badgeText = null,
+                    onClick = onNavigateToCategories,
+                    modifier = Modifier.weight(1f)
+                )
             }
+        } else {
+            // Stacked List Layout
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                HubListCard(
+                    title = "Products",
+                    subtitle = "Manage inventory items, barcodes, sizes, patterns & stock",
+                    itemCount = "${allProducts.size} Products",
+                    icon = Icons.Default.Checkroom,
+                    badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    onClick = onNavigateToProducts
+                )
 
-            if (isGridView) {
-                // 2-Column Grid Layout
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    HubGridCard(
-                        title = "Products",
-                        itemCount = "${allProducts.size} Items",
-                        icon = Icons.Default.Checkroom,
-                        badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
-                        onClick = onNavigateToProducts,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    HubGridCard(
-                        title = "Categories",
-                        itemCount = "${categories.size} Groups",
-                        icon = Icons.Default.Category,
-                        badgeText = null,
-                        onClick = onNavigateToCategories,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            } else {
-                // Stacked List Layout
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    HubListCard(
-                        title = "Products",
-                        subtitle = "Manage inventory items, barcodes, sizes, patterns & stock",
-                        itemCount = "${allProducts.size} Products",
-                        icon = Icons.Default.Checkroom,
-                        badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
-                        onClick = onNavigateToProducts
-                    )
-
-                    HubListCard(
-                        title = "Categories",
-                        subtitle = "Organize fashion apparel, fabrics & accessory collections",
-                        itemCount = "${categories.size} Categories",
-                        icon = Icons.Default.Category,
-                        badgeText = null,
-                        onClick = onNavigateToCategories
-                    )
-                }
+                HubListCard(
+                    title = "Categories",
+                    subtitle = "Organize fashion apparel, fabrics & accessory collections",
+                    itemCount = "${categories.size} Categories",
+                    icon = Icons.Default.Category,
+                    badgeText = null,
+                    onClick = onNavigateToCategories
+                )
             }
         }
     }
