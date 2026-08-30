@@ -27,22 +27,39 @@ class InventoryViewModel @Inject constructor(
     val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategoriesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val allProducts: StateFlow<List<ProductWithVariants>> = productRepository.getAllProductsWithVariantsFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
     val selectedCategoryId: StateFlow<String?> = _selectedCategoryId.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _categorySearchQuery = MutableStateFlow("")
+    val categorySearchQuery: StateFlow<String> = _categorySearchQuery.asStateFlow()
+
     private val _showOnlyLowStock = MutableStateFlow(false)
     val showOnlyLowStock: StateFlow<Boolean> = _showOnlyLowStock.asStateFlow()
 
+    val filteredCategories: StateFlow<List<CategoryEntity>> = combine(
+        categories,
+        _categorySearchQuery
+    ) { allCats, query ->
+        if (query.isBlank()) {
+            allCats
+        } else {
+            allCats.filter { it.name.contains(query, ignoreCase = true) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val products: StateFlow<List<ProductWithVariants>> = combine(
-        productRepository.getAllProductsWithVariantsFlow(),
+        allProducts,
         _selectedCategoryId,
         _searchQuery,
         _showOnlyLowStock
-    ) { allProducts, catId, query, onlyLowStock ->
-        allProducts.filter { pwv ->
+    ) { allProds, catId, query, onlyLowStock ->
+        allProds.filter { pwv ->
             val matchCat = catId == null || pwv.product.categoryId == catId
             val matchQuery = query.isBlank() ||
                     pwv.product.name.contains(query, ignoreCase = true) ||
@@ -62,6 +79,10 @@ class InventoryViewModel @Inject constructor(
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun setCategorySearchQuery(query: String) {
+        _categorySearchQuery.value = query
     }
 
     fun toggleLowStockFilter() {

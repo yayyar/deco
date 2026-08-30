@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -110,6 +112,24 @@ class InventoryViewModelTest {
         val categories = fakeCategoryRepo.getAllCategories()
         assertEquals(1, categories.size)
         assertEquals("Traditional Silk", categories[0].name)
+    }
+
+    @Test
+    fun categorySearch_filtersCategoriesByName() = runTest {
+        val collectJob = backgroundScope.launch {
+            viewModel.filteredCategories.collect()
+        }
+
+        val cat1 = CategoryEntity(id = "cat_1", name = "Silk Longyi", sortOrder = 1)
+        val cat2 = CategoryEntity(id = "cat_2", name = "Cotton Shirt", sortOrder = 2)
+        fakeCategoryRepo.categoriesFlow.value = listOf(cat1, cat2)
+
+        viewModel.setCategorySearchQuery("silk")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val filtered = viewModel.filteredCategories.value
+        assertEquals(1, filtered.size)
+        assertEquals("Silk Longyi", filtered[0].name)
     }
 
     @Test
