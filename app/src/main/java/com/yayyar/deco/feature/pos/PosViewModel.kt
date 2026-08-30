@@ -1,12 +1,14 @@
 package com.yayyar.deco.feature.pos
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.withTransaction
 import com.yayyar.deco.core.common.Formatters
 import com.yayyar.deco.core.common.Resource
-import com.yayyar.deco.core.database.DecoDatabase
+import com.yayyar.deco.core.data.repository.CategoryRepository
+import com.yayyar.deco.core.data.repository.OrderRepository
+import com.yayyar.deco.core.data.repository.ProductRepository
+import com.yayyar.deco.core.data.repository.ShiftRepository
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.OrderEntity
 import com.yayyar.deco.core.database.entity.OrderItemEntity
@@ -19,6 +21,8 @@ import com.yayyar.deco.core.printer.ReceiptData
 import com.yayyar.deco.core.printer.ReceiptItem
 import com.yayyar.deco.core.printer.SlipShareManager
 import com.yayyar.deco.core.printer.StoreConfig
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,19 +32,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-class PosViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = DecoDatabase.getInstance(application)
-    private val productDao = db.productDao()
-    private val categoryDao = db.categoryDao()
-    private val variantDao = db.variantDao()
-    private val orderDao = db.orderDao()
-    private val shiftDao = db.shiftDao()
+@HiltViewModel
+class PosViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val productRepository: ProductRepository,
+    private val categoryRepository: CategoryRepository,
+    private val orderRepository: OrderRepository,
+    private val shiftRepository: ShiftRepository
+) : ViewModel() {
 
-    val categories: StateFlow<List<CategoryEntity>> = categoryDao.getAllCategoriesFlow()
+    val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategoriesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val activeShift: StateFlow<ShiftEntity?> = shiftDao.getActiveShiftFlow()
+    val activeShift: StateFlow<ShiftEntity?> = shiftRepository.getActiveShiftFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
@@ -50,7 +56,7 @@ class PosViewModel(application: Application) : AndroidViewModel(application) {
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     val catalogProducts: StateFlow<List<ProductWithVariants>> = combine(
-        productDao.getActiveProductsWithVariantsFlow(),
+        productRepository.getActiveProductsWithVariantsFlow(),
         _selectedCategoryId,
         _searchQuery
     ) { products, catId, query ->
@@ -198,17 +204,11 @@ class PosViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
 
-                // Atomic transaction: Deduct stock + write order & items
-                db.withTransaction {
-                    val timestamp = System.currentTimeMillis()
-                    for (item in orderItems) {
-                        val affected = variantDao.deductStockAtomic(item.variantId, item.quantity, timestamp)
-                        if (affected == 0) {
-                            throw IllegalStateException("Insufficient stock for: ${item.productName} (${item.variantName})")
-                        }
-                    }
-                    orderDao.insertOrder(orderEntity)
-                    orderDao.insertOrderItems(orderItems)
+                // Execute atomic checkout through repository
+                val checkoutResult = orderRepository.checkoutOrder(orderEntity, orderItems)
+                if (checkoutResult is Resource.Error) {
+                    _checkoutState.value = Resource.Error(checkoutResult.message)
+                    return@launch
                 }
 
                 // Update shift total sales if active shift exists
@@ -224,7 +224,7 @@ class PosViewModel(application: Application) : AndroidViewModel(application) {
                                 totalSalesWave = shift.totalSalesWave + waveAmount
                             )
                         }
-                        shiftDao.updateShift(updatedShift)
+                        shiftRepository.updateShift(updatedShift)
                     }
                 }
 
@@ -269,12 +269,12 @@ class PosViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun shareReceipt(receiptData: ReceiptData) {
-        SlipShareManager.shareReceiptImage(getApplication(), receiptData)
+        SlipShareManager.shareReceiptImage(context, receiptData)
     }
 
     fun printThermalReceipt(receiptData: ReceiptData, deviceAddress: String? = null) {
         viewModelScope.launch {
-            PrinterManager.printReceipt(getApplication(), receiptData, deviceAddress)
+            PrinterManager.printReceipt(context, receiptData, deviceAddress)
         }
     }
 }

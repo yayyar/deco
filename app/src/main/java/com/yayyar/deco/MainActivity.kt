@@ -29,7 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yayyar.deco.feature.analytics.AnalyticsScreen
 import com.yayyar.deco.feature.analytics.AnalyticsViewModel
 import com.yayyar.deco.feature.inventory.InventoryScreen
@@ -39,19 +39,21 @@ import com.yayyar.deco.feature.pos.PosViewModel
 import com.yayyar.deco.feature.shift.ShiftScreen
 import com.yayyar.deco.feature.shift.ShiftViewModel
 import com.yayyar.deco.ui.theme.DecoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 enum class PosDestination(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
-    POS("pos", "POS Register", Icons.Default.PointOfSale),
+    POS("pos", "POS", Icons.Default.PointOfSale),
     INVENTORY("inventory", "Inventory", Icons.Default.Checkroom),
-    SHIFT("shift", "Shift & Float", Icons.Default.AccountBalanceWallet),
+    SHIFT("shift", "Shift", Icons.Default.AccountBalanceWallet),
     ANALYTICS("analytics", "Analytics", Icons.Default.Analytics)
 }
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint(ComponentActivity::class)
+class MainActivity : Hilt_MainActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -67,10 +69,10 @@ class MainActivity : ComponentActivity() {
 fun DecoApp() {
     var currentDestination by remember { mutableStateOf(PosDestination.POS) }
 
-    val posViewModel: PosViewModel = viewModel()
-    val inventoryViewModel: InventoryViewModel = viewModel()
-    val shiftViewModel: ShiftViewModel = viewModel()
-    val analyticsViewModel: AnalyticsViewModel = viewModel()
+    val posViewModel: PosViewModel = hiltViewModel()
+    val inventoryViewModel: InventoryViewModel = hiltViewModel()
+    val shiftViewModel: ShiftViewModel = hiltViewModel()
+    val analyticsViewModel: AnalyticsViewModel = hiltViewModel()
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isTabletLandscape = maxWidth >= 720.dp

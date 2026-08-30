@@ -1,14 +1,14 @@
 package com.yayyar.deco.feature.inventory
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.withTransaction
-import com.yayyar.deco.core.database.DecoDatabase
+import com.yayyar.deco.core.data.repository.CategoryRepository
+import com.yayyar.deco.core.data.repository.ProductRepository
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
 import com.yayyar.deco.core.database.model.ProductWithVariants
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,14 +16,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class InventoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = DecoDatabase.getInstance(application)
-    private val categoryDao = db.categoryDao()
-    private val productDao = db.productDao()
-    private val variantDao = db.variantDao()
+@HiltViewModel
+class InventoryViewModel @Inject constructor(
+    private val productRepository: ProductRepository,
+    private val categoryRepository: CategoryRepository
+) : ViewModel() {
 
-    val categories: StateFlow<List<CategoryEntity>> = categoryDao.getAllCategoriesFlow()
+    val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategoriesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
@@ -36,7 +37,7 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     val showOnlyLowStock: StateFlow<Boolean> = _showOnlyLowStock.asStateFlow()
 
     val products: StateFlow<List<ProductWithVariants>> = combine(
-        productDao.getAllProductsWithVariantsFlow(),
+        productRepository.getAllProductsWithVariantsFlow(),
         _selectedCategoryId,
         _searchQuery,
         _showOnlyLowStock
@@ -69,25 +70,21 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun saveProductWithVariants(product: ProductEntity, variants: List<ProductVariantEntity>) {
         viewModelScope.launch {
-            db.withTransaction {
-                productDao.insertProduct(product)
-                variantDao.deleteVariantsByProductId(product.id)
-                variantDao.insertVariants(variants)
-            }
+            productRepository.saveProductWithVariants(product, variants)
         }
     }
 
     fun deleteProduct(product: ProductEntity) {
         viewModelScope.launch {
-            productDao.deleteProduct(product)
+            productRepository.deleteProductWithVariants(product)
         }
     }
 
     fun addCategory(name: String) {
         if (name.isBlank()) return
         viewModelScope.launch {
-            val count = categoryDao.getAllCategories().size
-            categoryDao.insertCategory(
+            val count = categoryRepository.getAllCategories().size
+            categoryRepository.insertCategory(
                 CategoryEntity(
                     name = name.trim(),
                     sortOrder = count + 1
@@ -98,13 +95,19 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun deleteCategory(category: CategoryEntity) {
         viewModelScope.launch {
-            categoryDao.deleteCategory(category)
+            categoryRepository.deleteCategory(category)
+        }
+    }
+
+    fun adjustStock(variantId: String, deltaQty: Int) {
+        viewModelScope.launch {
+            productRepository.adjustVariantStock(variantId, deltaQty)
         }
     }
 
     fun updateStock(variantId: String, newStock: Int) {
         viewModelScope.launch {
-            variantDao.setStockDirect(variantId, newStock, System.currentTimeMillis())
+            productRepository.setVariantStock(variantId, newStock)
         }
     }
 }

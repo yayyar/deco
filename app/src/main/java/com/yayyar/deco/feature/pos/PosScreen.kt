@@ -231,7 +231,7 @@ private fun CatalogPane(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearch,
-            placeholder = { Text("Search dress, barcode, pattern (ကြောင်, ဝက်)...") },
+            placeholder = { Text("Search...") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -249,7 +249,7 @@ private fun CatalogPane(
                 FilterChip(
                     selected = selectedCatId == null,
                     onClick = { onSelectCategory(null) },
-                    label = { Text("All Items") },
+                    label = { Text("All / အားလုံး") },
                     shape = RoundedCornerShape(8.dp)
                 )
             }

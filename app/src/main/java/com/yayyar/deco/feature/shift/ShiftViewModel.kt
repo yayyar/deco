@@ -1,11 +1,12 @@
 package com.yayyar.deco.feature.shift
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yayyar.deco.core.database.DecoDatabase
+import com.yayyar.deco.core.common.Resource
+import com.yayyar.deco.core.data.repository.ShiftRepository
 import com.yayyar.deco.core.database.entity.CashMovementEntity
 import com.yayyar.deco.core.database.entity.ShiftEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,67 +15,61 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.UUID
+import javax.inject.Inject
 
-class ShiftViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = DecoDatabase.getInstance(application)
-    private val shiftDao = db.shiftDao()
+@HiltViewModel
+class ShiftViewModel @Inject constructor(
+    private val shiftRepository: ShiftRepository
+) : ViewModel() {
 
-    val activeShift: StateFlow<ShiftEntity?> = shiftDao.getActiveShiftFlow()
+    val activeShift: StateFlow<ShiftEntity?> = shiftRepository.getActiveShiftFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val cashMovements: StateFlow<List<CashMovementEntity>> = activeShift.flatMapLatest { shift ->
         if (shift != null) {
-            shiftDao.getCashMovementsByShiftFlow(shift.id)
+            shiftRepository.getCashMovementsByShiftFlow(shift.id)
         } else {
             flowOf(emptyList())
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val shiftHistory: StateFlow<List<ShiftEntity>> = shiftDao.getAllShiftsFlow()
+    val shiftHistory: StateFlow<List<ShiftEntity>> = shiftRepository.getAllShiftsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _shiftActionState = MutableStateFlow<Resource<ShiftEntity>?>(null)
+    val shiftActionState: StateFlow<Resource<ShiftEntity>?> = _shiftActionState.asStateFlow()
 
     fun openShift(openingFloat: Double, notes: String?) {
         viewModelScope.launch {
-            val shift = ShiftEntity(
-                id = UUID.randomUUID().toString(),
-                openedAt = System.currentTimeMillis(),
-                openingFloat = openingFloat,
-                notes = notes,
-                status = "OPEN"
-            )
-            shiftDao.insertShift(shift)
+            _shiftActionState.value = Resource.Loading
+            val result = shiftRepository.openShift(openingFloat, notes)
+            _shiftActionState.value = result
         }
     }
 
     fun recordCashMovement(type: String, amount: Double, reason: String) {
-        val currentShift = activeShift.value ?: return
+        val shiftId = activeShift.value?.id ?: return
         viewModelScope.launch {
-            val movement = CashMovementEntity(
-                shiftId = currentShift.id,
-                type = type,
+            shiftRepository.addCashMovement(
+                shiftId = shiftId,
                 amount = amount,
-                reason = reason
+                reason = reason,
+                type = type
             )
-            shiftDao.insertCashMovement(movement)
         }
     }
 
     fun closeShift(closingCashActual: Double, notes: String?) {
-        val currentShift = activeShift.value ?: return
+        val shiftId = activeShift.value?.id ?: return
         viewModelScope.launch {
-            val netAdjustments = shiftDao.getNetCashAdjustment(currentShift.id)
-            val expectedCash = currentShift.openingFloat + currentShift.totalSalesCash + netAdjustments
-
-            val closedShift = currentShift.copy(
-                closedAt = System.currentTimeMillis(),
-                closingCashActual = closingCashActual,
-                closingCashExpected = expectedCash,
-                notes = notes ?: currentShift.notes,
-                status = "CLOSED"
-            )
-            shiftDao.updateShift(closedShift)
+            _shiftActionState.value = Resource.Loading
+            val result = shiftRepository.closeShift(shiftId, closingCashActual, notes)
+            _shiftActionState.value = result
         }
+    }
+
+    fun clearActionState() {
+        _shiftActionState.value = null
     }
 }

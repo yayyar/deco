@@ -1,17 +1,17 @@
 package com.yayyar.deco.feature.analytics
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yayyar.deco.core.common.Formatters
-import com.yayyar.deco.core.database.DecoDatabase
+import com.yayyar.deco.core.data.repository.OrderRepository
 import com.yayyar.deco.core.database.model.CategorySalesSummary
 import com.yayyar.deco.core.database.model.DailySalesSummary
 import com.yayyar.deco.core.database.model.OrderWithItems
 import com.yayyar.deco.core.database.model.TopSellingItem
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,10 +23,50 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 import java.util.Calendar
+import javax.inject.Inject
 
-class AnalyticsViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = DecoDatabase.getInstance(application)
-    private val orderDao = db.orderDao()
+enum class TimeRange(val displayName: String) {
+    TODAY("Today"),
+    THIS_WEEK("This Week"),
+    THIS_MONTH("This Month"),
+    ALL_TIME("All Time");
+
+    fun getTimestamps(): Pair<Long, Long> {
+        val cal = Calendar.getInstance()
+        val end = cal.timeInMillis
+        return when (this) {
+            TODAY -> {
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                cal.set(Calendar.MILLISECOND, 0)
+                cal.timeInMillis to end
+            }
+            THIS_WEEK -> {
+                cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                cal.set(Calendar.MILLISECOND, 0)
+                cal.timeInMillis to end
+            }
+            THIS_MONTH -> {
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                cal.set(Calendar.MILLISECOND, 0)
+                cal.timeInMillis to end
+            }
+            ALL_TIME -> 0L to end
+        }
+    }
+}
+
+@HiltViewModel
+class AnalyticsViewModel @Inject constructor(
+    private val orderRepository: OrderRepository
+) : ViewModel() {
 
     private val _timeRange = MutableStateFlow(TimeRange.TODAY)
     val timeRange: StateFlow<TimeRange> = _timeRange.asStateFlow()
@@ -34,22 +74,22 @@ class AnalyticsViewModel(application: Application) : AndroidViewModel(applicatio
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val salesSummary: StateFlow<DailySalesSummary> = _timeRange.flatMapLatest { range ->
         val (start, end) = range.getTimestamps()
-        orderDao.getDailySalesSummaryFlow(start, end)
+        orderRepository.getDailySalesSummaryFlow(start, end)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DailySalesSummary())
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val topSellingItems: StateFlow<List<TopSellingItem>> = _timeRange.flatMapLatest { range ->
         val (start, end) = range.getTimestamps()
-        orderDao.getTopSellingItemsFlow(start, end, limit = 10)
+        orderRepository.getTopSellingItemsFlow(start, end, limit = 10)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val categorySales: StateFlow<List<CategorySalesSummary>> = _timeRange.flatMapLatest { range ->
         val (start, end) = range.getTimestamps()
-        orderDao.getCategorySalesSummaryFlow(start, end)
+        orderRepository.getCategorySalesSummaryFlow(start, end)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val allOrders: StateFlow<List<OrderWithItems>> = orderDao.getAllOrdersWithItemsFlow()
+    val allOrders: StateFlow<List<OrderWithItems>> = orderRepository.getAllOrdersWithItemsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun setTimeRange(range: TimeRange) {
@@ -91,40 +131,6 @@ class AnalyticsViewModel(application: Application) : AndroidViewModel(applicatio
         } catch (e: Exception) {
             e.printStackTrace()
             false
-        }
-    }
-}
-
-enum class TimeRange(val displayName: String) {
-    TODAY("Today"),
-    THIS_WEEK("This Week"),
-    THIS_MONTH("This Month"),
-    ALL_TIME("All Time");
-
-    fun getTimestamps(): Pair<Long, Long> {
-        val cal = Calendar.getInstance()
-        val end = cal.timeInMillis
-        return when (this) {
-            TODAY -> {
-                cal.set(Calendar.HOUR_OF_DAY, 0)
-                cal.set(Calendar.MINUTE, 0)
-                cal.set(Calendar.SECOND, 0)
-                cal.set(Calendar.MILLISECOND, 0)
-                cal.timeInMillis to end
-            }
-            THIS_WEEK -> {
-                cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
-                cal.set(Calendar.HOUR_OF_DAY, 0)
-                cal.set(Calendar.MINUTE, 0)
-                cal.timeInMillis to end
-            }
-            THIS_MONTH -> {
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                cal.set(Calendar.HOUR_OF_DAY, 0)
-                cal.set(Calendar.MINUTE, 0)
-                cal.timeInMillis to end
-            }
-            ALL_TIME -> 0L to end
         }
     }
 }
