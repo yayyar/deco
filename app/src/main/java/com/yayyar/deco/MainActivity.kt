@@ -2,21 +2,26 @@ package com.yayyar.deco
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Checkroom
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PointOfSale
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -27,11 +32,14 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +47,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -63,7 +74,7 @@ enum class PosDestination(
     val title: String,
     val icon: ImageVector
 ) {
-    POS("Sale", Icons.Default.PointOfSale),
+    POS("Sale", Icons.Default.LocalMall),
     INVENTORY("Inventory", Icons.Default.Checkroom),
     SHIFT("Shift", Icons.Default.AccountBalanceWallet),
     ANALYTICS("Analytics", Icons.Default.Analytics)
@@ -95,17 +106,32 @@ class MainActivity : Hilt_MainActivity() {
 fun DecoApp() {
     var appDestination by remember { mutableStateOf<AppDestination>(AppDestination.Main(PosDestination.POS)) }
     var isInventoryGridView by remember { mutableStateOf(false) }
+    var isPosSearchActive by remember { mutableStateOf(false) }
 
     val posViewModel: PosViewModel = hiltViewModel()
     val inventoryViewModel: InventoryViewModel = hiltViewModel()
     val shiftViewModel: ShiftViewModel = hiltViewModel()
     val analyticsViewModel: AnalyticsViewModel = hiltViewModel()
 
+    val posSearchQuery by posViewModel.searchQuery.collectAsState()
+    val posFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(isPosSearchActive) {
+        if (isPosSearchActive) {
+            posFocusRequester.requestFocus()
+        }
+    }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     when (val current = appDestination) {
         is AppDestination.Main -> {
+            BackHandler(enabled = isPosSearchActive && current.destination == PosDestination.POS) {
+                isPosSearchActive = false
+                posViewModel.setSearchQuery("")
+            }
+
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
@@ -125,6 +151,10 @@ fun DecoApp() {
                                 label = { Text(dest.title) },
                                 selected = current.destination == dest,
                                 onClick = {
+                                    if (dest != PosDestination.POS) {
+                                        isPosSearchActive = false
+                                        posViewModel.setSearchQuery("")
+                                    }
                                     appDestination = AppDestination.Main(dest)
                                     scope.launch { drawerState.close() }
                                 },
@@ -138,16 +168,61 @@ fun DecoApp() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = { Text(current.destination.title) },
-                            navigationIcon = {
-                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = "Open navigation menu"
+                            title = {
+                                if (current.destination == PosDestination.POS && isPosSearchActive) {
+                                    OutlinedTextField(
+                                        value = posSearchQuery,
+                                        onValueChange = { posViewModel.setSearchQuery(it) },
+                                        placeholder = { Text("Search products") },
+                                        singleLine = true,
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = Color.Transparent,
+                                            unfocusedBorderColor = Color.Transparent
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .focusRequester(posFocusRequester),
+                                        trailingIcon = {
+                                            if (posSearchQuery.isNotEmpty()) {
+                                                IconButton(onClick = { posViewModel.setSearchQuery("") }) {
+                                                    Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                                }
+                                            }
+                                        }
                                     )
+                                } else {
+                                    Text(current.destination.title)
+                                }
+                            },
+                            navigationIcon = {
+                                if (current.destination == PosDestination.POS && isPosSearchActive) {
+                                    IconButton(onClick = {
+                                        isPosSearchActive = false
+                                        posViewModel.setSearchQuery("")
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Exit search"
+                                        )
+                                    }
+                                } else {
+                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Menu,
+                                            contentDescription = "Open navigation menu"
+                                        )
+                                    }
                                 }
                             },
                             actions = {
+                                if (current.destination == PosDestination.POS && !isPosSearchActive) {
+                                    IconButton(onClick = { isPosSearchActive = true }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Search,
+                                            contentDescription = "Search Products"
+                                        )
+                                    }
+                                }
                                 if (current.destination == PosDestination.INVENTORY) {
                                     IconButton(onClick = { isInventoryGridView = !isInventoryGridView }) {
                                         Icon(

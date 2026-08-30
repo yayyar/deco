@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -88,7 +87,6 @@ fun PosScreen(
     val categories by viewModel.categories.collectAsState()
     val selectedCatId by viewModel.selectedCategoryId.collectAsState()
     val catalogProducts by viewModel.catalogProducts.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
     val cartState by viewModel.cartState.collectAsState()
     val checkoutState by viewModel.checkoutState.collectAsState()
 
@@ -105,9 +103,7 @@ fun PosScreen(
                     categories = categories,
                     selectedCatId = selectedCatId,
                     catalogProducts = catalogProducts,
-                    searchQuery = searchQuery,
                     onSelectCategory = { viewModel.selectCategory(it) },
-                    onSearch = { viewModel.setSearchQuery(it) },
                     onAddToCart = { prod, variant -> viewModel.addToCart(prod, variant) },
                     modifier = Modifier
                         .weight(0.65f)
@@ -143,10 +139,8 @@ fun PosScreen(
                 categories = categories,
                 selectedCatId = selectedCatId,
                 catalogProducts = catalogProducts,
-                searchQuery = searchQuery,
                 cartState = cartState,
                 onSelectCategory = { viewModel.selectCategory(it) },
-                onSearch = { viewModel.setSearchQuery(it) },
                 onAddToCart = { prod, variant -> viewModel.addToCart(prod, variant) },
                 onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
                 onRemoveItem = { viewModel.removeCartItem(it) },
@@ -220,26 +214,11 @@ private fun CatalogPane(
     categories: List<com.yayyar.deco.core.database.entity.CategoryEntity>,
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
-    searchQuery: String,
     onSelectCategory: (String?) -> Unit,
-    onSearch: (String) -> Unit,
     onAddToCart: (com.yayyar.deco.core.database.entity.ProductEntity, ProductVariantEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // Search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearch,
-            placeholder = { Text("Search...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(Modifier.height(10.dp))
-
         // Category Filter Chips
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -564,10 +543,8 @@ private fun MobilePosLayout(
     categories: List<com.yayyar.deco.core.database.entity.CategoryEntity>,
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
-    searchQuery: String,
     cartState: CartState,
     onSelectCategory: (String?) -> Unit,
-    onSearch: (String) -> Unit,
     onAddToCart: (com.yayyar.deco.core.database.entity.ProductEntity, ProductVariantEntity) -> Unit,
     onUpdateQty: (String, Int) -> Unit,
     onRemoveItem: (String) -> Unit,
@@ -606,9 +583,7 @@ private fun MobilePosLayout(
             categories = categories,
             selectedCatId = selectedCatId,
             catalogProducts = catalogProducts,
-            searchQuery = searchQuery,
             onSelectCategory = onSelectCategory,
-            onSearch = onSearch,
             onAddToCart = onAddToCart,
             modifier = Modifier
                 .fillMaxSize()
