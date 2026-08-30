@@ -60,14 +60,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 enum class PosDestination(
-    val route: String,
     val title: String,
     val icon: ImageVector
 ) {
-    POS("pos", "POS", Icons.Default.PointOfSale),
-    INVENTORY("inventory", "Inventory", Icons.Default.Checkroom),
-    SHIFT("shift", "Shift", Icons.Default.AccountBalanceWallet),
-    ANALYTICS("analytics", "Analytics", Icons.Default.Analytics)
+    POS("Sale", Icons.Default.PointOfSale),
+    INVENTORY("Inventory", Icons.Default.Checkroom),
+    SHIFT("Shift", Icons.Default.AccountBalanceWallet),
+    ANALYTICS("Analytics", Icons.Default.Analytics)
 }
 
 sealed interface AppDestination {
@@ -115,12 +114,12 @@ fun DecoApp() {
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Deco POS",
+                            text = "DeCo",
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                         )
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        PosDestination.values().forEach { dest ->
+                        PosDestination.entries.forEach { dest ->
                             NavigationDrawerItem(
                                 icon = { Icon(dest.icon, contentDescription = dest.title) },
                                 label = { Text(dest.title) },

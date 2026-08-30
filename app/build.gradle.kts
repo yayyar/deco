@@ -37,6 +37,11 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+    sourceSets {
+        getByName("main") {
+            java.directories.add("build/generated/ksp/debug/java")
+        }
+    }
 }
 
 dependencies {
