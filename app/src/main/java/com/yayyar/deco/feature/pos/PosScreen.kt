@@ -714,8 +714,8 @@ private fun MobilePosLayout(
                 onInitiateCheckout = onInitiateCheckout,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(480.dp)
-                    .padding(16.dp)
+                    .fillMaxHeight(0.9f)
+                    .padding(start = 3.dp, top = 0.dp, end = 3.dp, bottom = 8.dp)
             )
         }
     ) { innerPadding ->
