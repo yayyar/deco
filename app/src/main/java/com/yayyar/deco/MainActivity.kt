@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -164,88 +165,45 @@ fun DecoApp() {
                     }
                 }
             ) {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                if (current.destination == PosDestination.POS && isPosSearchActive) {
-                                    OutlinedTextField(
-                                        value = posSearchQuery,
-                                        onValueChange = { posViewModel.setSearchQuery(it) },
-                                        placeholder = { Text("Search products") },
-                                        singleLine = true,
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedBorderColor = Color.Transparent,
-                                            unfocusedBorderColor = Color.Transparent
-                                        ),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .focusRequester(posFocusRequester),
-                                        trailingIcon = {
-                                            if (posSearchQuery.isNotEmpty()) {
-                                                IconButton(onClick = { posViewModel.setSearchQuery("") }) {
-                                                    Icon(Icons.Default.Close, contentDescription = "Clear search")
-                                                }
-                                            }
-                                        }
-                                    )
-                                } else {
-                                    Text(current.destination.title)
-                                }
-                            },
-                            navigationIcon = {
-                                if (current.destination == PosDestination.POS && isPosSearchActive) {
-                                    IconButton(onClick = {
-                                        isPosSearchActive = false
-                                        posViewModel.setSearchQuery("")
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Exit search"
-                                        )
-                                    }
-                                } else {
-                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Menu,
-                                            contentDescription = "Open navigation menu"
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                if (current.destination == PosDestination.POS && !isPosSearchActive) {
-                                    IconButton(onClick = { isPosSearchActive = true }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Search,
-                                            contentDescription = "Search Products"
-                                        )
-                                    }
-                                }
-                                if (current.destination == PosDestination.INVENTORY) {
-                                    IconButton(onClick = { isInventoryGridView = !isInventoryGridView }) {
-                                        Icon(
-                                            imageVector = if (isInventoryGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
-                                            contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
-                                        )
-                                    }
-                                }
-                            }
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val isTabletLandscape = maxWidth >= 720.dp
+                    val isPosTablet = isTabletLandscape && current.destination == PosDestination.POS
+
+                    val topBarContent: @Composable () -> Unit = {
+                        MainTopAppBar(
+                            destination = current.destination,
+                            isPosSearchActive = isPosSearchActive,
+                            posSearchQuery = posSearchQuery,
+                            onPosSearchQueryChange = { posViewModel.setSearchQuery(it) },
+                            onPosSearchActiveChange = { isPosSearchActive = it },
+                            posFocusRequester = posFocusRequester,
+                            onOpenDrawer = { scope.launch { drawerState.open() } },
+                            isInventoryGridView = isInventoryGridView,
+                            onToggleInventoryGridView = { isInventoryGridView = !isInventoryGridView }
                         )
                     }
-                ) { innerPadding ->
-                    AppScreenContent(
-                        destination = current.destination,
-                        posViewModel = posViewModel,
-                        inventoryViewModel = inventoryViewModel,
-                        shiftViewModel = shiftViewModel,
-                        analyticsViewModel = analyticsViewModel,
-                        isInventoryGridView = isInventoryGridView,
-                        onNavigateToProducts = { appDestination = AppDestination.ProductList },
-                        onNavigateToCategories = { appDestination = AppDestination.CategoryList },
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        topBar = {
+                            if (!isPosTablet) {
+                                topBarContent()
+                            }
+                        }
+                    ) { innerPadding ->
+                        AppScreenContent(
+                            destination = current.destination,
+                            posViewModel = posViewModel,
+                            inventoryViewModel = inventoryViewModel,
+                            shiftViewModel = shiftViewModel,
+                            analyticsViewModel = analyticsViewModel,
+                            isInventoryGridView = isInventoryGridView,
+                            onNavigateToProducts = { appDestination = AppDestination.ProductList },
+                            onNavigateToCategories = { appDestination = AppDestination.CategoryList },
+                            topBar = if (isPosTablet) topBarContent else ({}),
+                            modifier = if (isPosTablet) Modifier.fillMaxSize() else Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
@@ -286,6 +244,87 @@ fun DecoApp() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MainTopAppBar(
+    destination: PosDestination,
+    isPosSearchActive: Boolean,
+    posSearchQuery: String,
+    onPosSearchQueryChange: (String) -> Unit,
+    onPosSearchActiveChange: (Boolean) -> Unit,
+    posFocusRequester: FocusRequester,
+    onOpenDrawer: () -> Unit,
+    isInventoryGridView: Boolean,
+    onToggleInventoryGridView: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            if (destination == PosDestination.POS && isPosSearchActive) {
+                OutlinedTextField(
+                    value = posSearchQuery,
+                    onValueChange = onPosSearchQueryChange,
+                    placeholder = { Text("Search products") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(posFocusRequester),
+                    trailingIcon = {
+                        if (posSearchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onPosSearchQueryChange("") }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear search")
+                            }
+                        }
+                    }
+                )
+            } else {
+                Text(destination.title)
+            }
+        },
+        navigationIcon = {
+            if (destination == PosDestination.POS && isPosSearchActive) {
+                IconButton(onClick = {
+                    onPosSearchActiveChange(false)
+                    onPosSearchQueryChange("")
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Exit search"
+                    )
+                }
+            } else {
+                IconButton(onClick = onOpenDrawer) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Open navigation menu"
+                    )
+                }
+            }
+        },
+        actions = {
+            if (destination == PosDestination.POS && !isPosSearchActive) {
+                IconButton(onClick = { onPosSearchActiveChange(true) }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Products"
+                    )
+                }
+            }
+            if (destination == PosDestination.INVENTORY) {
+                IconButton(onClick = onToggleInventoryGridView) {
+                    Icon(
+                        imageVector = if (isInventoryGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+                        contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
+                    )
+                }
+            }
+        }
+    )
+}
+
 @Composable
 private fun AppScreenContent(
     destination: PosDestination,
@@ -296,10 +335,15 @@ private fun AppScreenContent(
     isInventoryGridView: Boolean,
     onNavigateToProducts: () -> Unit,
     onNavigateToCategories: () -> Unit,
+    topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     when (destination) {
-        PosDestination.POS -> PosScreen(viewModel = posViewModel, modifier = modifier)
+        PosDestination.POS -> PosScreen(
+            viewModel = posViewModel,
+            topBar = topBar,
+            modifier = modifier
+        )
         PosDestination.INVENTORY -> InventoryScreen(
             viewModel = inventoryViewModel,
             isGridView = isInventoryGridView,

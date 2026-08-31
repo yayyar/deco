@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -86,6 +87,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PosScreen(
     viewModel: PosViewModel,
+    topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val categories by viewModel.categories.collectAsState()
@@ -103,18 +105,24 @@ fun PosScreen(
         if (isTabletLandscape) {
             // Tablet 2-Pane Master-Detail Layout
             Row(modifier = Modifier.fillMaxSize()) {
-                // Left 65%: Catalog
-                CatalogPane(
-                    categories = categories,
-                    selectedCatId = selectedCatId,
-                    catalogProducts = catalogProducts,
-                    onSelectCategory = { viewModel.selectCategory(it) },
-                    onProductClick = { selectedProductForVariants = it },
+                // Left 65%: TopAppBar + Catalog
+                Column(
                     modifier = Modifier
-                        .weight(0.65f)
+                        .weight(0.60f)
                         .fillMaxHeight()
-                        .padding(top = 16.dp)
-                )
+                ) {
+                    topBar()
+                    CatalogPane(
+                        categories = categories,
+                        selectedCatId = selectedCatId,
+                        catalogProducts = catalogProducts,
+                        onSelectCategory = { viewModel.selectCategory(it) },
+                        onProductClick = { selectedProductForVariants = it },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 8.dp)
+                    )
+                }
 
                 VerticalDivider(
                     modifier = Modifier
@@ -122,7 +130,7 @@ fun PosScreen(
                         .width(1.dp)
                 )
 
-                // Right 35%: Cart & Checkout Summary
+                // Right 35%: Cart & Checkout Summary (Full Height from top of screen, beside TopAppBar)
                 CartPane(
                     cartState = cartState,
                     onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
@@ -135,6 +143,7 @@ fun PosScreen(
                         .weight(0.35f)
                         .fillMaxHeight()
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                        .statusBarsPadding()
                         .padding(16.dp)
                 )
             }
