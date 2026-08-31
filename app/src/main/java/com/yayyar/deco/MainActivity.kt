@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
@@ -68,8 +67,6 @@ import com.yayyar.deco.feature.inventory.ProductAddScreen
 import com.yayyar.deco.feature.inventory.ProductListScreen
 import com.yayyar.deco.feature.pos.PosScreen
 import com.yayyar.deco.feature.pos.PosViewModel
-import com.yayyar.deco.feature.shift.ShiftScreen
-import com.yayyar.deco.feature.shift.ShiftViewModel
 import com.yayyar.deco.ui.theme.DecoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -80,7 +77,6 @@ enum class PosDestination(
 ) {
     POS("Sale", Icons.Outlined.LocalMall),
     INVENTORY("Inventory", Icons.Outlined.Checkroom),
-    SHIFT("Shift", Icons.Default.AccountBalanceWallet),
     ANALYTICS("Analytics", Icons.Default.Analytics)
 }
 
@@ -114,7 +110,6 @@ fun DecoApp() {
 
     val posViewModel: PosViewModel = hiltViewModel()
     val inventoryViewModel: InventoryViewModel = hiltViewModel()
-    val shiftViewModel: ShiftViewModel = hiltViewModel()
     val analyticsViewModel: AnalyticsViewModel = hiltViewModel()
 
     val posSearchQuery by posViewModel.searchQuery.collectAsState()
@@ -198,7 +193,6 @@ fun DecoApp() {
                             destination = current.destination,
                             posViewModel = posViewModel,
                             inventoryViewModel = inventoryViewModel,
-                            shiftViewModel = shiftViewModel,
                             analyticsViewModel = analyticsViewModel,
                             isInventoryGridView = isInventoryGridView,
                             onNavigateToProducts = { appDestination = AppDestination.ProductList },
@@ -334,7 +328,6 @@ private fun AppScreenContent(
     destination: PosDestination,
     posViewModel: PosViewModel,
     inventoryViewModel: InventoryViewModel,
-    shiftViewModel: ShiftViewModel,
     analyticsViewModel: AnalyticsViewModel,
     isInventoryGridView: Boolean,
     onNavigateToProducts: () -> Unit,
@@ -355,7 +348,6 @@ private fun AppScreenContent(
             onNavigateToCategories = onNavigateToCategories,
             modifier = modifier
         )
-        PosDestination.SHIFT -> ShiftScreen(viewModel = shiftViewModel, modifier = modifier)
         PosDestination.ANALYTICS -> AnalyticsScreen(viewModel = analyticsViewModel, modifier = modifier)
     }
 }

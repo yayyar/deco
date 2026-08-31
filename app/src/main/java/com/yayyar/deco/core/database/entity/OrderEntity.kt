@@ -9,18 +9,9 @@ import java.util.UUID
 
 @Entity(
     tableName = "orders",
-    foreignKeys = [
-        ForeignKey(
-            entity = ShiftEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["shift_id"],
-            onDelete = ForeignKey.SET_NULL
-        )
-    ],
     indices = [
         Index(value = ["receipt_number"], unique = true),
         Index(value = ["created_at"]),
-        Index(value = ["shift_id"]),
         Index(value = ["sync_status"])
     ]
 )
@@ -29,8 +20,6 @@ data class OrderEntity(
     val id: String = UUID.randomUUID().toString(),
     @ColumnInfo(name = "receipt_number")
     val receiptNumber: String,
-    @ColumnInfo(name = "shift_id")
-    val shiftId: String? = null,
     val subtotal: Double,
     @ColumnInfo(name = "discount_amount")
     val discountAmount: Double = 0.0,

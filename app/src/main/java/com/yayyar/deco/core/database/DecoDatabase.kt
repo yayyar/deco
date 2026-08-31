@@ -8,15 +8,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yayyar.deco.core.database.dao.CategoryDao
 import com.yayyar.deco.core.database.dao.OrderDao
 import com.yayyar.deco.core.database.dao.ProductDao
-import com.yayyar.deco.core.database.dao.ShiftDao
 import com.yayyar.deco.core.database.dao.VariantDao
-import com.yayyar.deco.core.database.entity.CashMovementEntity
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.OrderEntity
 import com.yayyar.deco.core.database.entity.OrderItemEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
-import com.yayyar.deco.core.database.entity.ShiftEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,9 +25,7 @@ import java.util.UUID
         ProductEntity::class,
         ProductVariantEntity::class,
         OrderEntity::class,
-        OrderItemEntity::class,
-        ShiftEntity::class,
-        CashMovementEntity::class
+        OrderItemEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -40,7 +35,6 @@ abstract class DecoDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun variantDao(): VariantDao
     abstract fun orderDao(): OrderDao
-    abstract fun shiftDao(): ShiftDao
 
     companion object {
         @Volatile
@@ -193,14 +187,6 @@ abstract class DecoDatabase : RoomDatabase() {
             prodDao.insertProduct(p3)
             varDao.deleteVariantsByProductId(p3.id)
             varDao.insertVariants(listOf(v3_1, v3_2))
-
-            // Seed initial active shift
-            val shift = ShiftEntity(
-                id = "shift_init_1",
-                openingFloat = 100000.0, // 100,000 MMK float
-                notes = "Morning Shift Register 01"
-            )
-            db.shiftDao().insertShift(shift)
         }
     }
 }

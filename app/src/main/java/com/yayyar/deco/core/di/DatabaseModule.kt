@@ -5,7 +5,6 @@ import com.yayyar.deco.core.database.DecoDatabase
 import com.yayyar.deco.core.database.dao.CategoryDao
 import com.yayyar.deco.core.database.dao.OrderDao
 import com.yayyar.deco.core.database.dao.ProductDao
-import com.yayyar.deco.core.database.dao.ShiftDao
 import com.yayyar.deco.core.database.dao.VariantDao
 import dagger.Module
 import dagger.Provides
@@ -35,7 +34,4 @@ object DatabaseModule {
 
     @Provides
     fun provideOrderDao(db: DecoDatabase): OrderDao = db.orderDao()
-
-    @Provides
-    fun provideShiftDao(db: DecoDatabase): ShiftDao = db.shiftDao()
 }

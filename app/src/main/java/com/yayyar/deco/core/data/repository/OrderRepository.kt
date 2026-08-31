@@ -17,7 +17,6 @@ import javax.inject.Singleton
 
 interface OrderRepository {
     fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
-    fun getOrdersByShiftFlow(shiftId: String): Flow<List<OrderWithItems>>
     suspend fun getOrderWithItemsById(orderId: String): OrderWithItems?
     suspend fun getOrderByReceiptNumber(receiptNumber: String): OrderWithItems?
     fun getOrdersBetweenFlow(startTime: Long, endTime: Long): Flow<List<OrderEntity>>
@@ -36,9 +35,6 @@ class OrderRepositoryImpl @Inject constructor(
 
     override fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>> =
         orderDao.getAllOrdersWithItemsFlow()
-
-    override fun getOrdersByShiftFlow(shiftId: String): Flow<List<OrderWithItems>> =
-        orderDao.getOrdersByShiftFlow(shiftId)
 
     override suspend fun getOrderWithItemsById(orderId: String): OrderWithItems? =
         orderDao.getOrderWithItemsById(orderId)

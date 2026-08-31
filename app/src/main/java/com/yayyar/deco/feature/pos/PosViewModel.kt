@@ -8,13 +8,11 @@ import com.yayyar.deco.core.common.Resource
 import com.yayyar.deco.core.data.repository.CategoryRepository
 import com.yayyar.deco.core.data.repository.OrderRepository
 import com.yayyar.deco.core.data.repository.ProductRepository
-import com.yayyar.deco.core.data.repository.ShiftRepository
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.OrderEntity
 import com.yayyar.deco.core.database.entity.OrderItemEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
-import com.yayyar.deco.core.database.entity.ShiftEntity
 import com.yayyar.deco.core.database.model.ProductWithVariants
 import com.yayyar.deco.core.printer.PrinterManager
 import com.yayyar.deco.core.printer.ReceiptData
@@ -39,15 +37,11 @@ class PosViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
-    private val orderRepository: OrderRepository,
-    private val shiftRepository: ShiftRepository
+    private val orderRepository: OrderRepository
 ) : ViewModel() {
 
     val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategoriesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    val activeShift: StateFlow<ShiftEntity?> = shiftRepository.getActiveShiftFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
     val selectedCategoryId: StateFlow<String?> = _selectedCategoryId.asStateFlow()
@@ -163,7 +157,6 @@ class PosViewModel @Inject constructor(
             try {
                 val orderId = UUID.randomUUID().toString()
                 val receiptNumber = Formatters.generateReceiptNumber()
-                val shiftId = activeShift.value?.id
 
                 val grandTotal = currentCart.grandTotal
                 val changeReturned = if (paymentType == "CASH" && cashReceived > grandTotal) {
@@ -173,7 +166,6 @@ class PosViewModel @Inject constructor(
                 val orderEntity = OrderEntity(
                     id = orderId,
                     receiptNumber = receiptNumber,
-                    shiftId = shiftId,
                     subtotal = currentCart.subtotal,
                     discountAmount = currentCart.discountAmount,
                     discountType = currentCart.discountType.name,
@@ -209,23 +201,6 @@ class PosViewModel @Inject constructor(
                 if (checkoutResult is Resource.Error) {
                     _checkoutState.value = Resource.Error(checkoutResult.message)
                     return@launch
-                }
-
-                // Update shift total sales if active shift exists
-                if (shiftId != null) {
-                    activeShift.value?.let { shift ->
-                        val updatedShift = when (paymentType) {
-                            "CASH" -> shift.copy(totalSalesCash = shift.totalSalesCash + grandTotal)
-                            "KPAY" -> shift.copy(totalSalesKpay = shift.totalSalesKpay + grandTotal)
-                            "WAVEPAY" -> shift.copy(totalSalesWave = shift.totalSalesWave + grandTotal)
-                            else -> shift.copy(
-                                totalSalesCash = shift.totalSalesCash + (cashReceived - changeReturned),
-                                totalSalesKpay = shift.totalSalesKpay + kpayAmount,
-                                totalSalesWave = shift.totalSalesWave + waveAmount
-                            )
-                        }
-                        shiftRepository.updateShift(updatedShift)
-                    }
                 }
 
                 // Prepare Receipt Data Model for Printing / Sharing

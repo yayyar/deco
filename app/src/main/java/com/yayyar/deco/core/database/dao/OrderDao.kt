@@ -21,10 +21,6 @@ interface OrderDao {
     fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
 
     @Transaction
-    @Query("SELECT * FROM orders WHERE shift_id = :shiftId ORDER BY created_at DESC")
-    fun getOrdersByShiftFlow(shiftId: String): Flow<List<OrderWithItems>>
-
-    @Transaction
     @Query("SELECT * FROM orders WHERE id = :orderId")
     suspend fun getOrderWithItemsById(orderId: String): OrderWithItems?
 

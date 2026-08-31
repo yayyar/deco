@@ -6,8 +6,6 @@ import com.yayyar.deco.core.data.repository.OrderRepository
 import com.yayyar.deco.core.data.repository.OrderRepositoryImpl
 import com.yayyar.deco.core.data.repository.ProductRepository
 import com.yayyar.deco.core.data.repository.ProductRepositoryImpl
-import com.yayyar.deco.core.data.repository.ShiftRepository
-import com.yayyar.deco.core.data.repository.ShiftRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,10 +33,4 @@ abstract class RepositoryModule {
     abstract fun bindOrderRepository(
         impl: OrderRepositoryImpl
     ): OrderRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindShiftRepository(
-        impl: ShiftRepositoryImpl
-    ): ShiftRepository
 }
