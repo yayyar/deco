@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,10 +76,10 @@ fun CheckoutDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Complete Checkout", fontWeight = FontWeight.Bold)
+                Text("Complete Checkout", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 CurrencyText(
                     amount = grandTotal,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -93,7 +94,7 @@ fun CheckoutDialog(
                 // Payment Method Selector
                 item {
                     Text(
-                        text = "Select Payment Method",
+                        text = "Payment",
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
@@ -103,7 +104,7 @@ fun CheckoutDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         PaymentTypeOption(
-                            label = "Cash (ငွေသား)",
+                            label = "Cash",
                             isSelected = selectedPaymentType == "CASH",
                             color = AccentGreen,
                             modifier = Modifier.weight(1f)
@@ -146,16 +147,17 @@ fun CheckoutDialog(
                                     OutlinedTextField(
                                         value = cashReceivedText,
                                         onValueChange = { cashReceivedText = it },
-                                        label = { Text("Tendered Cash Amount (Ks)") },
+                                        label = { Text("Cash Amount (Ks)") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         modifier = Modifier.fillMaxWidth(),
                                         singleLine = true
                                     )
 
                                     // Quick cash buttons
-                                    Row(
+                                    FlowRow(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
                                     ) {
                                         listOf(grandTotal, 20000.0, 50000.0, 100000.0).distinct().forEach { quickAmt ->
                                             if (quickAmt >= grandTotal) {
@@ -180,11 +182,13 @@ fun CheckoutDialog(
 
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text("Change Return (ပြန်အမ်းငွေ):", fontWeight = FontWeight.Bold)
+                                        Text("Change Return (ပြန်အမ်းငွေ):", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                         CurrencyText(
                                             amount = change,
+                                            fontSize = 12.sp,
                                             color = if (change > 0) AccentGreen else MaterialTheme.colorScheme.onSurface
                                         )
                                     }
@@ -203,7 +207,7 @@ fun CheckoutDialog(
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = "KPay Digital Transfer",
+                                        text = "KPay Transfer",
                                         fontWeight = FontWeight.Bold,
                                         color = AccentBlue
                                     )
@@ -215,7 +219,7 @@ fun CheckoutDialog(
                                     OutlinedTextField(
                                         value = paymentNote,
                                         onValueChange = { paymentNote = it },
-                                        label = { Text("Transaction ID / Last 4 digits (Optional)") },
+                                        label = { Text("Transaction ID") },
                                         modifier = Modifier.fillMaxWidth(),
                                         singleLine = true
                                     )
@@ -234,7 +238,7 @@ fun CheckoutDialog(
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = "WavePay Digital Transfer",
+                                        text = "WavePay Transfer",
                                         fontWeight = FontWeight.Bold,
                                         color = AccentPurple
                                     )
@@ -246,7 +250,7 @@ fun CheckoutDialog(
                                     OutlinedTextField(
                                         value = paymentNote,
                                         onValueChange = { paymentNote = it },
-                                        label = { Text("Transaction ID / Last 4 digits (Optional)") },
+                                        label = { Text("Transaction ID") },
                                         modifier = Modifier.fillMaxWidth(),
                                         singleLine = true
                                     )

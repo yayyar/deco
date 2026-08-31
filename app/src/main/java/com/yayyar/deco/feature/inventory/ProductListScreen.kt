@@ -112,7 +112,7 @@ fun ProductListScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setSearchQuery(it) },
-                            placeholder = { Text("Search products, barcode, pattern...") },
+                            placeholder = { Text("Search products...") },
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent,

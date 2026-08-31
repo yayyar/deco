@@ -128,21 +128,13 @@ fun ReceiptSuccessDialog(
                             CurrencyText(amount = receiptData.changeReturned, fontSize = 13.sp, color = AccentGreen)
                         }
                     }
-
-                    HorizontalDivider()
-
-                    Text(
-                        text = "Digital receipt rendered with Burmese Unicode typography. Ready for thermal print or chat dispatch.",
-                        fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
         },
         confirmButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 OutlinedButton(
                     onClick = { onShareSlip(receiptData) },
@@ -151,17 +143,17 @@ fun ReceiptSuccessDialog(
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Viber/Telegram", fontSize = 12.sp)
+                    Text("Share", fontSize = 12.sp)
                 }
 
-                Button(
+                OutlinedButton(
                     onClick = { onPrint(receiptData) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(Icons.Default.Print, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Print Slip", fontSize = 12.sp)
+                    Text("Print", fontSize = 12.sp)
                 }
             }
         },
@@ -169,7 +161,7 @@ fun ReceiptSuccessDialog(
             Button(
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors()
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Text("Start New Sale")
             }
