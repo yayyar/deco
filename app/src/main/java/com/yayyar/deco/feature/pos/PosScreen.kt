@@ -33,7 +33,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Percent
@@ -382,48 +381,23 @@ private fun ProductVariantSelectionDialog(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = productWithVariants.product.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    if (productWithVariants.category != null) {
+                        Spacer(Modifier.height(2.dp))
                         Text(
-                            text = productWithVariants.product.name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        if (productWithVariants.category != null) {
-                            Spacer(Modifier.height(2.dp))
-                            Text(
-                                text = productWithVariants.category.name,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.size(28.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = productWithVariants.category.name,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
-
-                Spacer(Modifier.height(14.dp))
-
-                Text(
-                    text = "Select Variant / အမျိုးအစား ရွေးချယ်ပါ",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
 
                 Spacer(Modifier.height(10.dp))
 
