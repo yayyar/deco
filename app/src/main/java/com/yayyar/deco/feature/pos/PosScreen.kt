@@ -719,7 +719,7 @@ private fun MobilePosLayout(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetPeekHeight = if (cartState.items.isNotEmpty()) 80.dp else 20.dp,
+        sheetPeekHeight = if (cartState.items.isNotEmpty()) 80.dp else 30.dp,
         sheetContent = {
             CartPane(
                 cartState = cartState,
