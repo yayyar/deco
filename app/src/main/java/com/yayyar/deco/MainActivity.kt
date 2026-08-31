@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,8 +25,12 @@ import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Checkroom
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.LocalMall
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -54,6 +59,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yayyar.deco.core.database.model.ProductWithVariants
@@ -167,6 +173,7 @@ fun DecoApp() {
                     val isTabletLandscape = maxWidth >= 720.dp
                     val isPosTablet = isTabletLandscape && current.destination == PosDestination.POS
 
+                    val context = LocalContext.current
                     val topBarContent: @Composable () -> Unit = {
                         MainTopAppBar(
                             destination = current.destination,
@@ -177,7 +184,12 @@ fun DecoApp() {
                             posFocusRequester = posFocusRequester,
                             onOpenDrawer = { scope.launch { drawerState.open() } },
                             isInventoryGridView = isInventoryGridView,
-                            onToggleInventoryGridView = { isInventoryGridView = !isInventoryGridView }
+                            onToggleInventoryGridView = { isInventoryGridView = !isInventoryGridView },
+                            onExportCsv = {
+                                scope.launch {
+                                    analyticsViewModel.exportOrdersCsv(context)
+                                }
+                            }
                         )
                     }
 
@@ -252,7 +264,8 @@ private fun MainTopAppBar(
     posFocusRequester: FocusRequester,
     onOpenDrawer: () -> Unit,
     isInventoryGridView: Boolean,
-    onToggleInventoryGridView: () -> Unit
+    onToggleInventoryGridView: () -> Unit,
+    onExportCsv: () -> Unit = {}
 ) {
     TopAppBar(
         title = {
@@ -317,6 +330,35 @@ private fun MainTopAppBar(
                         imageVector = if (isInventoryGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
                         contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
                     )
+                }
+            }
+            if (destination == PosDestination.ANALYTICS) {
+                var showAnalyticsMenu by remember { mutableStateOf(false) }
+                Box {
+                    IconButton(onClick = { showAnalyticsMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.MoreVert,
+                            contentDescription = "More options",
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showAnalyticsMenu,
+                        onDismissRequest = { showAnalyticsMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Export CSV") },
+                            onClick = {
+                                showAnalyticsMenu = false
+                                onExportCsv()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Download,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
