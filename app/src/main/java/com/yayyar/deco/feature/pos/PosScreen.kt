@@ -111,7 +111,7 @@ fun PosScreen(
                     modifier = Modifier
                         .weight(0.65f)
                         .fillMaxHeight()
-                        .padding(16.dp)
+                        .padding(top = 16.dp)
                 )
 
                 VerticalDivider(
@@ -225,6 +225,7 @@ private fun CatalogPane(
         // Category Filter Chips
         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
             LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -254,7 +255,7 @@ private fun CatalogPane(
             columns = GridCells.Adaptive(minSize = 200.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(bottom = 16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
             items(catalogProducts, key = { it.product.id }) { item ->
@@ -593,7 +594,7 @@ private fun MobilePosLayout(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(12.dp)
+                .padding(top = 12.dp)
         )
     }
 }
