@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Checkroom
+import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -76,8 +78,8 @@ enum class PosDestination(
     val title: String,
     val icon: ImageVector
 ) {
-    POS("Sale", Icons.Default.LocalMall),
-    INVENTORY("Inventory", Icons.Default.Checkroom),
+    POS("Sale", Icons.Outlined.LocalMall),
+    INVENTORY("Inventory", Icons.Outlined.Checkroom),
     SHIFT("Shift", Icons.Default.AccountBalanceWallet),
     ANALYTICS("Analytics", Icons.Default.Analytics)
 }
