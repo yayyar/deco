@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -111,6 +114,7 @@ fun PosScreen(
                     modifier = Modifier
                         .weight(0.65f)
                         .fillMaxHeight()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.Start))
                 ) {
                     topBar()
                     CatalogPane(
@@ -125,12 +129,6 @@ fun PosScreen(
                     )
                 }
 
-//                VerticalDivider(
-//                    modifier = Modifier
-//                        .fillMaxHeight()
-//                        .width(1.dp)
-//                )
-
                 // Right 35%: Cart & Checkout Summary (Full Height from top of screen, beside TopAppBar)
                 CartPane(
                     cartState = cartState,
@@ -144,8 +142,8 @@ fun PosScreen(
                         .weight(0.35f)
                         .fillMaxHeight()
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                        .safeDrawingPadding()
-                        .padding(0.dp)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End))
+                        .padding(start = 0.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
                 )
             }
         } else {
@@ -529,8 +527,9 @@ private fun CartPane(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(6.dp))
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(3.dp))
                     Text(
                         text = "Cart (${cartState.totalItemCount})",
                         fontWeight = FontWeight.Bold,
