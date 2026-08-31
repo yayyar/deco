@@ -413,7 +413,7 @@ private fun ProductVariantSelectionDialog(
                 } else {
                     // Variant Buttons for Quick Tap Entry
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -615,7 +615,7 @@ private fun CartPane(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Row(
@@ -670,7 +670,7 @@ private fun CartPane(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Quick Checkout (${Formatters.formatMmk(cartState.grandTotal)})", fontWeight = FontWeight.Bold)
+                    Text("Checkout (${Formatters.formatMmk(cartState.grandTotal)})", fontWeight = FontWeight.Bold)
                 }
             }
         }
