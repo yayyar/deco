@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -108,7 +109,7 @@ fun PosScreen(
                 // Left 65%: TopAppBar + Catalog
                 Column(
                     modifier = Modifier
-                        .weight(0.60f)
+                        .weight(0.65f)
                         .fillMaxHeight()
                 ) {
                     topBar()
@@ -124,11 +125,11 @@ fun PosScreen(
                     )
                 }
 
-                VerticalDivider(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                )
+//                VerticalDivider(
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                        .width(1.dp)
+//                )
 
                 // Right 35%: Cart & Checkout Summary (Full Height from top of screen, beside TopAppBar)
                 CartPane(
@@ -143,8 +144,8 @@ fun PosScreen(
                         .weight(0.35f)
                         .fillMaxHeight()
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                        .statusBarsPadding()
-                        .padding(16.dp)
+                        .safeDrawingPadding()
+                        .padding(0.dp)
                 )
             }
         } else {
@@ -531,7 +532,7 @@ private fun CartPane(
                     Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "Current Cart (${cartState.totalItemCount})",
+                        text = "Cart (${cartState.totalItemCount})",
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp
                     )
