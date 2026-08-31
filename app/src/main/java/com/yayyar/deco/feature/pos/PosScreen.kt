@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Percent
@@ -94,6 +95,7 @@ fun PosScreen(
     val checkoutState by viewModel.checkoutState.collectAsState()
 
     var showCheckoutDialog by remember { mutableStateOf(false) }
+    var selectedProductForVariants by remember { mutableStateOf<ProductWithVariants?>(null) }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isTabletLandscape = maxWidth >= 720.dp
@@ -107,7 +109,7 @@ fun PosScreen(
                     selectedCatId = selectedCatId,
                     catalogProducts = catalogProducts,
                     onSelectCategory = { viewModel.selectCategory(it) },
-                    onAddToCart = { prod, variant -> viewModel.addToCart(prod, variant) },
+                    onProductClick = { selectedProductForVariants = it },
                     modifier = Modifier
                         .weight(0.65f)
                         .fillMaxHeight()
@@ -144,7 +146,7 @@ fun PosScreen(
                 catalogProducts = catalogProducts,
                 cartState = cartState,
                 onSelectCategory = { viewModel.selectCategory(it) },
-                onAddToCart = { prod, variant -> viewModel.addToCart(prod, variant) },
+                onProductClick = { selectedProductForVariants = it },
                 onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
                 onRemoveItem = { viewModel.removeCartItem(it) },
                 onClearCart = { viewModel.clearCart() },
@@ -162,6 +164,17 @@ fun PosScreen(
             onConfirmCheckout = { pType, cashRec, kpayAmt, waveAmt, notes ->
                 showCheckoutDialog = false
                 viewModel.performCheckout(pType, cashRec, kpayAmt, waveAmt, notes)
+            }
+        )
+    }
+
+    selectedProductForVariants?.let { productWithVariants ->
+        ProductVariantSelectionDialog(
+            productWithVariants = productWithVariants,
+            onDismiss = { selectedProductForVariants = null },
+            onSelectVariant = { variant ->
+                viewModel.addToCart(productWithVariants.product, variant)
+                selectedProductForVariants = null
             }
         )
     }
@@ -218,7 +231,7 @@ private fun CatalogPane(
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
     onSelectCategory: (String?) -> Unit,
-    onAddToCart: (com.yayyar.deco.core.database.entity.ProductEntity, ProductVariantEntity) -> Unit,
+    onProductClick: (ProductWithVariants) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -252,7 +265,7 @@ private fun CatalogPane(
 
         // Product Catalog Grid
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 200.dp),
+            columns = GridCells.Adaptive(minSize = 160.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -261,7 +274,80 @@ private fun CatalogPane(
             items(catalogProducts, key = { it.product.id }) { item ->
                 ProductCatalogCard(
                     productWithVariants = item,
-                    onAddToCart = onAddToCart
+                    onClick = { onProductClick(item) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductCatalogCard(
+    productWithVariants: ProductWithVariants,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Text(
+                text = productWithVariants.product.name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                maxLines = 2
+            )
+            if (productWithVariants.category != null) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = productWithVariants.category.name,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (productWithVariants.variants.isNotEmpty()) {
+                    if (productWithVariants.minPrice == productWithVariants.maxPrice) {
+                        CurrencyText(
+                            amount = productWithVariants.minPrice,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Text(
+                            text = "${Formatters.formatMmk(productWithVariants.minPrice)} ~ ${Formatters.formatMmk(productWithVariants.maxPrice)}",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "No variants",
+                        fontSize = 11.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                Text(
+                    text = "${productWithVariants.variants.size} var",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
         }
@@ -270,70 +356,135 @@ private fun CatalogPane(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ProductCatalogCard(
+private fun ProductVariantSelectionDialog(
     productWithVariants: ProductWithVariants,
-    onAddToCart: (com.yayyar.deco.core.database.entity.ProductEntity, ProductVariantEntity) -> Unit
+    onDismiss: () -> Unit,
+    onSelectVariant: (ProductVariantEntity) -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = productWithVariants.product.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                maxLines = 2
-            )
-            if (productWithVariants.category != null) {
-                Text(
-                    text = productWithVariants.category.name,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            // Variant Buttons for Quick Tap Entry
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.fillMaxWidth()
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
-                productWithVariants.variants.forEach { variant ->
-                    val isOutOfStock = variant.stockQty <= 0
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = productWithVariants.product.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (productWithVariants.category != null) {
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                text = productWithVariants.category.name,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(14.dp))
+
+                Text(
+                    text = "Select Variant / အမျိုးအစား ရွေးချယ်ပါ",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                if (productWithVariants.variants.isEmpty()) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (isOutOfStock) Color(0xFFE2E8F0) else MaterialTheme.colorScheme.primaryContainer)
-                            .clickable(enabled = !isOutOfStock) {
-                                onAddToCart(productWithVariants.product, variant)
-                            }
-                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = variant.displayName,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            CurrencyText(
-                                amount = variant.sellPrice,
-                                fontSize = 11.sp,
-                                color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
-                            )
-                            if (variant.isLowStock) {
-                                Text(
-                                    text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
-                                    fontSize = 9.sp,
-                                    color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                        Text("No variants available for this product", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    // Variant Buttons for Quick Tap Entry
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        productWithVariants.variants.forEach { variant ->
+                            val isOutOfStock = variant.stockQty <= 0
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        if (isOutOfStock) Color(0xFFE2E8F0)
+                                        else MaterialTheme.colorScheme.primaryContainer
+                                    )
+                                    .clickable(enabled = !isOutOfStock) {
+                                        onSelectVariant(variant)
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = variant.displayName,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Spacer(Modifier.height(2.dp))
+                                    CurrencyText(
+                                        amount = variant.sellPrice,
+                                        fontSize = 12.sp,
+                                        color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
+                                    )
+                                    if (variant.isLowStock || isOutOfStock) {
+                                        Spacer(Modifier.height(2.dp))
+                                        Text(
+                                            text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
+                                            fontSize = 10.sp,
+                                            color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
                             }
                         }
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
                     }
                 }
             }
@@ -551,7 +702,7 @@ private fun MobilePosLayout(
     catalogProducts: List<ProductWithVariants>,
     cartState: CartState,
     onSelectCategory: (String?) -> Unit,
-    onAddToCart: (com.yayyar.deco.core.database.entity.ProductEntity, ProductVariantEntity) -> Unit,
+    onProductClick: (ProductWithVariants) -> Unit,
     onUpdateQty: (String, Int) -> Unit,
     onRemoveItem: (String) -> Unit,
     onClearCart: () -> Unit,
@@ -568,7 +719,7 @@ private fun MobilePosLayout(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetPeekHeight = if (cartState.items.isNotEmpty()) 80.dp else 0.dp,
+        sheetPeekHeight = if (cartState.items.isNotEmpty()) 80.dp else 20.dp,
         sheetContent = {
             CartPane(
                 cartState = cartState,
@@ -590,7 +741,7 @@ private fun MobilePosLayout(
             selectedCatId = selectedCatId,
             catalogProducts = catalogProducts,
             onSelectCategory = onSelectCategory,
-            onAddToCart = onAddToCart,
+            onProductClick = onProductClick,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
