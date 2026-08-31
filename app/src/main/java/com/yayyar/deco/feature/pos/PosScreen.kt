@@ -45,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -55,6 +56,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +68,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.common.Formatters
@@ -220,29 +223,31 @@ private fun CatalogPane(
 ) {
     Column(modifier = modifier) {
         // Category Filter Chips
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            item {
-                FilterChip(
-                    selected = selectedCatId == null,
-                    onClick = { onSelectCategory(null) },
-                    label = { Text("All / အားလုံး") },
-                    shape = RoundedCornerShape(8.dp)
-                )
-            }
-            items(categories, key = { it.id }) { cat ->
-                FilterChip(
-                    selected = selectedCatId == cat.id,
-                    onClick = { onSelectCategory(cat.id) },
-                    label = { Text(cat.name) },
-                    shape = RoundedCornerShape(8.dp)
-                )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                item {
+                    FilterChip(
+                        selected = selectedCatId == null,
+                        onClick = { onSelectCategory(null) },
+                        label = { Text("All / အားလုံး") },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
+                items(categories, key = { it.id }) { cat ->
+                    FilterChip(
+                        selected = selectedCatId == cat.id,
+                        onClick = { onSelectCategory(cat.id) },
+                        label = { Text(cat.name) },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
             }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(6.dp))
 
         // Product Catalog Grid
         LazyVerticalGrid(
