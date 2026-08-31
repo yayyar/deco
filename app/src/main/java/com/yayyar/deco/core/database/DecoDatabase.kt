@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yayyar.deco.core.database.dao.CategoryDao
 import com.yayyar.deco.core.database.dao.OrderDao
@@ -27,7 +28,7 @@ import java.util.UUID
         OrderEntity::class,
         OrderItemEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class DecoDatabase : RoomDatabase() {
@@ -40,6 +41,67 @@ abstract class DecoDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: DecoDatabase? = null
 
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 1. Create new orders table matching OrderEntity without shift_id
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `orders_new` (
+                        `id` TEXT NOT NULL,
+                        `receipt_number` TEXT NOT NULL,
+                        `subtotal` REAL NOT NULL,
+                        `discount_amount` REAL NOT NULL,
+                        `discount_type` TEXT NOT NULL,
+                        `deli_fee` REAL NOT NULL,
+                        `grand_total` REAL NOT NULL,
+                        `payment_type` TEXT NOT NULL,
+                        `cash_received` REAL NOT NULL,
+                        `change_returned` REAL NOT NULL,
+                        `kpay_amount` REAL NOT NULL,
+                        `wave_amount` REAL NOT NULL,
+                        `payment_notes` TEXT,
+                        `customer_name` TEXT,
+                        `customer_phone` TEXT,
+                        `customer_address` TEXT,
+                        `order_status` TEXT NOT NULL,
+                        `sync_status` INTEGER NOT NULL,
+                        `created_at` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                """.trimIndent())
+
+                // 2. Copy data from old orders table to orders_new
+                db.execSQL("""
+                    INSERT INTO `orders_new` (
+                        `id`, `receipt_number`, `subtotal`, `discount_amount`, `discount_type`,
+                        `deli_fee`, `grand_total`, `payment_type`, `cash_received`, `change_returned`,
+                        `kpay_amount`, `wave_amount`, `payment_notes`, `customer_name`, `customer_phone`,
+                        `customer_address`, `order_status`, `sync_status`, `created_at`
+                    )
+                    SELECT 
+                        `id`, `receipt_number`, `subtotal`, `discount_amount`, `discount_type`,
+                        `deli_fee`, `grand_total`, `payment_type`, `cash_received`, `change_returned`,
+                        `kpay_amount`, `wave_amount`, `payment_notes`, `customer_name`, `customer_phone`,
+                        `customer_address`, `order_status`, `sync_status`, `created_at`
+                    FROM `orders`
+                """.trimIndent())
+
+                // 3. Drop old orders table
+                db.execSQL("DROP TABLE `orders`")
+
+                // 4. Rename orders_new to orders
+                db.execSQL("ALTER TABLE `orders_new` RENAME TO `orders`")
+
+                // 5. Recreate indexes for orders table
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_orders_receipt_number` ON `orders` (`receipt_number`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_orders_created_at` ON `orders` (`created_at`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_orders_sync_status` ON `orders` (`sync_status`)")
+
+                // 6. Drop obsolete shifts and cash_movements tables
+                db.execSQL("DROP TABLE IF EXISTS `cash_movements`")
+                db.execSQL("DROP TABLE IF EXISTS `shifts`")
+            }
+        }
+
         fun getInstance(context: Context): DecoDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -47,6 +109,7 @@ abstract class DecoDatabase : RoomDatabase() {
                     DecoDatabase::class.java,
                     "deco_pos.db"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING) // High performance WAL mode
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
