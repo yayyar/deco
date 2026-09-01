@@ -1,8 +1,11 @@
 package com.yayyar.deco.feature.analytics
 
+import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
-import androidx.core.content.FileProvider
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yayyar.deco.core.common.Formatters
@@ -21,7 +24,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileWriter
+import java.io.FileOutputStream
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -75,7 +78,11 @@ class AnalyticsViewModel @Inject constructor(
     val salesSummary: StateFlow<DailySalesSummary> = _timeRange.flatMapLatest { range ->
         val (start, end) = range.getTimestamps()
         orderRepository.getDailySalesSummaryFlow(start, end)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DailySalesSummary())
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        DailySalesSummary(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    )
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val topSellingItems: StateFlow<List<TopSellingItem>> = _timeRange.flatMapLatest { range ->
@@ -99,37 +106,47 @@ class AnalyticsViewModel @Inject constructor(
     suspend fun exportOrdersCsv(context: Context): Boolean = withContext(Dispatchers.IO) {
         try {
             val orders = allOrders.value
-            val cacheDir = File(context.cacheDir, "exports").apply { mkdirs() }
-            val file = File(cacheDir, "Deco_Sales_Report_${System.currentTimeMillis()}.csv")
+            val fileName = "Deco_Sales_Report_${System.currentTimeMillis()}.csv"
 
-            FileWriter(file).use { writer ->
-                writer.append("Receipt Number,Date,Customer,Subtotal,Discount,Delivery Fee,Grand Total,Payment Type,Status\n")
+            val csvContent = buildString {
+                append("Receipt Number,Date,Customer,Subtotal,Discount,Delivery Fee,Grand Total,Payment Type,Status\n")
                 orders.forEach { orderWithItems ->
                     val o = orderWithItems.order
                     val date = Formatters.formatDateTime(o.createdAt)
-                    writer.append("\"${o.receiptNumber}\",\"$date\",\"${o.customerName ?: ""}\",${o.subtotal},${o.discountAmount},${o.deliFee},${o.grandTotal},\"${o.paymentType}\",\"${o.orderStatus}\"\n")
+                    append("\"${o.receiptNumber}\",\"$date\",\"${o.customerName ?: ""}\",${o.subtotal},${o.discountAmount},${o.deliFee},${o.grandTotal},\"${o.paymentType}\",\"${o.orderStatus}\"\n")
                 }
             }
 
-            val uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/DeCo Export")
+                }
+                val uri = context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    ?: throw IllegalStateException("Could not create file in Downloads")
 
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/csv"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, "Deco Sales Report Export")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                }
+            } else {
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val decoExportDir = File(downloadsDir, "DeCo Export").apply { mkdirs() }
+                val file = File(decoExportDir, fileName)
+                FileOutputStream(file).use { outputStream ->
+                    outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                }
             }
 
-            val chooser = Intent.createChooser(intent, "Export Sales Report CSV")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(chooser)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Saved to Download/DeCo Export/$fileName", Toast.LENGTH_LONG).show()
+            }
             true
         } catch (e: Exception) {
             e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Failed to export CSV: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
             false
         }
     }
