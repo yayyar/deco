@@ -21,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Checkroom
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -71,7 +73,7 @@ fun InventoryScreen(
                     title = "Products",
                     itemCount = "${allProducts.size} Items",
                     icon = Icons.Default.Checkroom,
-                    badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    badgeText =  null, // if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
                     onClick = onNavigateToProducts,
                     modifier = Modifier.weight(1f)
                 )
@@ -79,7 +81,7 @@ fun InventoryScreen(
                 HubGridCard(
                     title = "Categories",
                     itemCount = "${categories.size} Groups",
-                    icon = Icons.Default.Category,
+                    icon = Icons.Default.Style,
                     badgeText = null,
                     onClick = onNavigateToCategories,
                     modifier = Modifier.weight(1f)
@@ -94,17 +96,17 @@ fun InventoryScreen(
                 HubListCard(
                     title = "Products",
                     subtitle = "Manage inventory items, barcodes, sizes, patterns & stock",
-                    itemCount = "${allProducts.size} Products",
+                    itemCount = "${allProducts.size}",
                     icon = Icons.Default.Checkroom,
-                    badgeText = if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    badgeText = null, //if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
                     onClick = onNavigateToProducts
                 )
 
                 HubListCard(
                     title = "Categories",
                     subtitle = "Organize fashion apparel, fabrics & accessory collections",
-                    itemCount = "${categories.size} Categories",
-                    icon = Icons.Default.Category,
+                    itemCount = "${categories.size}",
+                    icon = Icons.Default.Style,
                     badgeText = null,
                     onClick = onNavigateToCategories
                 )
@@ -140,7 +142,7 @@ private fun HubListCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(50.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(14.dp)
@@ -174,7 +176,7 @@ private fun HubListCard(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
                         )
                     }
                 }

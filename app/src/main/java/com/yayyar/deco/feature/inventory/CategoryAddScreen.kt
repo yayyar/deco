@@ -139,7 +139,7 @@ fun CategoryAddScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Organize fashion apparel or accessory items into clear catalog groups.",
+                        text = "Organize fashion apparel, fabrics & accessory items into clear catalog groups.",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
