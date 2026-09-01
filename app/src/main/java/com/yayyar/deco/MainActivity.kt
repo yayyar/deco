@@ -57,6 +57,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -90,7 +91,7 @@ enum class PosDestination(
     ANALYTICS("Analytics", Icons.Outlined.Analytics)
 }
 
-sealed interface AppDestination {
+sealed interface AppDestination : java.io.Serializable {
     data class Main(val destination: PosDestination = PosDestination.POS) : AppDestination
     data object ProductList : AppDestination
     data class ProductAdd(val productToEdit: ProductWithVariants? = null) : AppDestination
@@ -114,9 +115,9 @@ class MainActivity : Hilt_MainActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DecoApp() {
-    var appDestination by remember { mutableStateOf<AppDestination>(AppDestination.Main(PosDestination.POS)) }
-    var isInventoryGridView by remember { mutableStateOf(false) }
-    var isPosSearchActive by remember { mutableStateOf(false) }
+    var appDestination by rememberSaveable { mutableStateOf<AppDestination>(AppDestination.Main(PosDestination.POS)) }
+    var isInventoryGridView by rememberSaveable { mutableStateOf(false) }
+    var isPosSearchActive by rememberSaveable { mutableStateOf(false) }
 
     val posViewModel: PosViewModel = hiltViewModel()
     val inventoryViewModel: InventoryViewModel = hiltViewModel()

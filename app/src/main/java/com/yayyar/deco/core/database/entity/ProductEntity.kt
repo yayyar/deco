@@ -38,4 +38,4 @@ data class ProductEntity(
     val syncStatus: Int = 1, // 0: Synced, 1: Created, 2: Updated, 3: Deleted
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long = System.currentTimeMillis()
-)
+) : java.io.Serializable

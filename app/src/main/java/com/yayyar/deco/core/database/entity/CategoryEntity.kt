@@ -23,4 +23,4 @@ data class CategoryEntity(
     val syncStatus: Int = 0, // 0: Synced, 1: Created, 2: Updated, 3: Deleted
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long = System.currentTimeMillis()
-)
+) : java.io.Serializable

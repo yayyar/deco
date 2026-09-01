@@ -21,7 +21,7 @@ data class ProductWithVariants(
         entityColumn = "id"
     )
     val category: CategoryEntity? = null
-) {
+) : java.io.Serializable {
     val minPrice: Double
         get() = variants.minOfOrNull { it.sellPrice } ?: 0.0
 
@@ -44,4 +44,4 @@ data class VariantWithProduct(
         entityColumn = "id"
     )
     val product: ProductEntity
-)
+) : java.io.Serializable

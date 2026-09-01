@@ -46,7 +46,7 @@ data class ProductVariantEntity(
     val syncStatus: Int = 1,
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long = System.currentTimeMillis()
-) {
+) : java.io.Serializable {
     val displayName: String
         get() = when {
             size.isNotBlank() && colorPattern.isNotBlank() && colorPattern != "Default" -> "$size / $colorPattern"
