@@ -29,10 +29,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -152,6 +155,7 @@ fun ProductListScreen(
                     }
                 },
                 actions = {
+                    var showProductMenu by remember { mutableStateOf(false) }
                     if (!isSearchActive) {
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
@@ -159,10 +163,37 @@ fun ProductListScreen(
                                 contentDescription = "Search Products"
                             )
                         }
+                        Box {
+                            IconButton(onClick = { showProductMenu = true }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.MoreVert,
+                                    contentDescription = "More options",
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showProductMenu,
+                                onDismissRequest = { showProductMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Low Stock") },
+                                    onClick = {
+                                        viewModel.toggleLowStockFilter()
+                                        showProductMenu = false
+                                    },
+                                    trailingIcon = {
+                                        Checkbox(
+                                            checked = showOnlyLowStock,
+                                            onCheckedChange = null
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             )
         },
+
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddProduct,
@@ -179,47 +210,27 @@ fun ProductListScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            // Category Filter Chips + Low Stock toggle
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Category Filter Chips
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    item {
-                        FilterChip(
-                            selected = selectedCatId == null,
-                            onClick = { viewModel.selectCategory(null) },
-                            label = { Text("All") },
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                    }
-                    items(categories, key = { it.id }) { cat ->
-                        FilterChip(
-                            selected = selectedCatId == cat.id,
-                            onClick = { viewModel.selectCategory(cat.id) },
-                            label = { Text(cat.name) },
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                    }
+                item {
+                    FilterChip(
+                        selected = selectedCatId == null,
+                        onClick = { viewModel.selectCategory(null) },
+                        label = { Text("All") },
+                        shape = RoundedCornerShape(8.dp)
+                    )
                 }
-
-                FilterChip(
-                    selected = showOnlyLowStock,
-                    onClick = { viewModel.toggleLowStockFilter() },
-                    label = { Text("Low Stock") },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = if (showOnlyLowStock) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    shape = RoundedCornerShape(8.dp)
-                )
+                items(categories, key = { it.id }) { cat ->
+                    FilterChip(
+                        selected = selectedCatId == cat.id,
+                        onClick = { viewModel.selectCategory(cat.id) },
+                        label = { Text(cat.name) },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
             }
 
             Spacer(Modifier.height(10.dp))

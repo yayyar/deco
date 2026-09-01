@@ -3,12 +3,14 @@ package com.yayyar.deco.feature.inventory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,6 +36,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -158,38 +161,39 @@ fun ProductAddScreen(
                     }
                 },
                 actions = {
-                    IconButton(
+                    TextButton(
                         onClick = handleSave,
                         enabled = isFormValid
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Save,
-                            contentDescription = "Save Product",
-                            tint = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        Text(
+                            text = "SAVE",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         )
                     }
                 }
             )
         },
-        bottomBar = {
-            Button(
-                onClick = handleSave,
-                enabled = isFormValid,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(50.dp)
-            ) {
-                Icon(Icons.Default.Save, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = if (isEditing) "Update Product" else "Save Product",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
+//        bottomBar = {
+//            Button(
+//                onClick = handleSave,
+//                enabled = isFormValid,
+//                shape = RoundedCornerShape(12.dp),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp)
+//                    .height(50.dp)
+//            ) {
+//                Icon(Icons.Default.Save, contentDescription = null)
+//                Spacer(Modifier.width(8.dp))
+//                Text(
+//                    text = if (isEditing) "Update Product" else "Save Product",
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//            }
+//        }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -212,7 +216,7 @@ fun ProductAddScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Product Name * (e.g. Silk Longyi / Floral Dress)") },
+                    label = { Text("Product Name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp)
@@ -258,7 +262,7 @@ fun ProductAddScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description / Fabric Notes (Optional)") },
+                    label = { Text("Description /  Notes") },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
                     shape = RoundedCornerShape(12.dp)
@@ -273,7 +277,7 @@ fun ProductAddScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Product Variants (${variants.size})",
                             fontWeight = FontWeight.Bold,
@@ -286,13 +290,15 @@ fun ProductAddScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                    Spacer(Modifier.width(8.dp))
                     OutlinedButton(
                         onClick = { variants.add(VariantDraft()) },
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Add")
+                        Text("Add", maxLines = 1)
                     }
                 }
             }

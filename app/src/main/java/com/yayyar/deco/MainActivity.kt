@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Checkroom
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.FileDownload
@@ -86,7 +87,7 @@ enum class PosDestination(
 ) {
     POS("Sale", Icons.Outlined.LocalMall),
     INVENTORY("Inventory", Icons.Outlined.Checkroom),
-    ANALYTICS("Analytics", Icons.Default.Analytics)
+    ANALYTICS("Analytics", Icons.Outlined.Analytics)
 }
 
 sealed interface AppDestination {
