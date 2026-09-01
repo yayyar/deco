@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,38 +82,39 @@ fun CategoryAddScreen(
                     }
                 },
                 actions = {
-                    IconButton(
+                    TextButton(
                         onClick = handleSave,
                         enabled = isValid
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Save,
-                            contentDescription = "Save Category",
-                            tint = if (isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        Text(
+                            text = "SAVE",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         )
                     }
                 }
             )
         },
-        bottomBar = {
-            Button(
-                onClick = handleSave,
-                enabled = isValid,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(50.dp)
-            ) {
-                Icon(Icons.Default.Save, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Save Category",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
+//        bottomBar = {
+//            Button(
+//                onClick = handleSave,
+//                enabled = isValid,
+//                shape = RoundedCornerShape(12.dp),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp)
+//                    .height(50.dp)
+//            ) {
+//                Icon(Icons.Default.Save, contentDescription = null)
+//                Spacer(Modifier.width(8.dp))
+//                Text(
+//                    text = "Save Category",
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//            }
+//        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -137,7 +139,7 @@ fun CategoryAddScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Organize fashion apparel, jewelry, or accessory items into clear catalog groups.",
+                        text = "Organize fashion apparel or accessory items into clear catalog groups.",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -147,7 +149,7 @@ fun CategoryAddScreen(
             OutlinedTextField(
                 value = categoryName,
                 onValueChange = { categoryName = it },
-                label = { Text("Category Name * (e.g. Silk Longyi, Dress, Top)") },
+                label = { Text("Category Name *") },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
