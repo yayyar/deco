@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Checkroom
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DrawerValue
@@ -327,7 +330,7 @@ private fun MainTopAppBar(
             if (destination == PosDestination.INVENTORY) {
                 IconButton(onClick = onToggleInventoryGridView) {
                     Icon(
-                        imageVector = if (isInventoryGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+                        imageVector = if (isInventoryGridView) Icons.AutoMirrored.Outlined.ViewList else Icons.Outlined.GridView,
                         contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
                     )
                 }
@@ -353,7 +356,7 @@ private fun MainTopAppBar(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Download,
+                                    imageVector = Icons.Outlined.FileDownload,
                                     contentDescription = null
                                 )
                             }

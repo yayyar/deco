@@ -18,7 +18,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Button
@@ -27,8 +29,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.common.Formatters
@@ -108,6 +113,13 @@ fun AnalyticsScreen(
 
             // Payment Breakdown Card
             item {
+                Text(
+                    text = "Payment",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -117,12 +129,6 @@ fun AnalyticsScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Text(
-                            text = "Payment Method Breakdown",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-
                         PaymentMethodRow(label = "Cash (ငွေသား)", amount = salesSummary.totalCash, color = AccentGreen)
                         PaymentMethodRow(label = "KPay Digital", amount = salesSummary.totalKpay, color = AccentBlue)
                         PaymentMethodRow(label = "WavePay Digital", amount = salesSummary.totalWave, color = AccentPurple)
@@ -148,8 +154,24 @@ fun AnalyticsScreen(
                 }
             }
 
-            // Top Selling SKUs / Variants
+            // Top Selling Products / Variants
             item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Top Selling",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    IconButton(onClick = {
+
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos ,contentDescription = "View all top selling products", modifier = Modifier.size(12.dp))
+                    }
+                }
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -159,11 +181,6 @@ fun AnalyticsScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = "Top Selling SKUs",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
 
                         if (topItems.isEmpty()) {
                             Text(
@@ -180,7 +197,10 @@ fun AnalyticsScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         Text(
                                             text = "#${index + 1}",
                                             fontWeight = FontWeight.Bold,
@@ -188,11 +208,13 @@ fun AnalyticsScreen(
                                             fontSize = 13.sp
                                         )
                                         Spacer(Modifier.width(8.dp))
-                                        Column {
+                                        Column(modifier = Modifier.weight(1f, fill = false)) {
                                             Text(
                                                 text = "${item.productName} (${item.variantName})",
                                                 fontWeight = FontWeight.SemiBold,
-                                                fontSize = 13.sp
+                                                fontSize = 13.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                             Text(
                                                 text = "${item.totalQuantitySold} units sold",
@@ -202,7 +224,13 @@ fun AnalyticsScreen(
                                         }
                                     }
 
-                                    CurrencyText(amount = item.totalRevenue, fontSize = 13.sp)
+                                    Spacer(Modifier.width(12.dp))
+
+                                    CurrencyText(
+                                        amount = item.totalRevenue,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 }
                             }
                         }
@@ -233,7 +261,7 @@ fun AnalyticsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(o.receiptNumber, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             Text(
                                 text = "${Formatters.formatDateTime(o.createdAt)} • ${orderWithItems.items.size} items",
@@ -241,6 +269,8 @@ fun AnalyticsScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+
+                        Spacer(Modifier.width(8.dp))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
