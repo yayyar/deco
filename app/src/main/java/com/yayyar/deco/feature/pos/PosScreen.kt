@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -524,12 +525,12 @@ private fun CartPane(
                 }
                 if (cartState.items.isNotEmpty()) {
                     TextButton(onClick = onClearCart) {
-                        Text("Clear", color = MaterialTheme.colorScheme.error)
+                        Text("CLEAN", color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
 
             if (cartState.items.isEmpty()) {
                 Box(
@@ -542,14 +543,14 @@ private fun CartPane(
                         Icon(
                             Icons.Default.LocalMall,
                             contentDescription = null,
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(40.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
                         Spacer(Modifier.height(3.dp))
                         Text(
                             text = "Cart is empty\nTap variants to add items",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
@@ -665,7 +666,7 @@ private fun CartPane(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Grand Total:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("Grand Total:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     CurrencyText(
                         amount = cartState.grandTotal,
                         color = MaterialTheme.colorScheme.primary,
@@ -682,7 +683,7 @@ private fun CartPane(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Checkout (${Formatters.formatMmk(cartState.grandTotal)})", fontWeight = FontWeight.Bold)
+                    Text("Place Order", fontWeight = FontWeight.Bold)
                 }
             }
         }
