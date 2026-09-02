@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -49,6 +50,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -195,7 +197,8 @@ fun DecoApp() {
                                 scope.launch {
                                     analyticsViewModel.exportOrdersCsv(context)
                                 }
-                            }
+                            },
+                            windowInsets = if (isPosTablet) WindowInsets(0, 0, 0, 0) else TopAppBarDefaults.windowInsets
                         )
                     }
 
@@ -274,9 +277,11 @@ private fun MainTopAppBar(
     onOpenDrawer: () -> Unit,
     isInventoryGridView: Boolean,
     onToggleInventoryGridView: () -> Unit,
-    onExportCsv: () -> Unit = {}
+    onExportCsv: () -> Unit = {},
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
 ) {
     TopAppBar(
+        windowInsets = windowInsets,
         title = {
             if (destination == PosDestination.POS && isPosSearchActive) {
                 OutlinedTextField(

@@ -116,7 +116,14 @@ fun PosScreen(
                         .fillMaxHeight()
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.Start))
                 ) {
-                    topBar()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 0.dp, end = 3.dp, top = 0.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        topBar()
+                    }
                     CatalogPane(
                         categories = categories,
                         selectedCatId = selectedCatId,
@@ -129,7 +136,7 @@ fun PosScreen(
                     )
                 }
 
-                // Right 35%: Cart & Checkout Summary (Full Height from top of screen, beside TopAppBar)
+                // Right 35%: Cart & Checkout Summary (Aligned with TopAppBar, below Status Bar)
                 CartPane(
                     cartState = cartState,
                     onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
@@ -141,9 +148,11 @@ fun PosScreen(
                     modifier = Modifier
                         .weight(0.35f)
                         .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End))
-                        .padding(start = 0.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
+                        .padding(start = 0.dp, end = 12.dp, top = 0.dp, bottom = 0.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(8.dp)
                 )
             }
         } else {
@@ -536,11 +545,11 @@ private fun CartPane(
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(3.dp))
                         Text(
                             text = "Cart is empty\nTap variants to add items",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
