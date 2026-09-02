@@ -65,13 +65,13 @@ fun AnalyticsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(0.dp),
     ) {
         // Time Range Filter
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
         ) {
             items(TimeRange.values()) { range ->
                 FilterChip(
@@ -85,8 +85,8 @@ fun AnalyticsScreen(
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(14.dp),
-            contentPadding = PaddingValues(bottom = 32.dp),
-            modifier = Modifier.fillMaxSize()
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize(),
         ) {
             // KPI Cards Row
             item {

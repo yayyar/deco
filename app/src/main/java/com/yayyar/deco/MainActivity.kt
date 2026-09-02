@@ -238,6 +238,9 @@ fun DecoApp() {
                 onBack = { appDestination = AppDestination.ProductList },
                 onSave = { prod, variants ->
                     inventoryViewModel.saveProductWithVariants(prod, variants)
+                },
+                onDelete = { prod ->
+                    inventoryViewModel.deleteProduct(prod)
                 }
             )
         }

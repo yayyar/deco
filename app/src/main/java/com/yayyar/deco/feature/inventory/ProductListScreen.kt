@@ -23,14 +23,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -46,7 +44,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,11 +61,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yayyar.deco.core.database.entity.ProductEntity
-import com.yayyar.deco.core.database.entity.ProductVariantEntity
 import com.yayyar.deco.core.database.model.ProductWithVariants
-import com.yayyar.deco.core.ui.components.CurrencyText
-import com.yayyar.deco.core.ui.components.StockBadge
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -87,9 +80,6 @@ fun ProductListScreen(
 
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotBlank()) }
     val focusRequester = remember { FocusRequester() }
-
-    var productToDelete by remember { mutableStateOf<ProductEntity?>(null) }
-    var adjustingVariantPair by remember { mutableStateOf<Pair<String, ProductVariantEntity>?>(null) }
 
     BackHandler {
         if (isSearchActive) {
@@ -115,39 +105,41 @@ fun ProductListScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setSearchQuery(it) },
-                            placeholder = { Text("Search products...") },
+                            placeholder = { Text("Search products...", fontSize = 16.sp) },
                             singleLine = true,
+                            trailingIcon = {
+                                if (searchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                                        Icon(Icons.Default.Close, contentDescription = "Clear")
+                                    }
+                                }
+                            },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent,
                                 unfocusedBorderColor = Color.Transparent
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .focusRequester(focusRequester),
-                            trailingIcon = {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear search")
-                                    }
-                                }
-                            }
+                                .focusRequester(focusRequester)
                         )
                     } else {
                         Text(
-                            text = "Products (${products.size})",
+                            text = "Products",
                             fontWeight = FontWeight.Bold
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (isSearchActive) {
-                            isSearchActive = false
-                            viewModel.setSearchQuery("")
-                        } else {
-                            onBack()
+                    IconButton(
+                        onClick = {
+                            if (isSearchActive) {
+                                isSearchActive = false
+                                viewModel.setSearchQuery("")
+                            } else {
+                                onBack()
+                            }
                         }
-                    }) {
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -155,52 +147,60 @@ fun ProductListScreen(
                     }
                 },
                 actions = {
-                    var showProductMenu by remember { mutableStateOf(false) }
                     if (!isSearchActive) {
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search Products"
+                                contentDescription = "Search"
                             )
                         }
-                        Box {
-                            IconButton(onClick = { showProductMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.MoreVert,
-                                    contentDescription = "More options",
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showProductMenu,
-                                onDismissRequest = { showProductMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Low Stock") },
-                                    onClick = {
-                                        viewModel.toggleLowStockFilter()
-                                        showProductMenu = false
-                                    },
-                                    trailingIcon = {
+                    }
+
+                    var menuExpanded by remember { mutableStateOf(false) }
+                    Box {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.MoreVert,
+                                contentDescription = "More Options"
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
                                         Checkbox(
                                             checked = showOnlyLowStock,
                                             onCheckedChange = null
                                         )
+                                        Text("Low Stock Only")
                                     }
-                                )
-                            }
+                                },
+                                onClick = {
+                                    viewModel.toggleLowStockFilter()
+                                    menuExpanded = false
+                                }
+                            )
                         }
                     }
                 }
             )
         },
-
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddProduct,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Product")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Product",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->
@@ -227,16 +227,17 @@ fun ProductListScreen(
                 items(categories, key = { it.id }) { cat ->
                     FilterChip(
                         selected = selectedCatId == cat.id,
-                        onClick = { viewModel.selectCategory(cat.id) },
-                        label = { Text(cat.name) },
-                        shape = RoundedCornerShape(8.dp)
+                        onClick = {
+                            if (selectedCatId == cat.id) viewModel.selectCategory(null)
+                            else viewModel.selectCategory(cat.id)
+                        },
+                        label = { Text(cat.name) }
                     )
                 }
             }
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(4.dp))
 
-            // Products List
             if (products.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -266,104 +267,73 @@ fun ProductListScreen(
                 }
             } else {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 90.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(top = 4.dp, bottom = 90.dp, start = 16.dp, end = 16.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(products, key = { it.product.id }) { item ->
                         Card(
+                            onClick = { onEditProduct(item) },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            )
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(3.dp)
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = item.product.name,
-                                            fontSize = 17.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        if (item.category != null) {
-                                            Text(
-                                                text = item.category.name,
-                                                fontSize = 12.sp,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
-                                    }
-
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        IconButton(onClick = { onEditProduct(item) }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Edit,
-                                                contentDescription = "Edit Product"
-                                            )
-                                        }
-                                        IconButton(onClick = { productToDelete = item.product }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = "Delete Product",
-                                                tint = MaterialTheme.colorScheme.error
-                                            )
-                                        }
-                                    }
-                                }
-
-                                if (!item.product.description.isNullOrBlank()) {
                                     Text(
-                                        text = item.product.description,
-                                        fontSize = 13.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        maxLines = 2,
-                                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
+                                        text = item.product.name,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
+                                    if (item.category != null) {
+                                        Text(
+                                            text = item.category.name,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
                                 }
 
-                                Spacer(Modifier.height(8.dp))
-
-                                // Variants chips & stock info
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxWidth()
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    item.variants.forEach { variant ->
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .background(MaterialTheme.colorScheme.surface)
-                                                .clickable {
-                                                    adjustingVariantPair = item.product.name to variant
-                                                }
-                                                .padding(horizontal = 10.dp, vertical = 6.dp)
-                                        ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                            ) {
-                                                Text(
-                                                    text = variant.displayName,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 13.sp
-                                                )
-                                                CurrencyText(
-                                                    amount = variant.sellPrice,
-                                                    fontSize = 13.sp,
-                                                    color = MaterialTheme.colorScheme.primary
-                                                )
-                                                StockBadge(
-                                                    stockQty = variant.stockQty,
-                                                    lowStockThreshold = variant.lowStockThreshold
-                                                )
-                                            }
-                                        }
+                                    val variantCount = item.variants.size
+                                    val variantText = if (variantCount == 1) "1 Variant" else "$variantCount Variants"
+                                    
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f))
+                                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = variantText,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
                                     }
+
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
                                 }
                             }
                         }
@@ -371,42 +341,5 @@ fun ProductListScreen(
                 }
             }
         }
-    }
-
-    // Delete Confirmation Dialog
-    productToDelete?.let { prod ->
-        AlertDialog(
-            onDismissRequest = { productToDelete = null },
-            title = { Text("Delete Product") },
-            text = { Text("Are you sure you want to delete '${prod.name}' and all its variants?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteProduct(prod)
-                        productToDelete = null
-                    }
-                ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { productToDelete = null }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
-    // Stock Adjustment Dialog
-    adjustingVariantPair?.let { (prodName, variant) ->
-        StockAdjustmentDialog(
-            productName = prodName,
-            variant = variant,
-            onDismiss = { adjustingVariantPair = null },
-            onSaveStock = { newStock ->
-                viewModel.updateStock(variant.id, newStock)
-                adjustingVariantPair = null
-            }
-        )
     }
 }
