@@ -119,7 +119,7 @@ fun PosScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 0.dp, end = 3.dp, top = 0.dp)
+                            .padding(start = 0.dp, end = 8.dp, top = 0.dp)
                             .clip(RoundedCornerShape(16.dp))
                     ) {
                         topBar()
@@ -513,8 +513,8 @@ private fun CartPane(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(Modifier.width(6.dp))
-                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+//                    Spacer(Modifier.width(6.dp))
+//                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(3.dp))
                     Text(
                         text = "Cart (${cartState.totalItemCount})",
@@ -562,7 +562,7 @@ private fun CartPane(
                     items(cartState.items, key = { it.variant.id }) { item ->
                         Card(
                             shape = RoundedCornerShape(10.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -727,7 +727,7 @@ private fun MobilePosLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
-                    .padding(start = 3.dp, top = 0.dp, end = 3.dp, bottom = 8.dp)
+                    .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp)
             )
         }
     ) { innerPadding ->
