@@ -252,42 +252,62 @@ fun AnalyticsScreen(
                     IconButton(onClick = {
 
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos ,contentDescription = "View all sales", modifier = Modifier.size(12.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "View all sales", modifier = Modifier.size(12.dp))
                     }
                 }
-            }
-
-            items(allOrders.take(15), key = { it.order.id }) { orderWithItems ->
-                val o = orderWithItems.order
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(o.receiptNumber, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        if (allOrders.isEmpty()) {
                             Text(
-                                text = "${Formatters.formatDateTime(o.createdAt)} • ${orderWithItems.items.size} items",
-                                fontSize = 11.sp,
+                                text = "No sales recorded yet",
+                                fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                        }
+                        } else {
+                            allOrders.take(15).forEach { orderWithItems ->
+                                val o = orderWithItems.order
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = o.receiptNumber,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 13.sp
+                                        )
+                                        Text(
+                                            text = "${Formatters.formatDateTime(o.createdAt)} • ${orderWithItems.items.size} items",
+                                            fontSize = 11.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
 
-                        Spacer(Modifier.width(8.dp))
+                                    Spacer(Modifier.width(8.dp))
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            PaymentMethodBadge(paymentType = o.paymentType)
-                            CurrencyText(amount = o.grandTotal, fontSize = 14.sp)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        PaymentMethodBadge(paymentType = o.paymentType)
+                                        CurrencyText(
+                                            amount = o.grandTotal,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
