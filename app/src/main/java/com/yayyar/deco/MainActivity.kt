@@ -88,9 +88,9 @@ enum class PosDestination(
     val title: String,
     val icon: ImageVector
 ) {
-    POS("Sale", Icons.Outlined.LocalMall),
-    INVENTORY("Inventory", Icons.Outlined.Checkroom),
-    ANALYTICS("Analytics", Icons.Outlined.Analytics)
+    POS("Sales", Icons.Outlined.LocalMall),
+    INVENTORY("Items", Icons.Outlined.Checkroom),
+    ANALYTICS("Reports", Icons.Outlined.Analytics)
 }
 
 sealed interface AppDestination : java.io.Serializable {

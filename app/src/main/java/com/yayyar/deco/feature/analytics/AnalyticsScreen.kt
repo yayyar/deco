@@ -240,11 +240,22 @@ fun AnalyticsScreen(
 
             // Recent Orders Log
             item {
-                Text(
-                    text = "Recent Transactions (${allOrders.size})",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Recent Sales",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    IconButton(onClick = {
+
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos ,contentDescription = "View all sales", modifier = Modifier.size(12.dp))
+                    }
+                }
             }
 
             items(allOrders.take(15), key = { it.order.id }) { orderWithItems ->

@@ -105,7 +105,7 @@ fun PosScreen(
     var selectedProductForVariants by remember { mutableStateOf<ProductWithVariants?>(null) }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isTabletLandscape = maxWidth >= 720.dp
+        val isTabletLandscape = maxWidth >= 768.dp
 
         if (isTabletLandscape) {
             // Tablet 2-Pane Master-Detail Layout
@@ -120,8 +120,8 @@ fun PosScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 0.dp, end = 8.dp, top = 0.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .padding(start = 0.dp, end = 3.dp, top = 0.dp)
+                            .clip(RoundedCornerShape(8.dp))
                     ) {
                         topBar()
                     }
@@ -151,7 +151,7 @@ fun PosScreen(
                         .fillMaxHeight()
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End))
                         .padding(start = 0.dp, end = 12.dp, top = 0.dp, bottom = 0.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(8.dp)
                 )
