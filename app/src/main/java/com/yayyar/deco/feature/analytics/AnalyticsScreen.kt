@@ -54,7 +54,8 @@ import com.yayyar.deco.ui.theme.AccentPurple
 @Composable
 fun AnalyticsScreen(
     viewModel: AnalyticsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToAllSellingProducts: () -> Unit = {}
 ) {
     val timeRange by viewModel.timeRange.collectAsState()
     val salesSummary by viewModel.salesSummary.collectAsState()
@@ -102,7 +103,7 @@ fun AnalyticsScreen(
                         modifier = Modifier.weight(1f)
                     )
                     KpiCard(
-                        title = "Total Orders",
+                        title = "Total Sales",
                         count = salesSummary.totalOrders,
                         icon = Icons.Default.Receipt,
                         iconColor = AccentBlue,
@@ -166,9 +167,7 @@ fun AnalyticsScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
-                    IconButton(onClick = {
-
-                    }) {
+                    IconButton(onClick = onNavigateToAllSellingProducts) {
                         Icon(Icons.AutoMirrored.Filled.ArrowForwardIos ,contentDescription = "View all top selling products", modifier = Modifier.size(12.dp))
                     }
                 }

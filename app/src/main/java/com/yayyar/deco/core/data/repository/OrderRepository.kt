@@ -22,6 +22,7 @@ interface OrderRepository {
     fun getOrdersBetweenFlow(startTime: Long, endTime: Long): Flow<List<OrderEntity>>
     fun getDailySalesSummaryFlow(startTime: Long, endTime: Long): Flow<DailySalesSummary>
     fun getTopSellingItemsFlow(startTime: Long, endTime: Long, limit: Int = 10): Flow<List<TopSellingItem>>
+    suspend fun getTopSellingItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<TopSellingItem>
     fun getCategorySalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<CategorySalesSummary>>
     suspend fun checkoutOrder(order: OrderEntity, items: List<OrderItemEntity>): Resource<Unit>
 }
@@ -54,6 +55,14 @@ class OrderRepositoryImpl @Inject constructor(
         limit: Int
     ): Flow<List<TopSellingItem>> =
         orderDao.getTopSellingItemsFlow(startTime, endTime, limit)
+
+    override suspend fun getTopSellingItemsPaged(
+        startTime: Long,
+        endTime: Long,
+        limit: Int,
+        offset: Int
+    ): List<TopSellingItem> =
+        orderDao.getTopSellingItemsPaged(startTime, endTime, limit, offset)
 
     override fun getCategorySalesSummaryFlow(
         startTime: Long,

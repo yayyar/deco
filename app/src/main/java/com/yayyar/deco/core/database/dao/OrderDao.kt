@@ -72,6 +72,22 @@ interface OrderDao {
 
     @Query("""
         SELECT 
+            oi.variant_id as variantId,
+            oi.product_name as productName,
+            oi.variant_name as variantName,
+            SUM(oi.quantity) as totalQuantitySold,
+            SUM(oi.total_price) as totalRevenue
+        FROM order_items oi
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.created_at >= :startTime AND o.created_at <= :endTime AND o.order_status = 'COMPLETED'
+        GROUP BY oi.variant_id
+        ORDER BY totalQuantitySold DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    suspend fun getTopSellingItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<TopSellingItem>
+
+    @Query("""
+        SELECT 
             COALESCE(c.name, 'Uncategorized') as categoryName,
             SUM(oi.quantity) as totalQuantity,
             SUM(oi.total_price) as totalRevenue

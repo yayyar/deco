@@ -70,6 +70,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yayyar.deco.core.database.model.ProductWithVariants
+import com.yayyar.deco.feature.analytics.AllSellingProductsScreen
 import com.yayyar.deco.feature.analytics.AnalyticsScreen
 import com.yayyar.deco.feature.analytics.AnalyticsViewModel
 import com.yayyar.deco.feature.inventory.CategoryAddScreen
@@ -99,6 +100,7 @@ sealed interface AppDestination : java.io.Serializable {
     data class ProductAdd(val productToEdit: ProductWithVariants? = null) : AppDestination
     data object CategoryList : AppDestination
     data object CategoryAdd : AppDestination
+    data object AllSellingProducts : AppDestination
 }
 
 @AndroidEntryPoint(ComponentActivity::class)
@@ -218,6 +220,7 @@ fun DecoApp() {
                             isInventoryGridView = isInventoryGridView,
                             onNavigateToProducts = { appDestination = AppDestination.ProductList },
                             onNavigateToCategories = { appDestination = AppDestination.CategoryList },
+                            onNavigateToAllSellingProducts = { appDestination = AppDestination.AllSellingProducts },
                             topBar = if (isPosTablet) topBarContent else ({}),
                             modifier = if (isPosTablet) Modifier.fillMaxSize() else Modifier.padding(innerPadding)
                         )
@@ -260,6 +263,11 @@ fun DecoApp() {
                 onSaveCategory = { name ->
                     inventoryViewModel.addCategory(name)
                 }
+            )
+        }
+        is AppDestination.AllSellingProducts -> {
+            AllSellingProductsScreen(
+                onBack = { appDestination = AppDestination.Main(PosDestination.ANALYTICS) }
             )
         }
     }
@@ -388,6 +396,7 @@ private fun AppScreenContent(
     isInventoryGridView: Boolean,
     onNavigateToProducts: () -> Unit,
     onNavigateToCategories: () -> Unit,
+    onNavigateToAllSellingProducts: () -> Unit = {},
     topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -404,6 +413,10 @@ private fun AppScreenContent(
             onNavigateToCategories = onNavigateToCategories,
             modifier = modifier
         )
-        PosDestination.ANALYTICS -> AnalyticsScreen(viewModel = analyticsViewModel, modifier = modifier)
+        PosDestination.ANALYTICS -> AnalyticsScreen(
+            viewModel = analyticsViewModel,
+            onNavigateToAllSellingProducts = onNavigateToAllSellingProducts,
+            modifier = modifier
+        )
     }
 }
