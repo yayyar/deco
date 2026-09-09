@@ -55,7 +55,8 @@ import com.yayyar.deco.ui.theme.AccentPurple
 fun AnalyticsScreen(
     viewModel: AnalyticsViewModel,
     modifier: Modifier = Modifier,
-    onNavigateToAllSellingProducts: () -> Unit = {}
+    onNavigateToAllSellingProducts: () -> Unit = {},
+    onNavigateToAllSales: () -> Unit = {}
 ) {
     val timeRange by viewModel.timeRange.collectAsState()
     val salesSummary by viewModel.salesSummary.collectAsState()
@@ -249,9 +250,7 @@ fun AnalyticsScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
-                    IconButton(onClick = {
-
-                    }) {
+                    IconButton(onClick = onNavigateToAllSales) {
                         Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "View all sales", modifier = Modifier.size(12.dp))
                     }
                 }

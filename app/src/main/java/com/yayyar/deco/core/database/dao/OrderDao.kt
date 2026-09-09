@@ -21,6 +21,10 @@ interface OrderDao {
     fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
 
     @Transaction
+    @Query("SELECT * FROM orders WHERE created_at >= :startTime AND created_at <= :endTime ORDER BY created_at DESC LIMIT :limit OFFSET :offset")
+    suspend fun getOrdersWithItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<OrderWithItems>
+
+    @Transaction
     @Query("SELECT * FROM orders WHERE id = :orderId")
     suspend fun getOrderWithItemsById(orderId: String): OrderWithItems?
 

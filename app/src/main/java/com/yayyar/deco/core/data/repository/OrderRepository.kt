@@ -17,6 +17,7 @@ import javax.inject.Singleton
 
 interface OrderRepository {
     fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
+    suspend fun getOrdersWithItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<OrderWithItems>
     suspend fun getOrderWithItemsById(orderId: String): OrderWithItems?
     suspend fun getOrderByReceiptNumber(receiptNumber: String): OrderWithItems?
     fun getOrdersBetweenFlow(startTime: Long, endTime: Long): Flow<List<OrderEntity>>
@@ -36,6 +37,14 @@ class OrderRepositoryImpl @Inject constructor(
 
     override fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>> =
         orderDao.getAllOrdersWithItemsFlow()
+
+    override suspend fun getOrdersWithItemsPaged(
+        startTime: Long,
+        endTime: Long,
+        limit: Int,
+        offset: Int
+    ): List<OrderWithItems> =
+        orderDao.getOrdersWithItemsPaged(startTime, endTime, limit, offset)
 
     override suspend fun getOrderWithItemsById(orderId: String): OrderWithItems? =
         orderDao.getOrderWithItemsById(orderId)
