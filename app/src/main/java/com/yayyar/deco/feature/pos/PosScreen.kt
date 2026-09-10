@@ -98,6 +98,7 @@ fun PosScreen(
     val categories by viewModel.categories.collectAsState()
     val selectedCatId by viewModel.selectedCategoryId.collectAsState()
     val catalogProducts by viewModel.catalogProducts.collectAsState()
+    val activePaymentMethods by viewModel.activePaymentMethods.collectAsState()
     val cartState by viewModel.cartState.collectAsState()
     val checkoutState by viewModel.checkoutState.collectAsState()
 
@@ -178,6 +179,7 @@ fun PosScreen(
     if (showCheckoutDialog) {
         CheckoutDialog(
             cartState = cartState,
+            activePaymentMethods = activePaymentMethods,
             onDismiss = { showCheckoutDialog = false },
             onConfirmCheckout = { pType, cashRec, kpayAmt, waveAmt, notes ->
                 showCheckoutDialog = false

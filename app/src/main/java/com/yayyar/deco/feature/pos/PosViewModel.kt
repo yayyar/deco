@@ -7,10 +7,12 @@ import com.yayyar.deco.core.common.Formatters
 import com.yayyar.deco.core.common.Resource
 import com.yayyar.deco.core.data.repository.CategoryRepository
 import com.yayyar.deco.core.data.repository.OrderRepository
+import com.yayyar.deco.core.data.repository.PaymentMethodRepository
 import com.yayyar.deco.core.data.repository.ProductRepository
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.OrderEntity
 import com.yayyar.deco.core.database.entity.OrderItemEntity
+import com.yayyar.deco.core.database.entity.PaymentMethodEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
 import com.yayyar.deco.core.database.model.ProductWithVariants
@@ -34,13 +36,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PosViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    private val paymentMethodRepository: PaymentMethodRepository
 ) : ViewModel() {
 
     val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategoriesFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val activePaymentMethods: StateFlow<List<PaymentMethodEntity>> = paymentMethodRepository.getActivePaymentMethodsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
