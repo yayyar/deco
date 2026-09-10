@@ -130,6 +130,7 @@ fun PosScreen(
                         categories = categories,
                         selectedCatId = selectedCatId,
                         catalogProducts = catalogProducts,
+                        saleType = cartState.saleType,
                         onSelectCategory = { viewModel.selectCategory(it) },
                         onProductClick = { selectedProductForVariants = it },
                         modifier = Modifier
@@ -141,6 +142,7 @@ fun PosScreen(
                 // Right 35%: Cart & Checkout Summary (Aligned with TopAppBar, below Status Bar)
                 CartPane(
                     cartState = cartState,
+                    onSetSaleType = { viewModel.setSaleType(it) },
                     onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
                     onRemoveItem = { viewModel.removeCartItem(it) },
                     onClearCart = { viewModel.clearCart() },
@@ -167,6 +169,7 @@ fun PosScreen(
                 cartState = cartState,
                 onSelectCategory = { viewModel.selectCategory(it) },
                 onProductClick = { selectedProductForVariants = it },
+                onSetSaleType = { viewModel.setSaleType(it) },
                 onUpdateQty = { variantId, qty -> viewModel.updateCartItemQuantity(variantId, qty) },
                 onRemoveItem = { viewModel.removeCartItem(it) },
                 onClearCart = { viewModel.clearCart() },
@@ -193,6 +196,7 @@ fun PosScreen(
     selectedProductForVariants?.let { productWithVariants ->
         ProductVariantSelectionDialog(
             productWithVariants = productWithVariants,
+            saleType = cartState.saleType,
             onDismiss = { selectedProductForVariants = null },
             onSelectVariant = { variant ->
                 viewModel.addToCart(productWithVariants.product, variant)
@@ -252,6 +256,7 @@ private fun CatalogPane(
     categories: List<com.yayyar.deco.core.database.entity.CategoryEntity>,
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
+    saleType: SaleType = SaleType.RETAIL,
     onSelectCategory: (String?) -> Unit,
     onProductClick: (ProductWithVariants) -> Unit,
     modifier: Modifier = Modifier
@@ -296,6 +301,7 @@ private fun CatalogPane(
             items(catalogProducts, key = { it.product.id }) { item ->
                 ProductCatalogCard(
                     productWithVariants = item,
+                    saleType = saleType,
                     onClick = { onProductClick(item) }
                 )
             }
@@ -306,9 +312,13 @@ private fun CatalogPane(
 @Composable
 private fun ProductCatalogCard(
     productWithVariants: ProductWithVariants,
+    saleType: SaleType = SaleType.RETAIL,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val minPrice = if (saleType == SaleType.WHOLESALE) productWithVariants.minWholesalePrice else productWithVariants.minPrice
+    val maxPrice = if (saleType == SaleType.WHOLESALE) productWithVariants.maxWholesalePrice else productWithVariants.maxPrice
+
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -344,15 +354,15 @@ private fun ProductCatalogCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (productWithVariants.variants.isNotEmpty()) {
-                    if (productWithVariants.minPrice == productWithVariants.maxPrice) {
+                    if (minPrice == maxPrice) {
                         CurrencyText(
-                            amount = productWithVariants.minPrice,
+                            amount = minPrice,
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
                     } else {
                         Text(
-                            text = "${Formatters.formatMmk(productWithVariants.minPrice)} ~ ${Formatters.formatMmk(productWithVariants.maxPrice)}",
+                            text = "${Formatters.formatMmk(minPrice)} ~ ${Formatters.formatMmk(maxPrice)}",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -380,6 +390,7 @@ private fun ProductCatalogCard(
 @Composable
 private fun ProductVariantSelectionDialog(
     productWithVariants: ProductWithVariants,
+    saleType: SaleType = SaleType.RETAIL,
     onDismiss: () -> Unit,
     onSelectVariant: (ProductVariantEntity) -> Unit
 ) {
@@ -396,21 +407,41 @@ private fun ProductVariantSelectionDialog(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = productWithVariants.product.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    if (productWithVariants.category != null) {
-                        Spacer(Modifier.height(2.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = productWithVariants.category.name,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium
+                            text = productWithVariants.product.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
+                        if (productWithVariants.category != null) {
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                text = productWithVariants.category.name,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    if (saleType == SaleType.WHOLESALE) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = "Whole Sale",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
                 }
 
@@ -434,6 +465,12 @@ private fun ProductVariantSelectionDialog(
                     ) {
                         productWithVariants.variants.forEach { variant ->
                             val isOutOfStock = variant.stockQty <= 0
+                            val priceToShow = if (saleType == SaleType.WHOLESALE && variant.wholesalePrice > 0) {
+                                variant.wholesalePrice
+                            } else {
+                                variant.sellPrice
+                            }
+
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
@@ -455,7 +492,7 @@ private fun ProductVariantSelectionDialog(
                                     )
                                     Spacer(Modifier.height(2.dp))
                                     CurrencyText(
-                                        amount = variant.sellPrice,
+                                        amount = priceToShow,
                                         fontSize = 12.sp,
                                         color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
                                     )
@@ -492,6 +529,7 @@ private fun ProductVariantSelectionDialog(
 @Composable
 private fun CartPane(
     cartState: CartState,
+    onSetSaleType: (SaleType) -> Unit = {},
     onUpdateQty: (variantId: String, newQty: Int) -> Unit,
     onRemoveItem: (variantId: String) -> Unit,
     onClearCart: () -> Unit,
@@ -519,8 +557,6 @@ private fun CartPane(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Spacer(Modifier.width(6.dp))
-//                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(3.dp))
                     Text(
                         text = "Cart (${cartState.totalItemCount})",
@@ -589,10 +625,29 @@ private fun CartPane(
                                         fontSize = 11.sp,
                                         color = MaterialTheme.colorScheme.primary
                                     )
-                                    CurrencyText(
-                                        amount = item.variant.sellPrice,
-                                        fontSize = 12.sp
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        CurrencyText(
+                                            amount = item.unitPrice,
+                                            fontSize = 12.sp
+                                        )
+                                        if (cartState.saleType == SaleType.WHOLESALE) {
+                                            Surface(
+                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                shape = RoundedCornerShape(4.dp)
+                                            ) {
+                                                Text(
+                                                    text = "Whole",
+                                                    fontSize = 9.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
 
                                 Row(
@@ -679,6 +734,60 @@ private fun CartPane(
                     )
                 }
 
+                // Whole Sale / Retail Sale Mode Switch
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val isRetail = cartState.saleType == SaleType.RETAIL
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isRetail) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { onSetSaleType(SaleType.RETAIL) }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Retail Sale",
+                                fontSize = 12.sp,
+                                fontWeight = if (isRetail) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isRetail) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        val isWholesale = cartState.saleType == SaleType.WHOLESALE
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isWholesale) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { onSetSaleType(SaleType.WHOLESALE) }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Whole Sale",
+                                fontSize = 12.sp,
+                                fontWeight = if (isWholesale) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isWholesale) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -727,6 +836,7 @@ private fun MobilePosLayout(
     cartState: CartState,
     onSelectCategory: (String?) -> Unit,
     onProductClick: (ProductWithVariants) -> Unit,
+    onSetSaleType: (SaleType) -> Unit = {},
     onUpdateQty: (String, Int) -> Unit,
     onRemoveItem: (String) -> Unit,
     onClearCart: () -> Unit,
@@ -748,6 +858,7 @@ private fun MobilePosLayout(
         sheetContent = {
             CartPane(
                 cartState = cartState,
+                onSetSaleType = onSetSaleType,
                 onUpdateQty = onUpdateQty,
                 onRemoveItem = onRemoveItem,
                 onClearCart = onClearCart,
@@ -766,6 +877,7 @@ private fun MobilePosLayout(
             categories = categories,
             selectedCatId = selectedCatId,
             catalogProducts = catalogProducts,
+            saleType = cartState.saleType,
             onSelectCategory = onSelectCategory,
             onProductClick = onProductClick,
             modifier = Modifier
@@ -775,3 +887,4 @@ private fun MobilePosLayout(
         )
     }
 }
+

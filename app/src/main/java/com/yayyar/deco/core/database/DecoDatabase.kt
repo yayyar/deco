@@ -31,7 +31,7 @@ import java.util.UUID
         OrderItemEntity::class,
         PaymentMethodEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class DecoDatabase : RoomDatabase() {
@@ -134,6 +134,14 @@ abstract class DecoDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `product_variants` ADD COLUMN `wholesale_price` REAL NOT NULL DEFAULT 0.0")
+                db.execSQL("UPDATE `product_variants` SET `wholesale_price` = `sell_price` WHERE `wholesale_price` = 0.0")
+                db.execSQL("ALTER TABLE `orders` ADD COLUMN `sale_type` TEXT NOT NULL DEFAULT 'RETAIL'")
+            }
+        }
+
         fun getInstance(context: Context): DecoDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -141,7 +149,7 @@ abstract class DecoDatabase : RoomDatabase() {
                     DecoDatabase::class.java,
                     "deco_pos.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING) // High performance WAL mode
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -191,6 +199,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ပန်းနီ",
                 basePrice = 12000.0,
                 sellPrice = 18500.0,
+                wholesalePrice = 16000.0,
                 stockQty = 15
             )
             val v1_2 = ProductVariantEntity(
@@ -201,6 +210,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ပန်းပြာ",
                 basePrice = 12000.0,
                 sellPrice = 18500.0,
+                wholesalePrice = 16000.0,
                 stockQty = 20
             )
             val v1_3 = ProductVariantEntity(
@@ -211,6 +221,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ဝါရောင်",
                 basePrice = 13000.0,
                 sellPrice = 19500.0,
+                wholesalePrice = 17000.0,
                 stockQty = 4 // Low stock
             )
             prodDao.insertProduct(p1)
@@ -232,6 +243,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ကြောင်ရုပ် (White)",
                 basePrice = 8000.0,
                 sellPrice = 13500.0,
+                wholesalePrice = 11000.0,
                 stockQty = 30
             )
             val v2_2 = ProductVariantEntity(
@@ -242,6 +254,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ဝက်ရုပ် (Pink)",
                 basePrice = 8000.0,
                 sellPrice = 13500.0,
+                wholesalePrice = 11000.0,
                 stockQty = 12
             )
             val v2_3 = ProductVariantEntity(
@@ -252,6 +265,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "ဝက်ဝံရုပ် (Black)",
                 basePrice = 8000.0,
                 sellPrice = 13500.0,
+                wholesalePrice = 11000.0,
                 stockQty = 3 // Low stock
             )
             prodDao.insertProduct(p2)
@@ -273,6 +287,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "Beige",
                 basePrice = 15000.0,
                 sellPrice = 22000.0,
+                wholesalePrice = 19000.0,
                 stockQty = 8
             )
             val v3_2 = ProductVariantEntity(
@@ -283,6 +298,7 @@ abstract class DecoDatabase : RoomDatabase() {
                 colorPattern = "Navy Blue",
                 basePrice = 15000.0,
                 sellPrice = 22000.0,
+                wholesalePrice = 19000.0,
                 stockQty = 10
             )
             prodDao.insertProduct(p3)

@@ -17,7 +17,7 @@ The codebase is built entirely with **Kotlin**, **Jetpack Compose (Material 3)**
 | **Language** | Kotlin | 2.2.10 | Modern static typing & coroutine primitives |
 | **UI Toolkit** | Jetpack Compose (BOM) | 2026.02.01 | Declarative UI, Material 3 design system |
 | **Dependency Injection** | Dagger Hilt | 2.55 | Compile-time dependency injection |
-| **Local Database** | Room (SQLite) | 2.7.2 | Reactive persistence, WAL mode, migrations (Schema v3) |
+| **Local Database** | Room (SQLite) | 2.7.2 | Reactive persistence, WAL mode, migrations (Schema v4) |
 | **Asynchronous Stream** | Kotlinx Coroutines & Flow | 1.9.0 | Reactive UDF pipelines and background processing |
 | **Preferences & Settings** | SharedPreferences / StateFlow | Core KTX | Persistent application & hardware configurations |
 | **Architecture** | MVVM + Unidirectional Data Flow (UDF) | Clean Architecture | Clear separation between Core, Data, and Feature layers |
@@ -119,7 +119,7 @@ com.yayyar.deco/
 
 ## 4. Database Architecture & Schema Design
 
-The application uses **Room Database (`deco_pos.db`)** at **Schema Version 3**, configured with **Write-Ahead Logging (WAL)** for high concurrency and transaction safety.
+The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, configured with **Write-Ahead Logging (WAL)** for high concurrency and transaction safety.
 
 ### 4.1. Entity Relationship Diagram (ERD)
 
@@ -149,6 +149,7 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 3**, 
                                  │ color_pattern    │
                                  │ base_price       │
                                  │ sell_price       │
+                                 │ wholesale_price  │
                                  │ stock_qty        │
                                  │ low_stock_thresh │
                                  │ sync_status      │
@@ -168,7 +169,8 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 3**, 
 │ deli_fee         │             │ quantity         │
 │ grand_total      │             │ unit_price       │
 │ payment_type     │             │ total_price      │
-│ cash_received    │             └──────────────────┘
+│ sale_type        │             └──────────────────┘
+│ cash_received    │
 │ change_returned  │
 │ kpay_amount      │
 │ wave_amount      │
@@ -208,28 +210,28 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 3**, 
 #### 3. `product_variants`
 - **Primary Key**: `id: String` (UUID)
 - **Foreign Key**: `product_id` -> `products(id)` ON DELETE `CASCADE`.
-- **Fields**: `productId`, `sku`, `barcode` (UNIQUE), `size` (e.g. S, M, L, Free), `colorPattern`, `basePrice`, `sellPrice`, `stockQty`, `lowStockThreshold`, `syncStatus`, `updatedAt`.
+- **Fields**: `productId`, `sku`, `barcode` (UNIQUE), `size` (e.g. S, M, L, Free), `colorPattern`, `basePrice`, `sellPrice` (Retail Price), `wholesalePrice` (Whole Sale Price), `stockQty`, `lowStockThreshold`, `syncStatus`, `updatedAt`.
 - **Indices**: `product_id`, `barcode`, `sku`, `sync_status`.
 
 #### 4. `orders`
 - **Primary Key**: `id: String` (UUID)
-- **Fields**: `receiptNumber` (UNIQUE, e.g. `REC-20260901-0001`), `subtotal`, `discountAmount`, `discountType` (`FIXED` / `PERCENT`), `deliFee`, `grandTotal`, `paymentType` (`CASH`, `KPAY`, `WAVEPAY`, `SPLIT`, or dynamic codes), `cashReceived`, `changeReturned`, `kpayAmount`, `waveAmount`, `paymentNotes`, `customerName`, `customerPhone`, `customerAddress`, `orderStatus` (`COMPLETED`, `DRAFT`, `CANCELLED`, `REFUNDED`), `syncStatus`, `createdAt`.
+- **Fields**: `receiptNumber` (UNIQUE, e.g. `REC-20260901-0001`), `subtotal`, `discountAmount`, `discountType` (`FIXED` / `PERCENT`), `deliFee`, `grandTotal`, `paymentType` (`CASH`, `KPAY`, `WAVEPAY`, `SPLIT`, or dynamic codes), `saleType` (`RETAIL` / `WHOLESALE`), `cashReceived`, `changeReturned`, `kpayAmount`, `waveAmount`, `paymentNotes`, `customerName`, `customerPhone`, `customerAddress`, `orderStatus` (`COMPLETED`, `DRAFT`, `CANCELLED`, `REFUNDED`), `syncStatus`, `createdAt`.
 - **Indices**: `receipt_number` (UNIQUE), `created_at`, `sync_status`.
 
 #### 5. `order_items`
 - **Primary Key**: `id: String` (UUID)
 - **Foreign Key**: `order_id` -> `orders(id)` ON DELETE `CASCADE`.
-- **Fields**: `orderId`, `variantId`, `productName`, `variantName`, `quantity`, `unitPrice`, `totalPrice`.
+- **Fields**: `orderId`, `variantId`, `productName`, `variantName`, `quantity`, `unitPrice` (applied rate), `totalPrice`.
 - **Indices**: `order_id`, `variant_id`.
 
-#### 6. `payment_methods` (Added in v3)
+#### 6. `payment_methods`
 - **Primary Key**: `id: String` (UUID)
-- **Fields**: `name` (e.g., "Cash", "KBZPay", "WavePay"), `code` (e.g., "CASH", "KPAY", "WAVEPAY"), `accountName`, `accountNumber`, `qrCodeData`, `isActive` (Boolean), `isDefault` (Boolean), `sortOrder` (Int), `createdAt` (Long).
-- **Default Seed Data**: Pre-populated with Cash (Default), KBZPay, and WavePay.
+- **Fields**: `name`, `code`, `accountName`, `accountNumber`, `qrCodeData`, `isActive` (Boolean), `isDefault` (Boolean), `sortOrder` (Int), `createdAt` (Long).
 
 ### 4.3. Database Migrations
 - **`MIGRATION_1_2`**: Restructured `orders` table to remove deprecated shift references, established unified order indexing, and removed legacy shift tables.
 - **`MIGRATION_2_3`**: Created `payment_methods` table for dynamic payment channel configuration and seeded initial payment methods.
+- **`MIGRATION_3_4`**: Added `wholesale_price` to `product_variants` (backfilling from `sell_price`), and added `sale_type` to `orders`.
 
 ### 4.4. Offline-Ready Sync Status Flags
 Every core entity contains a `sync_status` field designed for cloud synchronization:
@@ -340,11 +342,15 @@ Standard thermal POS printers (58mm / 80mm ESC/POS) lack built-in Burmese Unicod
    - Instant search bar listening for barcode inputs from external Bluetooth/USB laser scanners and software keyboards.
 4. **Dynamic Myanmar Payment Matrix**:
    - Flexible support for Cash, Mobile Wallets (KBZPay, WavePay, AYA Pay), Custom Payment Channels, and Split payments (e.g. Cash + KBZPay).
-5. **Draft / Parked Sales Workflow**:
+5. **Dual Selling Modes (Retail Sale & Whole Sale)**:
+   - Dedicated retail and wholesale pricing per product variant.
+   - Interactive toggle on POS interface dynamically recalculating cart line items, pricing tiers, and totals.
+   - Distinct receipt labeling and sales ledger analytics badges for wholesale orders.
+6. **Draft / Parked Sales Workflow**:
    - Instant parking and restoring of open orders with active notification badges in the navigation bar.
-6. **Real-time Low Stock Guard**:
+7. **Real-time Low Stock Guard**:
    - Threshold-based visual warnings when inventory dips below safe operational levels.
-7. **Comprehensive Settings & Hardware Setup**:
+8. **Comprehensive Settings & Hardware Setup**:
    - Integrated Bluetooth printer setup with automated pairing, test printing, and paper size switching.
    - Dark mode toggle, localized language selection, and payment channel configuration.
 

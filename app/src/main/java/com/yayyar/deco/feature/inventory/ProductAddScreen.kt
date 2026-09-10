@@ -91,6 +91,7 @@ fun ProductAddScreen(
         var barcode: String = "",
         var basePrice: String = "0",
         var sellPrice: String = "15000",
+        var wholesalePrice: String = "13000",
         var stockQty: String = "10",
         var lowStockThreshold: String = "5"
     )
@@ -108,6 +109,7 @@ fun ProductAddScreen(
                             barcode = it.barcode ?: "",
                             basePrice = it.basePrice.toInt().toString(),
                             sellPrice = it.sellPrice.toInt().toString(),
+                            wholesalePrice = (if (it.wholesalePrice > 0) it.wholesalePrice else it.sellPrice).toInt().toString(),
                             stockQty = it.stockQty.toString(),
                             lowStockThreshold = it.lowStockThreshold.toString()
                         )
@@ -130,6 +132,8 @@ fun ProductAddScreen(
                 description = description.trim().ifBlank { null }
             )
             val variantEntities = variants.map { v ->
+                val retail = v.sellPrice.toDoubleOrNull() ?: 0.0
+                val wholesale = v.wholesalePrice.toDoubleOrNull() ?: retail
                 ProductVariantEntity(
                     id = v.id,
                     productId = productId,
@@ -138,7 +142,8 @@ fun ProductAddScreen(
                     sku = v.sku.trim().ifBlank { null },
                     barcode = v.barcode.trim().ifBlank { null },
                     basePrice = v.basePrice.toDoubleOrNull() ?: 0.0,
-                    sellPrice = v.sellPrice.toDoubleOrNull() ?: 0.0,
+                    sellPrice = retail,
+                    wholesalePrice = wholesale,
                     stockQty = v.stockQty.toIntOrNull() ?: 0,
                     lowStockThreshold = v.lowStockThreshold.toIntOrNull() ?: 5
                 )
@@ -389,17 +394,22 @@ fun ProductAddScreen(
                         ) {
                             OutlinedTextField(
                                 value = variant.sellPrice,
-                                onValueChange = { variant.sellPrice = it },
-                                label = { Text("Selling Price (Ks) *") },
+                                onValueChange = { 
+                                    variant.sellPrice = it
+                                    if (variant.wholesalePrice.isBlank()) {
+                                        variant.wholesalePrice = it
+                                    }
+                                },
+                                label = { Text("Retail Price (Ks) *") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             OutlinedTextField(
-                                value = variant.stockQty,
-                                onValueChange = { variant.stockQty = it },
-                                label = { Text("Stock Qty") },
+                                value = variant.wholesalePrice,
+                                onValueChange = { variant.wholesalePrice = it },
+                                label = { Text("Wholesale Price (Ks)") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
@@ -412,9 +422,10 @@ fun ProductAddScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             OutlinedTextField(
-                                value = variant.barcode,
-                                onValueChange = { variant.barcode = it },
-                                label = { Text("Barcode / SKU") },
+                                value = variant.stockQty,
+                                onValueChange = { variant.stockQty = it },
+                                label = { Text("Stock Qty") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp)
@@ -429,6 +440,15 @@ fun ProductAddScreen(
                                 shape = RoundedCornerShape(8.dp)
                             )
                         }
+
+                        OutlinedTextField(
+                            value = variant.barcode,
+                            onValueChange = { variant.barcode = it },
+                            label = { Text("Barcode / SKU") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                     }
                 }
             }

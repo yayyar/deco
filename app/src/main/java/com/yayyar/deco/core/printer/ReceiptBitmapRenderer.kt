@@ -92,6 +92,10 @@ object ReceiptBitmapRenderer {
             canvas.drawText("Customer: ${data.customerName} (${data.customerPhone ?: ""})", padding, y, textPaint)
             y += 24f
         }
+        if (data.saleType.equals("WHOLESALE", ignoreCase = true)) {
+            canvas.drawText("Sale Type: Wholesale (လက္ကား)", padding, y, boldPaint)
+            y += 24f
+        }
         canvas.drawText("Cashier: ${data.cashierName}", padding, y, textPaint)
         y += 28f
 

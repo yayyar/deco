@@ -28,6 +28,12 @@ data class ProductWithVariants(
     val maxPrice: Double
         get() = variants.maxOfOrNull { it.sellPrice } ?: 0.0
 
+    val minWholesalePrice: Double
+        get() = variants.minOfOrNull { if (it.wholesalePrice > 0) it.wholesalePrice else it.sellPrice } ?: 0.0
+
+    val maxWholesalePrice: Double
+        get() = variants.maxOfOrNull { if (it.wholesalePrice > 0) it.wholesalePrice else it.sellPrice } ?: 0.0
+
     val totalStock: Int
         get() = variants.sumOf { it.stockQty }
 

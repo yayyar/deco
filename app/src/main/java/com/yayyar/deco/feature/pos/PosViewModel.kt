@@ -91,6 +91,13 @@ class PosViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+    fun setSaleType(saleType: SaleType) {
+        _cartState.update { current ->
+            val updatedItems = current.items.map { it.copy(saleType = saleType) }
+            current.copy(saleType = saleType, items = updatedItems)
+        }
+    }
+
     fun addToCart(product: ProductEntity, variant: ProductVariantEntity) {
         _cartState.update { current ->
             val existingIndex = current.items.indexOfFirst { it.variant.id == variant.id }
@@ -98,11 +105,14 @@ class PosViewModel @Inject constructor(
             if (existingIndex >= 0) {
                 val existing = newItems[existingIndex]
                 if (existing.quantity < variant.stockQty) {
-                    newItems[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                    newItems[existingIndex] = existing.copy(
+                        quantity = existing.quantity + 1,
+                        saleType = current.saleType
+                    )
                 }
             } else {
                 if (variant.stockQty > 0) {
-                    newItems.add(CartItem(product, variant, 1))
+                    newItems.add(CartItem(product, variant, 1, saleType = current.saleType))
                 }
             }
             current.copy(items = newItems)
@@ -130,7 +140,7 @@ class PosViewModel @Inject constructor(
     }
 
     fun clearCart() {
-        _cartState.value = CartState()
+        _cartState.value = CartState(saleType = _cartState.value.saleType)
     }
 
     fun setDiscount(type: DiscountType, value: Double) {
@@ -167,6 +177,7 @@ class PosViewModel @Inject constructor(
                 deliFee = currentCart.deliFee,
                 grandTotal = currentCart.grandTotal,
                 paymentType = "CASH",
+                saleType = currentCart.saleType.name,
                 customerName = currentCart.customerName,
                 customerPhone = currentCart.customerPhone,
                 customerAddress = currentCart.customerAddress,
@@ -181,7 +192,7 @@ class PosViewModel @Inject constructor(
                     productName = item.product.name,
                     variantName = item.variant.displayName,
                     quantity = item.quantity,
-                    unitPrice = item.variant.sellPrice,
+                    unitPrice = item.unitPrice,
                     totalPrice = item.totalPrice
                 )
             }
@@ -196,12 +207,18 @@ class PosViewModel @Inject constructor(
 
     fun restoreDraftSale(draftOrder: OrderWithItems, onRestored: () -> Unit = {}) {
         viewModelScope.launch {
+            val draftSaleType = try {
+                SaleType.valueOf(draftOrder.order.saleType)
+            } catch (_: Exception) {
+                SaleType.RETAIL
+            }
+
             val cartItems = mutableListOf<CartItem>()
             for (item in draftOrder.items) {
                 val variant = productRepository.getVariantById(item.variantId)
                 val product = variant?.let { productRepository.getProductById(it.productId) }
                 if (product != null && variant != null) {
-                    cartItems.add(CartItem(product, variant, item.quantity))
+                    cartItems.add(CartItem(product, variant, item.quantity, saleType = draftSaleType))
                 } else {
                     val fallbackProd = ProductEntity(
                         id = "prod_${item.variantId}",
@@ -217,9 +234,10 @@ class PosViewModel @Inject constructor(
                         colorPattern = item.variantName,
                         basePrice = item.unitPrice,
                         sellPrice = item.unitPrice,
+                        wholesalePrice = item.unitPrice,
                         stockQty = 999
                     )
-                    cartItems.add(CartItem(fallbackProd, fallbackVar, item.quantity))
+                    cartItems.add(CartItem(fallbackProd, fallbackVar, item.quantity, saleType = draftSaleType))
                 }
             }
 
@@ -231,6 +249,7 @@ class PosViewModel @Inject constructor(
 
             _cartState.value = CartState(
                 items = cartItems,
+                saleType = draftSaleType,
                 discountType = discType,
                 discountValue = draftOrder.order.discountAmount,
                 deliFee = draftOrder.order.deliFee,
@@ -281,6 +300,7 @@ class PosViewModel @Inject constructor(
                     deliFee = currentCart.deliFee,
                     grandTotal = grandTotal,
                     paymentType = paymentType,
+                    saleType = currentCart.saleType.name,
                     cashReceived = if (paymentType == "CASH") cashReceived else 0.0,
                     changeReturned = changeReturned,
                     kpayAmount = if (paymentType == "KPAY") grandTotal else kpayAmount,
@@ -300,7 +320,7 @@ class PosViewModel @Inject constructor(
                         productName = item.product.name,
                         variantName = item.variant.displayName,
                         quantity = item.quantity,
-                        unitPrice = item.variant.sellPrice,
+                        unitPrice = item.unitPrice,
                         totalPrice = item.totalPrice
                     )
                 }
@@ -323,7 +343,7 @@ class PosViewModel @Inject constructor(
                             productName = it.product.name,
                             variantName = it.variant.displayName,
                             quantity = it.quantity,
-                            unitPrice = it.variant.sellPrice,
+                            unitPrice = it.unitPrice,
                             totalPrice = it.totalPrice
                         )
                     },
@@ -332,6 +352,7 @@ class PosViewModel @Inject constructor(
                     deliFee = currentCart.deliFee,
                     grandTotal = grandTotal,
                     paymentType = paymentType,
+                    saleType = currentCart.saleType.name,
                     cashReceived = cashReceived,
                     changeReturned = changeReturned,
                     paymentNotes = paymentNotes,

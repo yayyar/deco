@@ -3,13 +3,24 @@ package com.yayyar.deco.feature.pos
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
 
+enum class SaleType {
+    RETAIL, WHOLESALE
+}
+
 data class CartItem(
     val product: ProductEntity,
     val variant: ProductVariantEntity,
-    val quantity: Int = 1
+    val quantity: Int = 1,
+    val saleType: SaleType = SaleType.RETAIL
 ) {
+    val unitPrice: Double
+        get() = when (saleType) {
+            SaleType.RETAIL -> variant.sellPrice
+            SaleType.WHOLESALE -> if (variant.wholesalePrice > 0) variant.wholesalePrice else variant.sellPrice
+        }
+
     val totalPrice: Double
-        get() = variant.sellPrice * quantity
+        get() = unitPrice * quantity
 }
 
 enum class DiscountType {
@@ -18,6 +29,7 @@ enum class DiscountType {
 
 data class CartState(
     val items: List<CartItem> = emptyList(),
+    val saleType: SaleType = SaleType.RETAIL,
     val discountType: DiscountType = DiscountType.FIXED,
     val discountValue: Double = 0.0,
     val deliFee: Double = 0.0,
@@ -40,3 +52,4 @@ data class CartState(
     val totalItemCount: Int
         get() = items.sumOf { it.quantity }
 }
+

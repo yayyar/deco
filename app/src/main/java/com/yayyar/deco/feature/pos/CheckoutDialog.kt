@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -96,7 +97,24 @@ fun CheckoutDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Complete Checkout", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Checkout", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text(
+                            text = if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
                 CurrencyText(
                     amount = grandTotal,
                     fontSize = 18.sp,

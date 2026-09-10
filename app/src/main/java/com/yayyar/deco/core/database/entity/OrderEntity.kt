@@ -49,6 +49,8 @@ data class OrderEntity(
     val customerAddress: String? = null,
     @ColumnInfo(name = "order_status")
     val orderStatus: String = "COMPLETED", // COMPLETED, CANCELLED, REFUNDED
+    @ColumnInfo(name = "sale_type")
+    val saleType: String = "RETAIL", // RETAIL, WHOLESALE
     @ColumnInfo(name = "sync_status")
     val syncStatus: Int = 1,
     @ColumnInfo(name = "created_at")

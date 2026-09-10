@@ -34,6 +34,7 @@ data class ReceiptData(
     val deliFee: Double = 0.0,
     val grandTotal: Double,
     val paymentType: String = "CASH",
+    val saleType: String = "RETAIL",
     val cashReceived: Double = 0.0,
     val changeReturned: Double = 0.0,
     val paymentNotes: String? = null,

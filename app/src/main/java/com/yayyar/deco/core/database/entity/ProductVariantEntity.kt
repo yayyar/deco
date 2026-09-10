@@ -38,6 +38,8 @@ data class ProductVariantEntity(
     val basePrice: Double = 0.0,
     @ColumnInfo(name = "sell_price")
     val sellPrice: Double,
+    @ColumnInfo(name = "wholesale_price")
+    val wholesalePrice: Double = sellPrice,
     @ColumnInfo(name = "stock_qty")
     val stockQty: Int = 0,
     @ColumnInfo(name = "low_stock_threshold")

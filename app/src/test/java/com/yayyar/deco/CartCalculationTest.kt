@@ -23,6 +23,7 @@ class CartCalculationTest {
         size = "M",
         colorPattern = "Red",
         sellPrice = 20000.0,
+        wholesalePrice = 17000.0,
         stockQty = 10
     )
 
@@ -32,6 +33,7 @@ class CartCalculationTest {
         size = "L",
         colorPattern = "Blue",
         sellPrice = 15000.0,
+        wholesalePrice = 12000.0,
         stockQty = 5
     )
 
@@ -45,6 +47,20 @@ class CartCalculationTest {
         )
 
         assertEquals(55000.0, cart.subtotal, 0.01)
+        assertEquals(3, cart.totalItemCount)
+    }
+
+    @Test
+    fun testWholesaleCartSubtotalCalculation() {
+        val cart = CartState(
+            saleType = com.yayyar.deco.feature.pos.SaleType.WHOLESALE,
+            items = listOf(
+                CartItem(sampleProduct, sampleVariant1, quantity = 2, saleType = com.yayyar.deco.feature.pos.SaleType.WHOLESALE), // 17,000 * 2 = 34,000
+                CartItem(sampleProduct, sampleVariant2, quantity = 1, saleType = com.yayyar.deco.feature.pos.SaleType.WHOLESALE)  // 12,000 * 1 = 12,000
+            )
+        )
+
+        assertEquals(46000.0, cart.subtotal, 0.01) // 34,000 + 12,000
         assertEquals(3, cart.totalItemCount)
     }
 
