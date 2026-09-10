@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -155,7 +156,9 @@ fun ProductAddScreen(
     }
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(),
         topBar = {
             TopAppBar(
                 title = {
@@ -181,6 +184,16 @@ fun ProductAddScreen(
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
+                    }
+                    TextButton(
+                        onClick = handleSave,
+                        enabled = isFormValid
+                    ) {
+                        Text(
+                            text = if (isEditing) "Update" else "Save",
+                            fontWeight = FontWeight.Bold,
+                            color = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        )
                     }
                 }
             )
