@@ -124,8 +124,7 @@ fun ProductListScreen(
                         )
                     } else {
                         Text(
-                            text = "Products",
-                            fontWeight = FontWeight.Bold
+                            text = "Products"
                         )
                     }
                 },

@@ -15,6 +15,7 @@ import com.yayyar.deco.core.database.entity.OrderItemEntity
 import com.yayyar.deco.core.database.entity.PaymentMethodEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
+import com.yayyar.deco.core.database.model.OrderWithItems
 import com.yayyar.deco.core.database.model.ProductWithVariants
 import com.yayyar.deco.core.printer.PrinterManager
 import com.yayyar.deco.core.printer.ReceiptData
@@ -47,6 +48,9 @@ class PosViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val activePaymentMethods: StateFlow<List<PaymentMethodEntity>> = paymentMethodRepository.getActivePaymentMethodsFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val draftOrders: StateFlow<List<OrderWithItems>> = orderRepository.getDraftOrdersWithItemsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
@@ -144,6 +148,105 @@ class PosViewModel @Inject constructor(
                 customerPhone = phone?.ifBlank { null },
                 customerAddress = address?.ifBlank { null }
             )
+        }
+    }
+
+    fun saveDraftSale(onSaved: () -> Unit = {}) {
+        val currentCart = _cartState.value
+        if (currentCart.items.isEmpty()) return
+
+        viewModelScope.launch {
+            val orderId = UUID.randomUUID().toString()
+            val receiptNumber = "DRAFT-${Formatters.generateReceiptNumber()}"
+            val orderEntity = OrderEntity(
+                id = orderId,
+                receiptNumber = receiptNumber,
+                subtotal = currentCart.subtotal,
+                discountAmount = currentCart.discountAmount,
+                discountType = currentCart.discountType.name,
+                deliFee = currentCart.deliFee,
+                grandTotal = currentCart.grandTotal,
+                paymentType = "CASH",
+                customerName = currentCart.customerName,
+                customerPhone = currentCart.customerPhone,
+                customerAddress = currentCart.customerAddress,
+                orderStatus = "DRAFT"
+            )
+
+            val orderItems = currentCart.items.map { item ->
+                OrderItemEntity(
+                    id = UUID.randomUUID().toString(),
+                    orderId = orderId,
+                    variantId = item.variant.id,
+                    productName = item.product.name,
+                    variantName = item.variant.displayName,
+                    quantity = item.quantity,
+                    unitPrice = item.variant.sellPrice,
+                    totalPrice = item.totalPrice
+                )
+            }
+
+            val result = orderRepository.saveDraftOrder(orderEntity, orderItems)
+            if (result is Resource.Success) {
+                clearCart()
+                onSaved()
+            }
+        }
+    }
+
+    fun restoreDraftSale(draftOrder: OrderWithItems, onRestored: () -> Unit = {}) {
+        viewModelScope.launch {
+            val cartItems = mutableListOf<CartItem>()
+            for (item in draftOrder.items) {
+                val variant = productRepository.getVariantById(item.variantId)
+                val product = variant?.let { productRepository.getProductById(it.productId) }
+                if (product != null && variant != null) {
+                    cartItems.add(CartItem(product, variant, item.quantity))
+                } else {
+                    val fallbackProd = ProductEntity(
+                        id = "prod_${item.variantId}",
+                        name = item.productName,
+                        categoryId = ""
+                    )
+                    val fallbackVar = ProductVariantEntity(
+                        id = item.variantId,
+                        productId = fallbackProd.id,
+                        sku = null,
+                        barcode = null,
+                        size = "",
+                        colorPattern = item.variantName,
+                        basePrice = item.unitPrice,
+                        sellPrice = item.unitPrice,
+                        stockQty = 999
+                    )
+                    cartItems.add(CartItem(fallbackProd, fallbackVar, item.quantity))
+                }
+            }
+
+            val discType = try {
+                DiscountType.valueOf(draftOrder.order.discountType)
+            } catch (_: Exception) {
+                DiscountType.FIXED
+            }
+
+            _cartState.value = CartState(
+                items = cartItems,
+                discountType = discType,
+                discountValue = draftOrder.order.discountAmount,
+                deliFee = draftOrder.order.deliFee,
+                customerName = draftOrder.order.customerName,
+                customerPhone = draftOrder.order.customerPhone,
+                customerAddress = draftOrder.order.customerAddress
+            )
+
+            orderRepository.deleteDraftOrder(draftOrder.order.id)
+            onRestored()
+        }
+    }
+
+    fun deleteDraftSale(orderId: String) {
+        viewModelScope.launch {
+            orderRepository.deleteDraftOrder(orderId)
         }
     }
 

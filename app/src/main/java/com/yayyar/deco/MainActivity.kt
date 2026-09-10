@@ -70,6 +70,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yayyar.deco.core.data.repository.PreferencesRepository
 import com.yayyar.deco.core.database.model.ProductWithVariants
@@ -89,6 +91,9 @@ import com.yayyar.deco.feature.settings.PaymentMethodScreen
 import com.yayyar.deco.feature.settings.PrinterScreen
 import com.yayyar.deco.feature.settings.SettingScreen
 import com.yayyar.deco.ui.theme.DecoTheme
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import com.yayyar.deco.feature.pos.DraftSalesDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -146,6 +151,9 @@ fun DecoApp() {
     val inventoryViewModel: InventoryViewModel = hiltViewModel()
     val analyticsViewModel: AnalyticsViewModel = hiltViewModel()
 
+    val draftOrders by posViewModel.draftOrders.collectAsState()
+    var showDraftSalesDialog by rememberSaveable { mutableStateOf(false) }
+
     val posSearchQuery by posViewModel.searchQuery.collectAsState()
     val posFocusRequester = remember { FocusRequester() }
 
@@ -153,6 +161,20 @@ fun DecoApp() {
         if (isPosSearchActive) {
             posFocusRequester.requestFocus()
         }
+    }
+
+    if (showDraftSalesDialog) {
+        DraftSalesDialog(
+            draftOrders = draftOrders,
+            onDismiss = { showDraftSalesDialog = false },
+            onRestoreDraft = { draftOrder ->
+                posViewModel.restoreDraftSale(draftOrder)
+                appDestination = AppDestination.Main(PosDestination.POS)
+            },
+            onDeleteDraft = { draftOrderId ->
+                posViewModel.deleteDraftSale(draftOrderId)
+            }
+        )
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -224,6 +246,8 @@ fun DecoApp() {
                             onPosSearchActiveChange = { isPosSearchActive = it },
                             posFocusRequester = posFocusRequester,
                             onOpenDrawer = { scope.launch { drawerState.open() } },
+                            draftOrdersCount = draftOrders.size,
+                            onOpenDraftSales = { showDraftSalesDialog = true },
                             isInventoryGridView = isInventoryGridView,
                             onToggleInventoryGridView = { isInventoryGridView = !isInventoryGridView },
                             onExportCsv = {
@@ -339,6 +363,8 @@ private fun MainTopAppBar(
     onPosSearchActiveChange: (Boolean) -> Unit,
     posFocusRequester: FocusRequester,
     onOpenDrawer: () -> Unit,
+    draftOrdersCount: Int = 0,
+    onOpenDraftSales: () -> Unit = {},
     isInventoryGridView: Boolean,
     onToggleInventoryGridView: () -> Unit,
     onExportCsv: () -> Unit = {},
@@ -394,6 +420,25 @@ private fun MainTopAppBar(
         },
         actions = {
             if (destination == PosDestination.POS && !isPosSearchActive) {
+                IconButton(onClick = onOpenDraftSales) {
+                    BadgedBox(
+                        badge = {
+                            if (draftOrdersCount > 0) {
+                                Badge(
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary
+                                ) {
+                                    Text(text = "$draftOrdersCount")
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
+                            contentDescription = "Draft sales",
+                        )
+                    }
+                }
                 IconButton(
                     onClick = { onPosSearchActiveChange(true) }) {
                     Icon(

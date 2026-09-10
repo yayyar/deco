@@ -107,7 +107,6 @@ fun ProductEditDialog(
         title = {
             Text(
                 text = if (isEditing) "Edit Product" else "Add New Fashion Item",
-                fontWeight = FontWeight.Bold
             )
         },
         text = {

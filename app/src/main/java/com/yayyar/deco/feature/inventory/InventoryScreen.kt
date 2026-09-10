@@ -166,8 +166,7 @@ private fun HubListCard(
                 ) {
                     Text(
                         text = title,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 18.sp
                     )
                     Surface(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
@@ -284,8 +283,7 @@ private fun HubGridCard(
             Column {
                 Text(
                     text = title,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 17.sp
                 )
                 Text(
                     text = itemCount,

@@ -70,7 +70,6 @@ fun CategoryAddScreen(
                 title = {
                     Text(
                         text = "Add New Category",
-                        fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {

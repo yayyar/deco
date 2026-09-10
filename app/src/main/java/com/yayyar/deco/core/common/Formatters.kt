@@ -20,7 +20,7 @@ object Formatters {
     }
 
     fun formatDateTime(timestamp: Long): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm a", Locale.getDefault())
         return sdf.format(Date(timestamp))
     }
 

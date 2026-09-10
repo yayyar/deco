@@ -38,7 +38,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -147,6 +147,7 @@ fun PosScreen(
                     onSetDiscount = { type, value -> viewModel.setDiscount(type, value) },
                     onSetDeliFee = { viewModel.setDeliFee(it) },
                     onInitiateCheckout = { showCheckoutDialog = true },
+                    onSaveDraft = { viewModel.saveDraftSale() },
                     modifier = Modifier
                         .weight(0.35f)
                         .fillMaxHeight()
@@ -171,7 +172,8 @@ fun PosScreen(
                 onClearCart = { viewModel.clearCart() },
                 onSetDiscount = { type, value -> viewModel.setDiscount(type, value) },
                 onSetDeliFee = { viewModel.setDeliFee(it) },
-                onInitiateCheckout = { showCheckoutDialog = true }
+                onInitiateCheckout = { showCheckoutDialog = true },
+                onSaveDraft = { viewModel.saveDraftSale() }
             )
         }
     }
@@ -496,6 +498,7 @@ private fun CartPane(
     onSetDiscount: (type: DiscountType, value: Double) -> Unit,
     onSetDeliFee: (fee: Double) -> Unit,
     onInitiateCheckout: () -> Unit,
+    onSaveDraft: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showDiscountInput by remember { mutableStateOf(false) }
@@ -676,16 +679,39 @@ private fun CartPane(
                     )
                 }
 
-                Button(
-                    onClick = onInitiateCheckout,
-                    enabled = cartState.items.isNotEmpty(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Place Order", fontWeight = FontWeight.Bold)
+                    OutlinedButton(
+                        onClick = onSaveDraft,
+                        enabled = cartState.items.isNotEmpty(),
+                        modifier = Modifier
+                            .weight(0.35f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.BookmarkAdd,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Draft", fontWeight = FontWeight.SemiBold)
+                    }
+
+                    Button(
+                        onClick = onInitiateCheckout,
+                        enabled = cartState.items.isNotEmpty(),
+                        modifier = Modifier
+                            .weight(0.65f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("Place Order", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
@@ -706,7 +732,8 @@ private fun MobilePosLayout(
     onClearCart: () -> Unit,
     onSetDiscount: (DiscountType, Double) -> Unit,
     onSetDeliFee: (Double) -> Unit,
-    onInitiateCheckout: () -> Unit
+    onInitiateCheckout: () -> Unit,
+    onSaveDraft: () -> Unit = {}
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -727,6 +754,7 @@ private fun MobilePosLayout(
                 onSetDiscount = onSetDiscount,
                 onSetDeliFee = onSetDeliFee,
                 onInitiateCheckout = onInitiateCheckout,
+                onSaveDraft = onSaveDraft,
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)

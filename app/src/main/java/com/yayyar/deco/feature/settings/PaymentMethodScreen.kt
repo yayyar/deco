@@ -92,9 +92,7 @@ fun PaymentMethodScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Payment Methods",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Payment Methods"
                     )
                 },
                 navigationIcon = {
@@ -390,8 +388,7 @@ private fun PaymentMethodEditDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (initialMethod == null) "Add Payment Method" else "Edit Payment Method",
-                fontWeight = FontWeight.Bold
+                text = if (initialMethod == null) "Add Payment Method" else "Edit Payment Method"
             )
         },
         text = {

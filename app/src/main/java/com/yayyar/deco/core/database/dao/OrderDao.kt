@@ -18,8 +18,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface OrderDao {
     @Transaction
-    @Query("SELECT * FROM orders ORDER BY created_at DESC")
+    @Query("SELECT * FROM orders WHERE order_status = 'COMPLETED' ORDER BY created_at DESC")
     fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
+
+    @Transaction
+    @Query("SELECT * FROM orders WHERE order_status = 'DRAFT' ORDER BY created_at DESC")
+    fun getDraftOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
+
+    @Query("DELETE FROM orders WHERE id = :orderId AND order_status = 'DRAFT'")
+    suspend fun deleteDraftOrder(orderId: String): Int
 
     @Transaction
     @Query("SELECT * FROM orders WHERE created_at >= :startTime AND created_at <= :endTime ORDER BY created_at DESC LIMIT :limit OFFSET :offset")

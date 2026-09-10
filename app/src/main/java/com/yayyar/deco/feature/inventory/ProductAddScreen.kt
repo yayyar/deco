@@ -154,8 +154,7 @@ fun ProductAddScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isEditing) "Edit Product" else "Add New Product",
-                        fontWeight = FontWeight.Bold
+                        text = if (isEditing) "Edit Product" else "Add New Product"
                     )
                 },
                 navigationIcon = {

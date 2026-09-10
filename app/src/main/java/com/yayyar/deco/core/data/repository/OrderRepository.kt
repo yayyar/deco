@@ -26,8 +26,11 @@ interface OrderRepository {
     fun getPaymentMethodSalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<PaymentMethodSalesSummary>>
     fun getTopSellingItemsFlow(startTime: Long, endTime: Long, limit: Int = 10): Flow<List<TopSellingItem>>
     suspend fun getTopSellingItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<TopSellingItem>
+    fun getDraftOrdersWithItemsFlow(): Flow<List<OrderWithItems>>
     fun getCategorySalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<CategorySalesSummary>>
     suspend fun checkoutOrder(order: OrderEntity, items: List<OrderItemEntity>): Resource<Unit>
+    suspend fun saveDraftOrder(order: OrderEntity, items: List<OrderItemEntity>): Resource<Unit>
+    suspend fun deleteDraftOrder(orderId: String): Resource<Unit>
 }
 
 @Singleton
@@ -39,6 +42,9 @@ class OrderRepositoryImpl @Inject constructor(
 
     override fun getAllOrdersWithItemsFlow(): Flow<List<OrderWithItems>> =
         orderDao.getAllOrdersWithItemsFlow()
+
+    override fun getDraftOrdersWithItemsFlow(): Flow<List<OrderWithItems>> =
+        orderDao.getDraftOrdersWithItemsFlow()
 
     override suspend fun getOrdersWithItemsPaged(
         startTime: Long,
@@ -106,6 +112,30 @@ class OrderRepositoryImpl @Inject constructor(
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to process checkout transaction")
+        }
+    }
+
+    override suspend fun saveDraftOrder(
+        order: OrderEntity,
+        items: List<OrderItemEntity>
+    ): Resource<Unit> {
+        return try {
+            database.withTransaction {
+                orderDao.insertOrder(order.copy(orderStatus = "DRAFT"))
+                orderDao.insertOrderItems(items)
+            }
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to save draft order")
+        }
+    }
+
+    override suspend fun deleteDraftOrder(orderId: String): Resource<Unit> {
+        return try {
+            orderDao.deleteDraftOrder(orderId)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to delete draft order")
         }
     }
 }

@@ -116,8 +116,7 @@ fun CategoryListScreen(
                         )
                     } else {
                         Text(
-                            text = "Categories (${categories.size})",
-                            fontWeight = FontWeight.Bold
+                            text = "Categories"
                         )
                     }
                 },

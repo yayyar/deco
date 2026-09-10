@@ -133,9 +133,7 @@ fun PrinterScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Printers",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Printers"
                     )
                 },
                 navigationIcon = {
