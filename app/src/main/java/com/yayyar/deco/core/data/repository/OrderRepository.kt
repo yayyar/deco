@@ -10,6 +10,7 @@ import com.yayyar.deco.core.database.entity.OrderItemEntity
 import com.yayyar.deco.core.database.model.CategorySalesSummary
 import com.yayyar.deco.core.database.model.DailySalesSummary
 import com.yayyar.deco.core.database.model.OrderWithItems
+import com.yayyar.deco.core.database.model.PaymentMethodSalesSummary
 import com.yayyar.deco.core.database.model.TopSellingItem
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -22,6 +23,7 @@ interface OrderRepository {
     suspend fun getOrderByReceiptNumber(receiptNumber: String): OrderWithItems?
     fun getOrdersBetweenFlow(startTime: Long, endTime: Long): Flow<List<OrderEntity>>
     fun getDailySalesSummaryFlow(startTime: Long, endTime: Long): Flow<DailySalesSummary>
+    fun getPaymentMethodSalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<PaymentMethodSalesSummary>>
     fun getTopSellingItemsFlow(startTime: Long, endTime: Long, limit: Int = 10): Flow<List<TopSellingItem>>
     suspend fun getTopSellingItemsPaged(startTime: Long, endTime: Long, limit: Int, offset: Int): List<TopSellingItem>
     fun getCategorySalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<CategorySalesSummary>>
@@ -57,6 +59,12 @@ class OrderRepositoryImpl @Inject constructor(
 
     override fun getDailySalesSummaryFlow(startTime: Long, endTime: Long): Flow<DailySalesSummary> =
         orderDao.getDailySalesSummaryFlow(startTime, endTime)
+
+    override fun getPaymentMethodSalesSummaryFlow(
+        startTime: Long,
+        endTime: Long
+    ): Flow<List<PaymentMethodSalesSummary>> =
+        orderDao.getPaymentMethodSalesSummaryFlow(startTime, endTime)
 
     override fun getTopSellingItemsFlow(
         startTime: Long,

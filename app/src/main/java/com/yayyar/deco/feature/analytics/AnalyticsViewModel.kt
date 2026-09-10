@@ -10,9 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yayyar.deco.core.common.Formatters
 import com.yayyar.deco.core.data.repository.OrderRepository
+import com.yayyar.deco.core.data.repository.PaymentMethodRepository
 import com.yayyar.deco.core.database.model.CategorySalesSummary
 import com.yayyar.deco.core.database.model.DailySalesSummary
 import com.yayyar.deco.core.database.model.OrderWithItems
+import com.yayyar.deco.core.database.model.PaymentMethodSalesSummary
+import com.yayyar.deco.core.database.model.PaymentMethodSalesUiModel
 import com.yayyar.deco.core.database.model.TopSellingItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
@@ -68,7 +72,8 @@ enum class TimeRange(val displayName: String) {
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    private val paymentMethodRepository: PaymentMethodRepository
 ) : ViewModel() {
 
     private val _timeRange = MutableStateFlow(TimeRange.TODAY)
@@ -94,6 +99,52 @@ class AnalyticsViewModel @Inject constructor(
     val categorySales: StateFlow<List<CategorySalesSummary>> = _timeRange.flatMapLatest { range ->
         val (start, end) = range.getTimestamps()
         orderRepository.getCategorySalesSummaryFlow(start, end)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val paymentMethodSales: StateFlow<List<PaymentMethodSalesUiModel>> = _timeRange.flatMapLatest { range ->
+        val (start, end) = range.getTimestamps()
+        combine(
+            orderRepository.getPaymentMethodSalesSummaryFlow(start, end),
+            paymentMethodRepository.getAllPaymentMethodsFlow()
+        ) { salesBreakdown, configuredMethods ->
+            val salesMap = salesBreakdown.associateBy { it.paymentType.uppercase() }
+            val result = mutableListOf<PaymentMethodSalesUiModel>()
+            val seenCodes = mutableSetOf<String>()
+
+            // 1. Add configured methods from database
+            configuredMethods.forEach { method ->
+                val codeUpper = method.code.uppercase()
+                seenCodes.add(codeUpper)
+                val sales = salesMap[codeUpper]
+                result.add(
+                    PaymentMethodSalesUiModel(
+                        paymentType = method.code,
+                        totalOrders = sales?.totalOrders ?: 0,
+                        totalAmount = sales?.totalAmount ?: 0.0,
+                        label = method.name
+                    )
+                )
+            }
+
+            // 2. Add any other payment types present in completed orders
+            salesBreakdown.forEach { sales ->
+                val codeUpper = sales.paymentType.uppercase()
+                if (codeUpper !in seenCodes) {
+                    seenCodes.add(codeUpper)
+                    result.add(
+                        PaymentMethodSalesUiModel(
+                            paymentType = sales.paymentType,
+                            totalOrders = sales.totalOrders,
+                            totalAmount = sales.totalAmount,
+                            label = sales.paymentType
+                        )
+                    )
+                }
+            }
+
+            result
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val allOrders: StateFlow<List<OrderWithItems>> = orderRepository.getAllOrdersWithItemsFlow()

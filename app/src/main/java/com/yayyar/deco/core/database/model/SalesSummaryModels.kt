@@ -10,6 +10,19 @@ data class DailySalesSummary(
     val totalWave: Double = 0.0
 )
 
+data class PaymentMethodSalesSummary(
+    val paymentType: String,
+    val totalOrders: Int = 0,
+    val totalAmount: Double = 0.0
+)
+
+data class PaymentMethodSalesUiModel(
+    val paymentType: String,
+    val totalOrders: Int = 0,
+    val totalAmount: Double = 0.0,
+    val label: String = paymentType
+)
+
 data class TopSellingItem(
     val variantId: String,
     val productName: String,

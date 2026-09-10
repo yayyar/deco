@@ -11,6 +11,7 @@ import com.yayyar.deco.core.database.entity.OrderItemEntity
 import com.yayyar.deco.core.database.model.CategorySalesSummary
 import com.yayyar.deco.core.database.model.DailySalesSummary
 import com.yayyar.deco.core.database.model.OrderWithItems
+import com.yayyar.deco.core.database.model.PaymentMethodSalesSummary
 import com.yayyar.deco.core.database.model.TopSellingItem
 import kotlinx.coroutines.flow.Flow
 
@@ -57,6 +58,18 @@ interface OrderDao {
         WHERE created_at >= :startTime AND created_at <= :endTime AND order_status = 'COMPLETED'
     """)
     fun getDailySalesSummaryFlow(startTime: Long, endTime: Long): Flow<DailySalesSummary>
+
+    @Query("""
+        SELECT 
+            payment_type as paymentType,
+            COUNT(id) as totalOrders,
+            COALESCE(SUM(grand_total), 0.0) as totalAmount
+        FROM orders 
+        WHERE created_at >= :startTime AND created_at <= :endTime AND order_status = 'COMPLETED'
+        GROUP BY payment_type
+        ORDER BY totalAmount DESC
+    """)
+    fun getPaymentMethodSalesSummaryFlow(startTime: Long, endTime: Long): Flow<List<PaymentMethodSalesSummary>>
 
     @Query("""
         SELECT 

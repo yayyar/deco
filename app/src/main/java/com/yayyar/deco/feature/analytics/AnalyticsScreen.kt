@@ -60,6 +60,7 @@ fun AnalyticsScreen(
 ) {
     val timeRange by viewModel.timeRange.collectAsState()
     val salesSummary by viewModel.salesSummary.collectAsState()
+    val paymentMethodSales by viewModel.paymentMethodSales.collectAsState()
     val topItems by viewModel.topSellingItems.collectAsState()
     val categorySales by viewModel.categorySales.collectAsState()
     val allOrders by viewModel.allOrders.collectAsState()
@@ -131,9 +132,27 @@ fun AnalyticsScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        PaymentMethodRow(label = "Cash (ငွေသား)", amount = salesSummary.totalCash, color = AccentGreen)
-                        PaymentMethodRow(label = "KPay Digital", amount = salesSummary.totalKpay, color = AccentBlue)
-                        PaymentMethodRow(label = "WavePay Digital", amount = salesSummary.totalWave, color = AccentPurple)
+                        if (paymentMethodSales.isNotEmpty()) {
+                            paymentMethodSales.forEach { item ->
+                                val color = when (item.paymentType.uppercase()) {
+                                    "CASH" -> AccentGreen
+                                    "KPAY" -> AccentBlue
+                                    "WAVEPAY" -> AccentPurple
+                                    "CB", "CBPAY" -> Color(0xFFE11D48)
+                                    "AYA", "AYAPAY" -> Color(0xFFD97706)
+                                    else -> MaterialTheme.colorScheme.primary
+                                }
+                                PaymentMethodRow(
+                                    label = item.label,
+                                    amount = item.totalAmount,
+                                    color = color
+                                )
+                            }
+                        } else {
+                            PaymentMethodRow(label = "Cash", amount = salesSummary.totalCash, color = AccentGreen)
+                            PaymentMethodRow(label = "KPay", amount = salesSummary.totalKpay, color = AccentBlue)
+                            PaymentMethodRow(label = "WavePay", amount = salesSummary.totalWave, color = AccentPurple)
+                        }
 
                         if (salesSummary.totalDiscount > 0 || salesSummary.totalDeli > 0) {
                             HorizontalDivider()
