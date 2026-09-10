@@ -1,5 +1,6 @@
 package com.yayyar.deco
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -67,6 +68,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -128,6 +130,12 @@ class MainActivity : Hilt_MainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isTablet = resources.configuration.smallestScreenWidthDp >= 530
+        if (!isTablet) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
         enableEdgeToEdge()
         setContent {
             val darkModePref by preferencesRepository.isDarkMode.collectAsState()
@@ -233,7 +241,9 @@ fun DecoApp() {
                 }
             ) {
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                    val isTabletLandscape = maxWidth >= 720.dp
+                    val configuration = LocalConfiguration.current
+                    val isTablet = configuration.smallestScreenWidthDp >= 530
+                    val isTabletLandscape = isTablet && maxWidth >= 720.dp
                     val isPosTablet = isTabletLandscape && current.destination == PosDestination.POS
 
                     val context = LocalContext.current

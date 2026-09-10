@@ -74,6 +74,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -106,7 +107,9 @@ fun PosScreen(
     var selectedProductForVariants by remember { mutableStateOf<ProductWithVariants?>(null) }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isTabletLandscape = maxWidth >= 768.dp
+        val configuration = LocalConfiguration.current
+        val isTablet = configuration.smallestScreenWidthDp >= 530
+        val isTabletLandscape = isTablet && maxWidth >= 720.dp
 
         if (isTabletLandscape) {
             // Tablet 2-Pane Master-Detail Layout
@@ -154,7 +157,7 @@ fun PosScreen(
                         .weight(0.35f)
                         .fillMaxHeight()
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End))
-                        .padding(start = 0.dp, end = 12.dp, top = 0.dp, bottom = 0.dp)
+                        .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 0.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(8.dp)
