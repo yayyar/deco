@@ -33,6 +33,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -68,7 +69,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yayyar.deco.core.data.repository.PreferencesRepository
 import com.yayyar.deco.core.database.model.ProductWithVariants
 import com.yayyar.deco.feature.analytics.AllSalesScreen
 import com.yayyar.deco.feature.analytics.AllSellingProductsScreen
@@ -82,9 +85,13 @@ import com.yayyar.deco.feature.inventory.ProductAddScreen
 import com.yayyar.deco.feature.inventory.ProductListScreen
 import com.yayyar.deco.feature.pos.PosScreen
 import com.yayyar.deco.feature.pos.PosViewModel
+import com.yayyar.deco.feature.settings.PaymentMethodScreen
+import com.yayyar.deco.feature.settings.PrinterScreen
+import com.yayyar.deco.feature.settings.SettingScreen
 import com.yayyar.deco.ui.theme.DecoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 enum class PosDestination(
     val title: String,
@@ -103,15 +110,24 @@ sealed interface AppDestination : java.io.Serializable {
     data object CategoryAdd : AppDestination
     data object AllSellingProducts : AppDestination
     data object AllSales : AppDestination
+    data object Settings : AppDestination
+    data object PaymentMethods : AppDestination
+    data object Printers : AppDestination
 }
 
 @AndroidEntryPoint(ComponentActivity::class)
 class MainActivity : Hilt_MainActivity() {
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DecoTheme {
+            val darkModePref by preferencesRepository.isDarkMode.collectAsState()
+            val isDark = darkModePref ?: isSystemInDarkTheme()
+
+            DecoTheme(darkTheme = isDark) {
                 DecoApp()
             }
         }
@@ -178,6 +194,18 @@ fun DecoApp() {
                             )
                         }
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        NavigationDrawerItem(
+                            icon = { Icon(Icons.Outlined.Settings, contentDescription = "Settings") },
+                            label = { Text("Settings") },
+                            selected = false,
+                            onClick = {
+                                isPosSearchActive = false
+                                posViewModel.setSearchQuery("")
+                                appDestination = AppDestination.Settings
+                                scope.launch { drawerState.close() }
+                            },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                        )
                     }
                 }
             ) {
@@ -276,6 +304,23 @@ fun DecoApp() {
         is AppDestination.AllSales -> {
             AllSalesScreen(
                 onBack = { appDestination = AppDestination.Main(PosDestination.ANALYTICS) }
+            )
+        }
+        is AppDestination.Settings -> {
+            SettingScreen(
+                onBack = { appDestination = AppDestination.Main(PosDestination.POS) },
+                onNavigateToPaymentMethods = { appDestination = AppDestination.PaymentMethods },
+                onNavigateToPrinters = { appDestination = AppDestination.Printers }
+            )
+        }
+        is AppDestination.PaymentMethods -> {
+            PaymentMethodScreen(
+                onBack = { appDestination = AppDestination.Settings }
+            )
+        }
+        is AppDestination.Printers -> {
+            PrinterScreen(
+                onBack = { appDestination = AppDestination.Settings }
             )
         }
     }

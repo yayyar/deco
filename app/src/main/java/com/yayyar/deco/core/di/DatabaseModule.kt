@@ -4,6 +4,7 @@ import android.content.Context
 import com.yayyar.deco.core.database.DecoDatabase
 import com.yayyar.deco.core.database.dao.CategoryDao
 import com.yayyar.deco.core.database.dao.OrderDao
+import com.yayyar.deco.core.database.dao.PaymentMethodDao
 import com.yayyar.deco.core.database.dao.ProductDao
 import com.yayyar.deco.core.database.dao.VariantDao
 import dagger.Module
@@ -34,4 +35,7 @@ object DatabaseModule {
 
     @Provides
     fun provideOrderDao(db: DecoDatabase): OrderDao = db.orderDao()
+
+    @Provides
+    fun providePaymentMethodDao(db: DecoDatabase): PaymentMethodDao = db.paymentMethodDao()
 }

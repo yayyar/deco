@@ -8,11 +8,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yayyar.deco.core.database.dao.CategoryDao
 import com.yayyar.deco.core.database.dao.OrderDao
+import com.yayyar.deco.core.database.dao.PaymentMethodDao
 import com.yayyar.deco.core.database.dao.ProductDao
 import com.yayyar.deco.core.database.dao.VariantDao
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.OrderEntity
 import com.yayyar.deco.core.database.entity.OrderItemEntity
+import com.yayyar.deco.core.database.entity.PaymentMethodEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +28,10 @@ import java.util.UUID
         ProductEntity::class,
         ProductVariantEntity::class,
         OrderEntity::class,
-        OrderItemEntity::class
+        OrderItemEntity::class,
+        PaymentMethodEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class DecoDatabase : RoomDatabase() {
@@ -36,6 +39,7 @@ abstract class DecoDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun variantDao(): VariantDao
     abstract fun orderDao(): OrderDao
+    abstract fun paymentMethodDao(): PaymentMethodDao
 
     companion object {
         @Volatile
@@ -102,6 +106,34 @@ abstract class DecoDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `payment_methods` (
+                        `id` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `code` TEXT NOT NULL,
+                        `account_name` TEXT,
+                        `account_number` TEXT,
+                        `qr_code_data` TEXT,
+                        `is_active` INTEGER NOT NULL,
+                        `is_default` INTEGER NOT NULL,
+                        `sort_order` INTEGER NOT NULL,
+                        `created_at` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                """.trimIndent())
+                // Seed initial payment methods for existing installs
+                db.execSQL("""
+                    INSERT OR IGNORE INTO `payment_methods` (`id`, `name`, `code`, `account_name`, `account_number`, `qr_code_data`, `is_active`, `is_default`, `sort_order`, `created_at`)
+                    VALUES 
+                    ('pm_cash', 'Cash', 'CASH', NULL, NULL, NULL, 1, 1, 1, 1700000000000),
+                    ('pm_kpay', 'KBZPay', 'KPAY', 'Store Merchant', '09123456789', NULL, 1, 0, 2, 1700000000001),
+                    ('pm_wave', 'WavePay', 'WAVEPAY', 'Store Merchant', '09987654321', NULL, 1, 0, 3, 1700000000002)
+                """.trimIndent())
+            }
+        }
+
         fun getInstance(context: Context): DecoDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -109,7 +141,7 @@ abstract class DecoDatabase : RoomDatabase() {
                     DecoDatabase::class.java,
                     "deco_pos.db"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING) // High performance WAL mode
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -130,6 +162,12 @@ abstract class DecoDatabase : RoomDatabase() {
             val catDao = db.categoryDao()
             val prodDao = db.productDao()
             val varDao = db.variantDao()
+            val payDao = db.paymentMethodDao()
+
+            val pmCash = PaymentMethodEntity(id = "pm_cash", name = "Cash", code = "CASH", isDefault = true, sortOrder = 1)
+            val pmKpay = PaymentMethodEntity(id = "pm_kpay", name = "KBZPay", code = "KPAY", accountName = "Store Merchant", accountNumber = "09123456789", sortOrder = 2)
+            val pmWave = PaymentMethodEntity(id = "pm_wave", name = "WavePay", code = "WAVEPAY", accountName = "Store Merchant", accountNumber = "09987654321", sortOrder = 3)
+            payDao.insertPaymentMethods(listOf(pmCash, pmKpay, pmWave))
 
             val catDress = CategoryEntity(id = "cat_dress", name = "Dresses / ဂါဝန်", sortOrder = 1)
             val catTop = CategoryEntity(id = "cat_top", name = "Tops & Shirts / အင်္ကျီ", sortOrder = 2)
