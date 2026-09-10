@@ -3,6 +3,7 @@ package com.yayyar.deco.feature.settings
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -96,6 +97,10 @@ fun PrinterScreen(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         viewModel.refreshPairedPrinters(context)
+    }
+
+    BackHandler {
+        onBack()
     }
 
     LaunchedEffect(Unit) {

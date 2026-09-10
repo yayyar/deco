@@ -66,10 +66,11 @@ import com.yayyar.deco.ui.theme.PrimaryLight
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
-    onBack: () -> Unit,
+    onBack: () -> Unit = {},
     onNavigateToPaymentMethods: () -> Unit,
     onNavigateToPrinters: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel(),
+    showTopBar: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val isDarkModePref by viewModel.isDarkMode.collectAsState()
@@ -82,36 +83,10 @@ fun SettingScreen(
 
     var showLanguageDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Settings",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { innerPadding ->
+    val content: @Composable (Modifier) -> Unit = { contentModifier ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = contentModifier
                 .background(MaterialTheme.colorScheme.background)
-                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -231,6 +206,38 @@ fun SettingScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+
+    if (showTopBar) {
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Settings",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            }
+        ) { innerPadding ->
+            content(Modifier.fillMaxSize().padding(innerPadding))
+        }
+    } else {
+        content(modifier.fillMaxSize())
     }
 
     if (showLanguageDialog) {

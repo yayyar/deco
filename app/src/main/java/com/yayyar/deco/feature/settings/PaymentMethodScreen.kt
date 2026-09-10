@@ -1,5 +1,6 @@
 package com.yayyar.deco.feature.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,6 +81,10 @@ fun PaymentMethodScreen(
     var editingMethod by remember { mutableStateOf<PaymentMethodEntity?>(null) }
     var isAddingNew by remember { mutableStateOf(false) }
     var deletingMethod by remember { mutableStateOf<PaymentMethodEntity?>(null) }
+
+    BackHandler {
+        onBack()
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

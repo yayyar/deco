@@ -99,7 +99,8 @@ enum class PosDestination(
 ) {
     POS("Sales", Icons.Outlined.LocalMall),
     INVENTORY("Items", Icons.Outlined.Checkroom),
-    ANALYTICS("Reports", Icons.Outlined.Analytics)
+    ANALYTICS("Reports", Icons.Outlined.Analytics),
+    SETTINGS("Settings", Icons.Outlined.Settings)
 }
 
 sealed interface AppDestination : java.io.Serializable {
@@ -177,7 +178,7 @@ fun DecoApp() {
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                         )
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        PosDestination.entries.forEach { dest ->
+                        PosDestination.entries.filter { it != PosDestination.SETTINGS }.forEach { dest ->
                             NavigationDrawerItem(
                                 icon = { Icon(dest.icon, contentDescription = dest.title) },
                                 label = { Text(dest.title) },
@@ -197,11 +198,11 @@ fun DecoApp() {
                         NavigationDrawerItem(
                             icon = { Icon(Icons.Outlined.Settings, contentDescription = "Settings") },
                             label = { Text("Settings") },
-                            selected = false,
+                            selected = current.destination == PosDestination.SETTINGS,
                             onClick = {
                                 isPosSearchActive = false
                                 posViewModel.setSearchQuery("")
-                                appDestination = AppDestination.Settings
+                                appDestination = AppDestination.Main(PosDestination.SETTINGS)
                                 scope.launch { drawerState.close() }
                             },
                             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -252,6 +253,8 @@ fun DecoApp() {
                             onNavigateToCategories = { appDestination = AppDestination.CategoryList },
                             onNavigateToAllSellingProducts = { appDestination = AppDestination.AllSellingProducts },
                             onNavigateToAllSales = { appDestination = AppDestination.AllSales },
+                            onNavigateToPaymentMethods = { appDestination = AppDestination.PaymentMethods },
+                            onNavigateToPrinters = { appDestination = AppDestination.Printers },
                             topBar = if (isPosTablet) topBarContent else ({}),
                             modifier = if (isPosTablet) Modifier.fillMaxSize() else Modifier.padding(innerPadding)
                         )
@@ -315,12 +318,12 @@ fun DecoApp() {
         }
         is AppDestination.PaymentMethods -> {
             PaymentMethodScreen(
-                onBack = { appDestination = AppDestination.Settings }
+                onBack = { appDestination = AppDestination.Main(PosDestination.SETTINGS) }
             )
         }
         is AppDestination.Printers -> {
             PrinterScreen(
-                onBack = { appDestination = AppDestination.Settings }
+                onBack = { appDestination = AppDestination.Main(PosDestination.SETTINGS) }
             )
         }
     }
@@ -451,6 +454,8 @@ private fun AppScreenContent(
     onNavigateToCategories: () -> Unit,
     onNavigateToAllSellingProducts: () -> Unit = {},
     onNavigateToAllSales: () -> Unit = {},
+    onNavigateToPaymentMethods: () -> Unit = {},
+    onNavigateToPrinters: () -> Unit = {},
     topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -471,6 +476,12 @@ private fun AppScreenContent(
             viewModel = analyticsViewModel,
             onNavigateToAllSellingProducts = onNavigateToAllSellingProducts,
             onNavigateToAllSales = onNavigateToAllSales,
+            modifier = modifier
+        )
+        PosDestination.SETTINGS -> SettingScreen(
+            onNavigateToPaymentMethods = onNavigateToPaymentMethods,
+            onNavigateToPrinters = onNavigateToPrinters,
+            showTopBar = false,
             modifier = modifier
         )
     }
