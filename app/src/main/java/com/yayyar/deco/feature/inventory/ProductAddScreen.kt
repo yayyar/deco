@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,15 +86,15 @@ fun ProductAddScreen(
 
     data class VariantDraft(
         val id: String = UUID.randomUUID().toString(),
-        var size: String = "Free Size",
-        var colorPattern: String = "Default",
-        var sku: String = "",
-        var barcode: String = "",
-        var basePrice: String = "0",
-        var sellPrice: String = "15000",
-        var wholesalePrice: String = "13000",
-        var stockQty: String = "10",
-        var lowStockThreshold: String = "5"
+        val size: String = "Free Size",
+        val colorPattern: String = "Default",
+        val sku: String = "",
+        val barcode: String = "",
+        val basePrice: String = "0",
+        val sellPrice: String = "15000",
+        val wholesalePrice: String = "13000",
+        val stockQty: String = "10",
+        val lowStockThreshold: String = "5"
     )
 
     val variants = remember {
@@ -159,7 +160,8 @@ fun ProductAddScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isEditing) "Edit Product" else "Add New Product"
+                        text = if (isEditing) "Edit Product" else "New Product",
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
@@ -171,56 +173,44 @@ fun ProductAddScreen(
                     }
                 },
                 actions = {
-                    TextButton(
-                        onClick = handleSave,
-                        enabled = isFormValid
-                    ) {
-                        Text(
-                            text = "SAVE",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                        )
+                    if (isEditing && onDelete != null) {
+                        IconButton(onClick = { showDeleteConfirmation = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Product",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )
         },
         bottomBar = {
-            if (isEditing && onDelete != null) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    tonalElevation = 2.dp,
-                    shadowElevation = 4.dp
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    OutlinedButton(
+                        onClick = onBack,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        OutlinedButton(
-                            onClick = { showDeleteConfirmation = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            ),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete Product",
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = "Delete",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 15.sp
-                            )
-                        }
+                        Text("Cancel")
+                    }
+                    Button(
+                        onClick = handleSave,
+                        enabled = isFormValid,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(if (isEditing) "Update" else "Save")
                     }
                 }
             }
@@ -247,7 +237,7 @@ fun ProductAddScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Product Name") },
+                    label = { Text("Product Name *") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp)
@@ -257,20 +247,19 @@ fun ProductAddScreen(
             item {
                 ExposedDropdownMenuBox(
                     expanded = categoryDropdownExpanded,
-                    onExpandedChange = { categoryDropdownExpanded = !categoryDropdownExpanded },
-                    modifier = Modifier.fillMaxWidth()
+                    onExpandedChange = { categoryDropdownExpanded = it }
                 ) {
-                    val currentCategoryName = categories.find { it.id == selectedCategoryId }?.name ?: "Select Category"
+                    val currentCategoryName = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Select Category"
                     OutlinedTextField(
                         value = currentCategoryName,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Category") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
-                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
                             .fillMaxWidth()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                        shape = RoundedCornerShape(12.dp)
                     )
                     ExposedDropdownMenu(
                         expanded = categoryDropdownExpanded,
@@ -293,9 +282,10 @@ fun ProductAddScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description /  Notes") },
+                    label = { Text("Description (Optional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3,
+                    minLines = 2,
+                    maxLines = 4,
                     shape = RoundedCornerShape(12.dp)
                 )
             }
@@ -334,7 +324,7 @@ fun ProductAddScreen(
                 }
             }
 
-            itemsIndexed(variants) { index, variant ->
+            itemsIndexed(variants, key = { _, v -> v.id }) { index, variant ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -372,7 +362,7 @@ fun ProductAddScreen(
                         ) {
                             OutlinedTextField(
                                 value = variant.size,
-                                onValueChange = { variant.size = it },
+                                onValueChange = { variants[index] = variant.copy(size = it) },
                                 label = { Text("Size (S, M, Free)") },
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
@@ -380,7 +370,7 @@ fun ProductAddScreen(
                             )
                             OutlinedTextField(
                                 value = variant.colorPattern,
-                                onValueChange = { variant.colorPattern = it },
+                                onValueChange = { variants[index] = variant.copy(colorPattern = it) },
                                 label = { Text("Color / Pattern") },
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
@@ -394,11 +384,16 @@ fun ProductAddScreen(
                         ) {
                             OutlinedTextField(
                                 value = variant.sellPrice,
-                                onValueChange = { 
-                                    variant.sellPrice = it
-                                    if (variant.wholesalePrice.isBlank()) {
-                                        variant.wholesalePrice = it
+                                onValueChange = { newPrice ->
+                                    val newWholesale = if (variant.wholesalePrice.isBlank() || variant.wholesalePrice == variant.sellPrice) {
+                                        newPrice
+                                    } else {
+                                        variant.wholesalePrice
                                     }
+                                    variants[index] = variant.copy(
+                                        sellPrice = newPrice,
+                                        wholesalePrice = newWholesale
+                                    )
                                 },
                                 label = { Text("Retail Price (Ks) *") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -408,7 +403,7 @@ fun ProductAddScreen(
                             )
                             OutlinedTextField(
                                 value = variant.wholesalePrice,
-                                onValueChange = { variant.wholesalePrice = it },
+                                onValueChange = { variants[index] = variant.copy(wholesalePrice = it) },
                                 label = { Text("Wholesale Price (Ks)") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
@@ -423,7 +418,7 @@ fun ProductAddScreen(
                         ) {
                             OutlinedTextField(
                                 value = variant.stockQty,
-                                onValueChange = { variant.stockQty = it },
+                                onValueChange = { variants[index] = variant.copy(stockQty = it) },
                                 label = { Text("Stock Qty") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
@@ -432,7 +427,7 @@ fun ProductAddScreen(
                             )
                             OutlinedTextField(
                                 value = variant.lowStockThreshold,
-                                onValueChange = { variant.lowStockThreshold = it },
+                                onValueChange = { variants[index] = variant.copy(lowStockThreshold = it) },
                                 label = { Text("Low Alert Qty") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
@@ -443,7 +438,7 @@ fun ProductAddScreen(
 
                         OutlinedTextField(
                             value = variant.barcode,
-                            onValueChange = { variant.barcode = it },
+                            onValueChange = { variants[index] = variant.copy(barcode = it) },
                             label = { Text("Barcode / SKU") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
