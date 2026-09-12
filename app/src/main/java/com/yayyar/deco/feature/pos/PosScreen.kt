@@ -85,6 +85,7 @@ import com.yayyar.deco.core.database.entity.ProductVariantEntity
 import com.yayyar.deco.core.database.model.ProductWithVariants
 import com.yayyar.deco.core.printer.ReceiptData
 import com.yayyar.deco.core.ui.components.CurrencyText
+import com.yayyar.deco.core.ui.components.ProductThumbnail
 import com.yayyar.deco.core.ui.components.StockBadge
 import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentRed
@@ -328,34 +329,43 @@ private fun ProductCatalogCard(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = productWithVariants.product.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                maxLines = 2
+            // Product Thumbnail (falls back to first variant photo)
+            val firstVariantImg = productWithVariants.variants.firstOrNull { !it.imageUri.isNullOrBlank() }?.imageUri
+            ProductThumbnail(
+                imageUri = productWithVariants.product.imageUri,
+                fallbackImageUri = firstVariantImg,
+                size = 56.dp,
+                shape = RoundedCornerShape(10.dp)
             )
-            if (productWithVariants.category != null) {
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = productWithVariants.category.name,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            }
 
-            Spacer(Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
+                Text(
+                    text = productWithVariants.product.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    maxLines = 2
+                )
+                if (productWithVariants.category != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = productWithVariants.category.name,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(Modifier.height(6.dp))
+
                 if (productWithVariants.variants.isNotEmpty()) {
                     if (minPrice == maxPrice) {
                         CurrencyText(
@@ -371,19 +381,42 @@ private fun ProductCatalogCard(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                } else {
-                    Text(
-                        text = "No variants",
-                        fontSize = 11.sp,
-                        color = Color.Gray
-                    )
                 }
 
-                Text(
-                    text = "${productWithVariants.variants.size} var",
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    if (productWithVariants.variants.isNotEmpty()) {
+//                        if (minPrice == maxPrice) {
+//                            CurrencyText(
+//                                amount = minPrice,
+//                                fontSize = 13.sp,
+//                                color = MaterialTheme.colorScheme.primary
+//                            )
+//                        } else {
+//                            Text(
+//                                text = "${Formatters.formatMmk(minPrice)} ~ ${Formatters.formatMmk(maxPrice)}",
+//                                fontSize = 11.sp,
+//                                fontWeight = FontWeight.SemiBold,
+//                                color = MaterialTheme.colorScheme.primary
+//                            )
+//                        }
+//                    } else {
+//                        Text(
+//                            text = "No variants",
+//                            fontSize = 11.sp,
+//                            color = Color.Gray
+//                        )
+//                    }
+//
+//                    Text(
+//                        text = "${productWithVariants.variants.size} var",
+//                        fontSize = 11.sp,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+//                    )
+//                }
             }
         }
     }
@@ -397,6 +430,10 @@ private fun ProductVariantSelectionDialog(
     onDismiss: () -> Unit,
     onSelectVariant: (ProductVariantEntity) -> Unit
 ) {
+    var previewVariant by remember {
+        mutableStateOf(productWithVariants.variants.firstOrNull())
+    }
+
     androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -410,16 +447,24 @@ private fun ProductVariantSelectionDialog(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
+                // Header with Product/Variant Image
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    ProductThumbnail(
+                        imageUri =  productWithVariants.product.imageUri, //previewVariant?.imageUri,
+                        fallbackImageUri = previewVariant?.imageUri,
+                        size = 64.dp,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = productWithVariants.product.name,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         if (productWithVariants.category != null) {
@@ -432,6 +477,7 @@ private fun ProductVariantSelectionDialog(
                             )
                         }
                     }
+
                     if (saleType == SaleType.WHOLESALE) {
                         Surface(
                             color = MaterialTheme.colorScheme.primaryContainer,
@@ -448,7 +494,7 @@ private fun ProductVariantSelectionDialog(
                     }
                 }
 
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(14.dp))
 
                 if (productWithVariants.variants.isEmpty()) {
                     Box(
@@ -476,37 +522,50 @@ private fun ProductVariantSelectionDialog(
 
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(10.dp))
                                     .background(
                                         if (isOutOfStock) Color(0xFFE2E8F0)
                                         else MaterialTheme.colorScheme.primaryContainer
                                     )
                                     .clickable(enabled = !isOutOfStock) {
+                                        previewVariant = variant
                                         onSelectVariant(variant)
                                     }
-                                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                                    .padding(horizontal = 10.dp, vertical = 8.dp)
                             ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        text = variant.displayName,
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                    Spacer(Modifier.height(2.dp))
-                                    CurrencyText(
-                                        amount = priceToShow,
-                                        fontSize = 12.sp,
-                                        color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
-                                    )
-                                    if (variant.isLowStock || isOutOfStock) {
-                                        Spacer(Modifier.height(2.dp))
-                                        Text(
-                                            text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
-                                            fontSize = 10.sp,
-                                            color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
-                                            fontWeight = FontWeight.SemiBold
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    if (!variant.imageUri.isNullOrBlank()) {
+                                        ProductThumbnail(
+                                            imageUri = variant.imageUri,
+                                            size = 28.dp,
+                                            shape = RoundedCornerShape(6.dp)
                                         )
+                                    }
+
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = variant.displayName,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(Modifier.height(1.dp))
+                                        CurrencyText(
+                                            amount = priceToShow,
+                                            fontSize = 11.sp,
+                                            color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
+                                        )
+                                        if (variant.isLowStock || isOutOfStock) {
+                                            Text(
+                                                text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
+                                                fontSize = 9.sp,
+                                                color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -612,10 +671,18 @@ private fun CartPane(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(10.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                // Variant/Product Thumbnail
+                                ProductThumbnail(
+                                    imageUri = item.variant.imageUri,
+                                    fallbackImageUri = item.product.imageUri,
+                                    size = 44.dp,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = item.product.name,
@@ -655,7 +722,7 @@ private fun CartPane(
 
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     IconButton(
                                         onClick = { onUpdateQty(item.variant.id, item.quantity - 1) },

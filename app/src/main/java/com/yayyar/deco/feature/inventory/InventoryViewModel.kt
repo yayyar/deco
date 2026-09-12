@@ -2,6 +2,7 @@ package com.yayyar.deco.feature.inventory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yayyar.deco.core.common.ImageStorageHelper
 import com.yayyar.deco.core.data.repository.CategoryRepository
 import com.yayyar.deco.core.data.repository.ProductRepository
 import com.yayyar.deco.core.database.entity.CategoryEntity
@@ -97,6 +98,11 @@ class InventoryViewModel @Inject constructor(
 
     fun deleteProduct(product: ProductEntity) {
         viewModelScope.launch {
+            val variants = productRepository.getVariantsByProductId(product.id)
+            ImageStorageHelper.deleteImageFile(product.imageUri)
+            variants.forEach { v ->
+                ImageStorageHelper.deleteImageFile(v.imageUri)
+            }
             productRepository.deleteProductWithVariants(product)
         }
     }

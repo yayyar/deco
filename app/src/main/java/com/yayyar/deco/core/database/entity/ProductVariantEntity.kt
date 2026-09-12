@@ -44,6 +44,8 @@ data class ProductVariantEntity(
     val stockQty: Int = 0,
     @ColumnInfo(name = "low_stock_threshold")
     val lowStockThreshold: Int = 5,
+    @ColumnInfo(name = "image_uri")
+    val imageUri: String? = null,
     @ColumnInfo(name = "sync_status")
     val syncStatus: Int = 1,
     @ColumnInfo(name = "updated_at")

@@ -4,9 +4,9 @@
 
 ## 1. Executive Summary
 
-**DeCo** is a modern, offline-first Point-of-Sale (POS) and Inventory Management Android application built for retail fashion boutiques and apparel shops. The app is specifically tailored for the Myanmar retail market, featuring native Myanmar Kyat (MMK) currency formatting, bilingual support (English & Burmese Unicode), dual selling modes (Retail vs. Wholesale), customizable payment channels (Cash, KBZPay, WavePay, AYA Pay, Custom Wallets, Split payments), Bluetooth ESC/POS thermal receipt printing, draft/parked sales management, granular sales intelligence, and instant digital receipt slip sharing via social/chat apps (Viber, Telegram, Messenger).
+**DeCo** is a modern, offline-first Point-of-Sale (POS) and Inventory Management Android application built for retail fashion boutiques and apparel shops. The app is specifically tailored for the Myanmar retail market, featuring native Myanmar Kyat (MMK) currency formatting, bilingual support (English & Burmese Unicode), dual selling modes (Retail vs. Wholesale), product and variant-level photo management, customizable payment channels (Cash, KBZPay, WavePay, AYA Pay, Custom Wallets, Split payments), Bluetooth ESC/POS thermal receipt printing, draft/parked sales management, granular sales intelligence, and instant digital receipt slip sharing via social/chat apps (Viber, Telegram, Messenger).
 
-The codebase is built entirely with **Kotlin**, **Jetpack Compose (Material 3)**, **Room Database**, **Kotlin Coroutines & StateFlow**, and **Dagger Hilt** following modern Android Architecture and Clean Architecture principles.
+The codebase is built entirely with **Kotlin**, **Jetpack Compose (Material 3)**, **Room Database**, **Kotlin Coroutines & StateFlow**, **Coil**, and **Dagger Hilt** following modern Android Architecture and Clean Architecture principles.
 
 ---
 
@@ -16,8 +16,9 @@ The codebase is built entirely with **Kotlin**, **Jetpack Compose (Material 3)**
 | :--- | :--- | :--- | :--- |
 | **Language** | Kotlin | 2.2.10 | Modern static typing & coroutine primitives |
 | **UI Toolkit** | Jetpack Compose (BOM) | 2026.02.01 | Declarative UI, Material 3 design system |
+| **Image Loading** | Coil Compose | 2.7.0 | Async image loading, caching, crossfade, and fallback handling |
 | **Dependency Injection** | Dagger Hilt | 2.55 | Compile-time dependency injection |
-| **Local Database** | Room (SQLite) | 2.7.2 | Reactive persistence, WAL mode, migrations (Schema v4) |
+| **Local Database** | Room (SQLite) | 2.7.2 | Reactive persistence, WAL mode, migrations (Schema v5) |
 | **Asynchronous Stream** | Kotlinx Coroutines & Flow | 1.9.0 | Reactive UDF pipelines and background processing |
 | **Preferences & Settings** | SharedPreferences / StateFlow | Core KTX | Persistent application & hardware configurations |
 | **Architecture** | MVVM + Unidirectional Data Flow (UDF) | Clean Architecture | Clear separation between Core, Data, and Feature layers |
@@ -36,6 +37,7 @@ com.yayyar.deco/
 ├── core/                               # Shared modules and infrastructural components
 │   ├── common/
 │   │   ├── Formatters.kt               # Currency (MMK), date/time, and receipt number formatters
+│   │   ├── ImageStorageHelper.kt       # Offline image compression, internal storage persistence & file cleanup
 │   │   └── Resource.kt                 # Generic State sealed class (Success, Error, Loading)
 │   ├── data/
 │   │   └── repository/
@@ -45,7 +47,7 @@ com.yayyar.deco/
 │   │       ├── PreferencesRepository.kt   # Theme mode, language & default printer configuration
 │   │       └── ProductRepository.kt    # Product & Variant management contracts
 │   ├── database/
-│   │   ├── DecoDatabase.kt             # Room database configuration (v4), WAL mode, migrations & seed data
+│   │   ├── DecoDatabase.kt             # Room database configuration (v5), WAL mode, migrations & seed data
 │   │   ├── dao/
 │   │   │   ├── CategoryDao.kt          # Reactive category queries & mutations
 │   │   │   ├── OrderDao.kt             # Order records, daily aggregations, drafts & sales reporting
@@ -56,8 +58,8 @@ com.yayyar.deco/
 │   │   │   ├── CategoryEntity.kt       # 'categories' table definition
 │   │   │   ├── OrderEntity.kt          # 'orders' and 'order_items' table definitions
 │   │   │   ├── PaymentMethodEntity.kt  # 'payment_methods' table definition
-│   │   │   ├── ProductEntity.kt        # 'products' table definition
-│   │   │   └── ProductVariantEntity.kt # 'product_variants' table definition
+│   │   │   ├── ProductEntity.kt        # 'products' table definition (image_uri)
+│   │   │   └── ProductVariantEntity.kt # 'product_variants' table definition (image_uri, wholesale_price)
 │   │   └── model/
 │   │       ├── OrderWithItems.kt       # 1-to-N Relation model for Order + OrderItems
 │   │       ├── ProductWithVariants.kt  # 1-to-N Relation model for Product + Variants + Category
@@ -73,7 +75,8 @@ com.yayyar.deco/
 │   │   └── SlipShareManager.kt         # FileProvider image export for Viber/Messenger/Telegram
 │   └── ui/
 │       └── components/
-│           └── CommonComponents.kt     # Shared UI elements (badges, state screens, currency text, chips)
+│           ├── CommonComponents.kt     # Shared UI elements (badges, state screens, currency text, chips)
+│           └── ProductThumbnail.kt     # Coil SubcomposeAsyncImage component with fallback waterfall
 │
 ├── feature/                            # Feature-driven UI and ViewModels
 │   ├── analytics/
@@ -89,14 +92,14 @@ com.yayyar.deco/
 │   │   ├── CategoryManageDialog.kt     # Quick category management popup dialog
 │   │   ├── InventoryScreen.kt          # Main inventory overview (List/Grid view, Low stock toggle)
 │   │   ├── InventoryViewModel.kt       # Filter, search, and stock level state management
-│   │   ├── ProductAddScreen.kt         # Multi-variant product creator & editor (Size, Color, SKU, Barcode)
-│   │   ├── ProductListScreen.kt        # Comprehensive product inventory list
+│   │   ├── ProductAddScreen.kt         # Multi-variant product builder with hero & variant photo pickers
+│   │   ├── ProductListScreen.kt        # Comprehensive product inventory list with image thumbnails
 │   │   └── StockAdjustmentDialog.kt    # Instant atomic stock increment/decrement dialog
 │   ├── pos/
 │   │   ├── CheckoutDialog.kt           # Payment modal (Cash, KPay, WavePay, Custom methods, Split, Discounts)
 │   │   ├── DraftSalesDialog.kt         # Parked/Draft sales manager (resume cart, delete draft, badge counter)
 │   │   ├── PosModels.kt                # CartState, CartItem, SaleType (RETAIL/WHOLESALE), DiscountType models
-│   │   ├── PosScreen.kt                # Responsive POS layout (Master-detail on Tablet, Flow on Phone)
+│   │   ├── PosScreen.kt                # Responsive POS layout, catalog thumbnails, variant modal & cart images
 │   │   ├── PosViewModel.kt             # Cart operations, barcode search, drafts, wholesale & checkout orchestration
 │   │   └── ReceiptSuccessDialog.kt     # Post-checkout modal with Print & Share actions
 │   └── settings/
@@ -118,7 +121,7 @@ com.yayyar.deco/
 
 ## 4. Database Architecture & Schema Design
 
-The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, configured with **Write-Ahead Logging (WAL)** for high concurrency and transaction safety.
+The application uses **Room Database (`deco_pos.db`)** at **Schema Version 5**, configured with **Write-Ahead Logging (WAL)** for high concurrency and transaction safety.
 
 ### 4.1. Entity Relationship Diagram (ERD)
 
@@ -130,8 +133,9 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, 
 │ name             │             │ category_id (FK) │
 │ sort_order       │             │ name             │
 │ sync_status      │             │ description      │
-│ updated_at       │             │ is_active        │
-└──────────────────┘             │ sync_status      │
+│ updated_at       │             │ image_uri        │
+└──────────────────┘             │ is_active        │
+                                 │ sync_status      │
                                  │ updated_at       │
                                  └─────────┬────────┘
                                            │ 1
@@ -151,6 +155,7 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, 
                                  │ wholesale_price  │
                                  │ stock_qty        │
                                  │ low_stock_thresh │
+                                 │ image_uri        │
                                  │ sync_status      │
                                  │ updated_at       │
                                  └─────────┬────────┘
@@ -203,13 +208,13 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, 
 #### 2. `products`
 - **Primary Key**: `id: String` (UUID)
 - **Foreign Key**: `category_id` -> `categories(id)` ON DELETE `SET NULL`.
-- **Fields**: `name`, `categoryId`, `description`, `imageUri`, `isActive`, `syncStatus`, `updatedAt`.
+- **Fields**: `name`, `categoryId`, `description`, `imageUri` (Local file URI), `isActive`, `syncStatus`, `updatedAt`.
 - **Indices**: `name`, `category_id`, `sync_status`.
 
 #### 3. `product_variants`
 - **Primary Key**: `id: String` (UUID)
 - **Foreign Key**: `product_id` -> `products(id)` ON DELETE `CASCADE`.
-- **Fields**: `productId`, `sku`, `barcode` (UNIQUE), `size` (e.g., S, M, L, Free), `colorPattern`, `basePrice`, `sellPrice` (Retail Price), `wholesalePrice` (Wholesale Price), `stockQty`, `lowStockThreshold`, `syncStatus`, `updatedAt`.
+- **Fields**: `productId`, `sku`, `barcode` (UNIQUE), `size` (e.g. S, M, L, Free), `colorPattern`, `basePrice`, `sellPrice` (Retail Price), `wholesalePrice` (Wholesale Price), `stockQty`, `lowStockThreshold`, `imageUri` (Variant-specific photo URI), `syncStatus`, `updatedAt`.
 - **Indices**: `product_id`, `barcode`, `sku`, `sync_status`.
 
 #### 4. `orders`
@@ -231,6 +236,7 @@ The application uses **Room Database (`deco_pos.db`)** at **Schema Version 4**, 
 - **`MIGRATION_1_2`**: Restructured `orders` table to remove deprecated shift references, established unified order indexing, and removed legacy shift tables.
 - **`MIGRATION_2_3`**: Created `payment_methods` table for dynamic payment channel configuration and seeded initial payment methods (`CASH`, `KPAY`, `WAVEPAY`).
 - **`MIGRATION_3_4`**: Added `wholesale_price` column to `product_variants` (backfilling from `sell_price`), and added `sale_type` (`RETAIL` / `WHOLESALE`) column to `orders`.
+- **`MIGRATION_4_5`**: Added `image_uri` column to `product_variants` to support variant-specific photos (e.g. distinct color swatches/patterns).
 
 ### 4.4. Offline-Ready Sync Status Flags
 Every core entity contains a `sync_status` field designed for cloud synchronization:
@@ -254,33 +260,38 @@ The application uses an in-place sealed interface navigation model with complete
   - `Settings`, `PaymentMethods`, `Printers`
 - All destinations and data models implement `java.io.Serializable` to guarantee seamless persistence in Android's `SavedStateRegistry`.
 
-### 5.2. POS Checkout & Atomic Stock Deduction Flow
+### 5.2. Product & Variant Image Management Pipeline
+
 ```
-User selects items from Catalog / Scans Barcode (Retail or Wholesale Mode)
-                │
-                ▼
-Cart updates (Calculates unitPrice dynamically based on SaleType & validates stockQty)
-                │
-                ▼
-Checkout Dialog opened (Discount, Delivery fee, Payment type selection & Notes)
-                │
-                ├──▶ Option: "Save as Draft" -> Inserts order as status 'DRAFT' (Holds cart for later)
-                │
-                ▼
-OrderRepository.checkoutOrder(order, items)
-                │
-                ├──▶ [Inside database.withTransaction]
-                │    1. Deduct stock atomically: UPDATE product_variants SET stock_qty = stock_qty - qty WHERE id = ? AND stock_qty >= qty
-                │    2. If affected rows == 0 -> Rollback & Throw "Insufficient stock"
-                │    3. Insert OrderEntity into 'orders' (status = 'COMPLETED')
-                │    4. Insert OrderItemEntity records into 'order_items'
-                │    5. If restoring a draft order -> Delete original draft order and draft items
-                │
-                ▼
-ReceiptSuccessDialog displayed
-    ├──▶ Bluetooth ESC/POS Print (via PrinterManager / default configured printer)
-    └──▶ Share Image Slip (via SlipShareManager & Android Sharesheet)
+User selects Photo via Android PhotoPicker (PickVisualMedia)
+                         │
+                         ▼
+           ImageStorageHelper.saveImageFromUri()
+   ┌─────────────────────────────────────────────────────┐
+   │ 1. Decodes & downsamples image (max 1080px)         │
+   │ 2. Corrects EXIF camera orientation                 │
+   │ 3. Compresses to JPEG (85% quality)                 │
+   │ 4. Persists to internal storage:                    │
+   │    filesDir/product_images/prod_xxx.jpg or var_xxx  │
+   └─────────────────────────────────────────────────────┘
+                         │
+                         ▼
+        Room Database updates (ProductEntity / Variant)
+                         │
+                         ▼
+      Coil SubcomposeAsyncImage with Fallback Waterfall:
+  Variant Photo ──▶ Product Hero Photo ──▶ Vector Placeholder
 ```
+
+1. **Fallback Resolution Waterfall**:
+   - **Variant Photo**: If a variant has an assigned photo (e.g. *Red Floral*), it is displayed.
+   - **Product Hero Photo**: If a variant has no photo, the UI falls back to the parent product's hero photo.
+   - **Fashion Vector Placeholder**: If neither is set, a themed `Icons.Default.Checkroom` placeholder is displayed with subtle container backgrounds.
+2. **Offline-First Storage**:
+   - Copying picked images into the private `filesDir/product_images/` ensures images are 100% offline-ready, immune to temporary URI permission expiration across reboots, and automatically cleared on product deletion.
+3. **Dynamic POS Preview**:
+   - In `ProductVariantSelectionDialog`, selecting different size/color variant chips dynamically updates the preview image in real-time.
+   - In the Active Cart pane, the exact variant photo is displayed alongside line items.
 
 ### 5.3. Dual Selling Modes (Retail vs. Wholesale)
 1. **Model Representation**: `SaleType.RETAIL` and `SaleType.WHOLESALE` in `PosModels.kt`.
@@ -343,9 +354,9 @@ Standard thermal POS printers (58mm / 80mm ESC/POS) lack built-in Burmese Unicod
 1. **Dual-Pane Tablet & Single-Pane Phone Adaptive Layout**:
    - On screens $\ge 720\text{dp}$ width with smallest screen width $\ge 530\text{dp}$ (tablets in landscape), the POS interface dynamically splits into a side-by-side Catalog Grid and Active Cart pane.
    - On mobile screens, orientation is locked to portrait with smooth collapsible sliding bottom panels to optimize viewport space.
-2. **Multi-Variant Apparel Matrix**:
+2. **Multi-Variant Apparel Matrix with Photo Support**:
    - Products support arbitrary combinations of Sizes (S, M, L, XL, Free Size) and Color/Patterns (e.g., Floral Red, Cat Graphic White).
-   - Each variant possesses its own barcode, SKU, cost price, sell price, wholesale price, and real-time inventory count.
+   - Each variant possesses its own photo, barcode, SKU, cost price, sell price, wholesale price, and real-time inventory count.
 3. **Barcode Scanning Support**:
    - Instant search bar listening for barcode inputs from external Bluetooth/USB laser scanners and software keyboards.
 4. **Dynamic Myanmar Payment Matrix**:
@@ -387,3 +398,4 @@ The project contains comprehensive unit tests verifying calculations, hardware e
 - **Database Schema Changes**: Always increment `version` in `DecoDatabase` and provide explicit `Migration(from, to)` objects rather than relying on destructive fallbacks.
 - **Stock Updates**: Never modify `stock_qty` in memory before writing; always use the atomic SQL methods `deductStockAtomic` and `restockAtomic` inside transactions to prevent race conditions during checkout.
 - **Preferences & Hardware State**: Store persistent user configurations through `PreferencesRepository` using reactive `StateFlow` primitives to ensure instant UI reactivity across all composables.
+- **Image Handling**: Always compress and persist user-selected images into internal storage (`ImageStorageHelper`) rather than storing transient `content://` URIs.

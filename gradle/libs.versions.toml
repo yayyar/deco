@@ -15,8 +15,11 @@ navigationCompose = "2.8.8"
 coroutines = "1.9.0"
 hilt = "2.55"
 hiltNavigationCompose = "1.2.0"
+# Coil Image Loading
+coil = "2.7.0"
 
 [libraries]
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

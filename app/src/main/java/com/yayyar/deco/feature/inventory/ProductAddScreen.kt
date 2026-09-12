@@ -56,8 +56,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.database.entity.CategoryEntity
 import com.yayyar.deco.core.database.entity.ProductEntity
+import androidx.compose.ui.graphics.Color
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.SubcomposeAsyncImage
+import com.yayyar.deco.core.common.ImageStorageHelper
+import com.yayyar.deco.core.ui.components.ProductThumbnail
+import kotlinx.coroutines.launch
 import com.yayyar.deco.core.database.model.ProductWithVariants
+import java.io.File
 import java.util.UUID
 
 data class VariantDraft(
@@ -70,7 +91,8 @@ data class VariantDraft(
     val sellPrice: String = "15000",
     val wholesalePrice: String = "13000",
     val stockQty: String = "10",
-    val lowStockThreshold: String = "5"
+    val lowStockThreshold: String = "5",
+    val imageUri: String? = null
 )
 
 private val NumberKeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -88,17 +110,34 @@ fun ProductAddScreen(
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = onBack)
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val isEditing = productWithVariants != null
     val productId = remember { productWithVariants?.product?.id ?: UUID.randomUUID().toString() }
     var name by remember { mutableStateOf(productWithVariants?.product?.name ?: "") }
     var description by remember { mutableStateOf(productWithVariants?.product?.description ?: "") }
+    var imageUri by remember { mutableStateOf(productWithVariants?.product?.imageUri) }
     var selectedCategoryId by remember {
         mutableStateOf(productWithVariants?.product?.categoryId ?: categories.firstOrNull()?.id)
     }
 
     var categoryDropdownExpanded by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    // Launcher for main product image
+    val productPhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            coroutineScope.launch {
+                val savedPath = ImageStorageHelper.saveImageFromUri(context, it, prefix = "prod_${productId.take(8)}")
+                if (savedPath != null) {
+                    imageUri = savedPath
+                }
+            }
+        }
+    }
 
     val variants = remember {
         mutableStateListOf<VariantDraft>().apply {
@@ -115,7 +154,8 @@ fun ProductAddScreen(
                             sellPrice = it.sellPrice.toInt().toString(),
                             wholesalePrice = (if (it.wholesalePrice > 0) it.wholesalePrice else it.sellPrice).toInt().toString(),
                             stockQty = it.stockQty.toString(),
-                            lowStockThreshold = it.lowStockThreshold.toString()
+                            lowStockThreshold = it.lowStockThreshold.toString(),
+                            imageUri = it.imageUri
                         )
                     }
                 )
@@ -137,7 +177,8 @@ fun ProductAddScreen(
                 id = productId,
                 name = name.trim(),
                 categoryId = selectedCategoryId,
-                description = description.trim().ifBlank { null }
+                description = description.trim().ifBlank { null },
+                imageUri = imageUri
             )
             val variantEntities = variants.map { v ->
                 val retail = v.sellPrice.toDoubleOrNull() ?: 0.0
@@ -153,7 +194,8 @@ fun ProductAddScreen(
                     sellPrice = retail,
                     wholesalePrice = wholesale,
                     stockQty = v.stockQty.toIntOrNull() ?: 0,
-                    lowStockThreshold = v.lowStockThreshold.toIntOrNull() ?: 5
+                    lowStockThreshold = v.lowStockThreshold.toIntOrNull() ?: 5,
+                    imageUri = v.imageUri
                 )
             }
             onSave(product, variantEntities)
@@ -254,6 +296,107 @@ fun ProductAddScreen(
                 )
             }
 
+            // Main Product Photo Picker Card
+            item(contentType = "product_image_picker") {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(CardShape)
+                        .clickable {
+                            productPhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    shape = CardShape,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+                    )
+                ) {
+                    if (!imageUri.isNullOrBlank()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(170.dp)
+                        ) {
+                            SubcomposeAsyncImage(
+                                model = if (imageUri!!.startsWith("http") || imageUri!!.startsWith("content://")) imageUri else File(imageUri!!),
+                                contentDescription = "Product Photo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            // Overlay action buttons
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.BottomCenter)
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        productPhotoPickerLauncher.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CameraAlt,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Change Photo", color = Color.White, fontSize = 12.sp)
+                                }
+
+                                IconButton(
+                                    onClick = { imageUri = null },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Delete,
+                                        contentDescription = "Remove Photo",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp, horizontal = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(54.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddPhotoAlternate,
+                                    contentDescription = "Add Photo",
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                            Text(
+                                text = "Add Main Product Photo",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+            }
+
             item(contentType = "product_name") {
                 OutlinedTextField(
                     value = name,
@@ -327,7 +470,7 @@ fun ProductAddScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Sizes, colors/patterns, pricing & inventory stock",
+                            text = "Sizes, colors/patterns, photos, pricing & inventory stock",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -354,6 +497,7 @@ fun ProductAddScreen(
                     index = index,
                     totalVariants = variants.size,
                     variant = variant,
+                    fallbackProductImageUri = imageUri,
                     onUpdate = { updatedVariant ->
                         variants[index] = updatedVariant
                     },
@@ -395,10 +539,31 @@ private fun VariantCardItem(
     index: Int,
     totalVariants: Int,
     variant: VariantDraft,
+    fallbackProductImageUri: String? = null,
     onUpdate: (VariantDraft) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val variantPhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            coroutineScope.launch {
+                val savedPath = ImageStorageHelper.saveImageFromUri(
+                    context,
+                    it,
+                    prefix = "var_${variant.id.take(8)}"
+                )
+                if (savedPath != null) {
+                    onUpdate(variant.copy(imageUri = savedPath))
+                }
+            }
+        }
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = CardShape,
@@ -430,26 +595,98 @@ private fun VariantCardItem(
                 }
             }
 
+            // Variant Photo Picker + Size/Color row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedTextField(
-                    value = variant.size,
-                    onValueChange = { onUpdate(variant.copy(size = it)) },
-                    label = { Text("Size (S, M, Free)") },
+                // Compact Variant Photo Picker Thumbnail (64x64dp)
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
+                        .clickable {
+                            variantPhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!variant.imageUri.isNullOrBlank()) {
+                        ProductThumbnail(
+                            imageUri = variant.imageUri,
+                            size = 64.dp,
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        // Small remove button
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(2.dp)
+                                .size(20.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color.Black.copy(alpha = 0.6f))
+                                .clickable { onUpdate(variant.copy(imageUri = null)) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = "Remove variant photo",
+                                tint = Color.White,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    } else {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddPhotoAlternate,
+                                contentDescription = "Add Variant Photo",
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Text(
+                                text = "Photo",
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Column(
                     modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = FieldShape
-                )
-                OutlinedTextField(
-                    value = variant.colorPattern,
-                    onValueChange = { onUpdate(variant.copy(colorPattern = it)) },
-                    label = { Text("Color / Pattern") },
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = variant.size,
+                        onValueChange = { onUpdate(variant.copy(size = it)) },
+                        label = { Text("Size (S, M, Free)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = FieldShape
+                    )
+                }
+
+                Column(
                     modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = FieldShape
-                )
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = variant.colorPattern,
+                        onValueChange = { onUpdate(variant.copy(colorPattern = it)) },
+                        label = { Text("Color / Pattern") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = FieldShape
+                    )
+                }
             }
 
             Row(

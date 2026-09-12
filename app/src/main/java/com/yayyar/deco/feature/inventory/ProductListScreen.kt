@@ -62,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.database.model.ProductWithVariants
+import com.yayyar.deco.core.ui.components.ProductThumbnail
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -282,17 +283,26 @@ fun ProductListScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                // Product Thumbnail (with fallback to first variant's image)
+                                val firstVariantImg = item.variants.firstOrNull { !it.imageUri.isNullOrBlank() }?.imageUri
+                                ProductThumbnail(
+                                    imageUri = item.product.imageUri,
+                                    fallbackImageUri = firstVariantImg,
+                                    size = 52.dp,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+
                                 Column(
                                     modifier = Modifier.weight(1f),
                                     verticalArrangement = Arrangement.spacedBy(3.dp)
                                 ) {
                                     Text(
                                         text = item.product.name,
-                                        fontSize = 16.sp,
+                                        fontSize = 15.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )

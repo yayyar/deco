@@ -31,7 +31,7 @@ import java.util.UUID
         OrderItemEntity::class,
         PaymentMethodEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class DecoDatabase : RoomDatabase() {
@@ -142,6 +142,12 @@ abstract class DecoDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `product_variants` ADD COLUMN `image_uri` TEXT")
+            }
+        }
+
         fun getInstance(context: Context): DecoDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -149,7 +155,7 @@ abstract class DecoDatabase : RoomDatabase() {
                     DecoDatabase::class.java,
                     "deco_pos.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING) // High performance WAL mode
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
