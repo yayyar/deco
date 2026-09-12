@@ -675,7 +675,7 @@ private fun CartPane(
                         )
                         Spacer(Modifier.height(3.dp))
                         Text(
-                            text = "Cart is empty\nTap variants to add items",
+                            text = "Cart is empty",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -902,10 +902,10 @@ private fun CartPane(
                         Icon(
                             imageVector = Icons.Outlined.BookmarkAdd,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(26.dp)
                         )
-//                        Spacer(Modifier.width(4.dp))
-//                        Text("Draft", fontWeight = FontWeight.SemiBold)
+                        Spacer(Modifier.width(4.dp))
+                        Text("Draft", fontWeight = FontWeight.SemiBold)
                     }
 
                     Button(

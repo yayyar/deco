@@ -143,8 +143,7 @@ fun AllSalesScreen(
                         )
                     } else {
                         Text(
-                            text = "All Sales",
-                            fontWeight = FontWeight.Bold
+                            text = "All Sales"
                         )
                     }
                 },
