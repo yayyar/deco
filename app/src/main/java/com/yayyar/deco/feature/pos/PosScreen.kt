@@ -897,15 +897,14 @@ private fun CartPane(
                         modifier = Modifier
                             .weight(0.2f)
                             .height(48.dp),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.BookmarkAdd,
-                            contentDescription = null,
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = "Draft",
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(Modifier.width(4.dp))
-                        Text("Draft", fontWeight = FontWeight.SemiBold)
                     }
 
                     Button(
