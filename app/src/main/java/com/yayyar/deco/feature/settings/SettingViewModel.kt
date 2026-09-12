@@ -21,6 +21,7 @@ class SettingViewModel @Inject constructor(
     val isDarkMode: StateFlow<Boolean?> = preferencesRepository.isDarkMode
     val selectedLanguage: StateFlow<String> = preferencesRepository.selectedLanguage
     val selectedPrinterName: StateFlow<String?> = preferencesRepository.selectedPrinterName
+    val isGridView: StateFlow<Boolean> = preferencesRepository.isGridView
 
     val activePaymentMethodsCount: StateFlow<Int> = paymentMethodRepository.getActivePaymentMethodsFlow()
         .map { it.size }
@@ -36,5 +37,9 @@ class SettingViewModel @Inject constructor(
 
     fun setSelectedLanguage(lang: String) {
         preferencesRepository.setSelectedLanguage(lang)
+    }
+
+    fun setGridView(isGrid: Boolean) {
+        preferencesRepository.setGridView(isGrid)
     }
 }

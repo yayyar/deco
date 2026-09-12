@@ -14,10 +14,12 @@ interface PreferencesRepository {
     val selectedLanguage: StateFlow<String>
     val selectedPrinterAddress: StateFlow<String?>
     val selectedPrinterName: StateFlow<String?>
+    val isGridView: StateFlow<Boolean>
 
     fun setDarkMode(enabled: Boolean?)
     fun setSelectedLanguage(lang: String)
     fun setSelectedPrinter(address: String?, name: String?)
+    fun setGridView(isGrid: Boolean)
 }
 
 @Singleton
@@ -40,6 +42,9 @@ class PreferencesRepositoryImpl @Inject constructor(
     private val _selectedPrinterName = MutableStateFlow(readPrinterName())
     override val selectedPrinterName: StateFlow<String?> = _selectedPrinterName.asStateFlow()
 
+    private val _isGridView = MutableStateFlow(readGridView())
+    override val isGridView: StateFlow<Boolean> = _isGridView.asStateFlow()
+
     private fun readDarkMode(): Boolean? {
         if (!prefs.contains(KEY_DARK_MODE)) return null // Follow system
         return prefs.getBoolean(KEY_DARK_MODE, false)
@@ -55,6 +60,10 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     private fun readPrinterName(): String? {
         return prefs.getString(KEY_PRINTER_NAME, null)
+    }
+
+    private fun readGridView(): Boolean {
+        return prefs.getBoolean(KEY_ITEM_LAYOUT_GRID, true)
     }
 
     override fun setDarkMode(enabled: Boolean?) {
@@ -84,10 +93,16 @@ class PreferencesRepositoryImpl @Inject constructor(
         _selectedPrinterName.value = name
     }
 
+    override fun setGridView(isGrid: Boolean) {
+        prefs.edit().putBoolean(KEY_ITEM_LAYOUT_GRID, isGrid).apply()
+        _isGridView.value = isGrid
+    }
+
     companion object {
         private const val KEY_DARK_MODE = "pref_dark_mode"
         private const val KEY_LANGUAGE = "pref_language"
         private const val KEY_PRINTER_ADDRESS = "pref_printer_address"
         private const val KEY_PRINTER_NAME = "pref_printer_name"
+        private const val KEY_ITEM_LAYOUT_GRID = "pref_item_layout_grid"
     }
 }

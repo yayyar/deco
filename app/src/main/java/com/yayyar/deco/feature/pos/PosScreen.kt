@@ -94,6 +94,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PosScreen(
     viewModel: PosViewModel,
+    isGridView: Boolean = true,
     topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -135,6 +136,7 @@ fun PosScreen(
                         selectedCatId = selectedCatId,
                         catalogProducts = catalogProducts,
                         saleType = cartState.saleType,
+                        isGridView = isGridView,
                         onSelectCategory = { viewModel.selectCategory(it) },
                         onProductClick = { selectedProductForVariants = it },
                         modifier = Modifier
@@ -171,6 +173,7 @@ fun PosScreen(
                 selectedCatId = selectedCatId,
                 catalogProducts = catalogProducts,
                 cartState = cartState,
+                isGridView = isGridView,
                 onSelectCategory = { viewModel.selectCategory(it) },
                 onProductClick = { selectedProductForVariants = it },
                 onSetSaleType = { viewModel.setSaleType(it) },
@@ -261,6 +264,7 @@ private fun CatalogPane(
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
     saleType: SaleType = SaleType.RETAIL,
+    isGridView: Boolean = true,
     onSelectCategory: (String?) -> Unit,
     onProductClick: (ProductWithVariants) -> Unit,
     modifier: Modifier = Modifier
@@ -294,20 +298,36 @@ private fun CatalogPane(
 
         Spacer(Modifier.height(6.dp))
 
-        // Product Catalog Grid
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 160.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(catalogProducts, key = { it.product.id }) { item ->
-                ProductCatalogCard(
-                    productWithVariants = item,
-                    saleType = saleType,
-                    onClick = { onProductClick(item) }
-                )
+        // Product Catalog (Grid or List Layout based on Global Setting)
+        if (isGridView) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 160.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(catalogProducts, key = { it.product.id }) { item ->
+                    ProductCatalogCard(
+                        productWithVariants = item,
+                        saleType = saleType,
+                        onClick = { onProductClick(item) }
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(catalogProducts, key = { it.product.id }) { item ->
+                    ProductCatalogCard(
+                        productWithVariants = item,
+                        saleType = saleType,
+                        onClick = { onProductClick(item) }
+                    )
+                }
             }
         }
     }
@@ -334,16 +354,18 @@ private fun ProductCatalogCard(
                 .fillMaxWidth()
                 .padding(10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             // Product Thumbnail (falls back to first variant photo)
             val firstVariantImg = productWithVariants.variants.firstOrNull { !it.imageUri.isNullOrBlank() }?.imageUri
-            ProductThumbnail(
-                imageUri = productWithVariants.product.imageUri,
-                fallbackImageUri = firstVariantImg,
-                size = 56.dp,
-                shape = RoundedCornerShape(10.dp)
-            )
+            if(!firstVariantImg.isNullOrBlank()){
+                ProductThumbnail(
+                    imageUri = productWithVariants.product.imageUri,
+                    fallbackImageUri = firstVariantImg,
+                    size = 56.dp,
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -453,12 +475,14 @@ private fun ProductVariantSelectionDialog(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProductThumbnail(
-                        imageUri =  productWithVariants.product.imageUri, //previewVariant?.imageUri,
-                        fallbackImageUri = previewVariant?.imageUri,
-                        size = 64.dp,
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    if(!productWithVariants.product.imageUri.isNullOrBlank() || !previewVariant?.imageUri.isNullOrBlank()){
+                        ProductThumbnail(
+                            imageUri =  productWithVariants.product.imageUri, //previewVariant?.imageUri,
+                            fallbackImageUri = previewVariant?.imageUri,
+                            size = 64.dp,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
@@ -558,14 +582,14 @@ private fun ProductVariantSelectionDialog(
                                             fontSize = 11.sp,
                                             color = if (isOutOfStock) Color.Gray else MaterialTheme.colorScheme.primary
                                         )
-                                        if (variant.isLowStock || isOutOfStock) {
-                                            Text(
-                                                text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
-                                                fontSize = 9.sp,
-                                                color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                        }
+//                                        if (variant.isLowStock || isOutOfStock) {
+//                                            Text(
+//                                                text = if (isOutOfStock) "Out" else "${variant.stockQty} left",
+//                                                fontSize = 9.sp,
+//                                                color = if (isOutOfStock) AccentRed else Color(0xFFD97706),
+//                                                fontWeight = FontWeight.SemiBold
+//                                            )
+//                                        }
                                     }
                                 }
                             }
@@ -904,6 +928,7 @@ private fun MobilePosLayout(
     selectedCatId: String?,
     catalogProducts: List<ProductWithVariants>,
     cartState: CartState,
+    isGridView: Boolean = true,
     onSelectCategory: (String?) -> Unit,
     onProductClick: (ProductWithVariants) -> Unit,
     onSetSaleType: (SaleType) -> Unit = {},
@@ -948,6 +973,7 @@ private fun MobilePosLayout(
             selectedCatId = selectedCatId,
             catalogProducts = catalogProducts,
             saleType = cartState.saleType,
+            isGridView = isGridView,
             onSelectCategory = onSelectCategory,
             onProductClick = onProductClick,
             modifier = Modifier

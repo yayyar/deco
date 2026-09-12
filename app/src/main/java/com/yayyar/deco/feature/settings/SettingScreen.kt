@@ -21,7 +21,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Payments
@@ -77,11 +80,13 @@ fun SettingScreen(
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
     val activePaymentCount by viewModel.activePaymentMethodsCount.collectAsState()
     val selectedPrinterName by viewModel.selectedPrinterName.collectAsState()
+    val isGridView by viewModel.isGridView.collectAsState()
 
     val systemInDark = isSystemInDarkTheme()
     val isDarkEffective = isDarkModePref ?: systemInDark
 
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showItemLayoutDialog by remember { mutableStateOf(false) }
 
     val content: @Composable (Modifier) -> Unit = { contentModifier ->
         Column(
@@ -127,6 +132,21 @@ fun SettingScreen(
                         subtitle = if (selectedLanguage == "my") "Myanmar (မြန်မာ)" else "English (US)",
                         valueText = if (selectedLanguage == "my") "မြန်မာ" else "English",
                         onClick = { showLanguageDialog = true }
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    )
+
+                    // Item Layout Item
+                    SettingsClickableItem(
+                        icon = if (isGridView) Icons.Outlined.GridView else Icons.AutoMirrored.Outlined.ViewList,
+                        iconBackground = AccentBlue,
+                        title = "Item layout",
+                        subtitle = if (isGridView) "Grid" else "List",
+                        valueText = if (isGridView) "Grid" else "List",
+                        onClick = { showItemLayoutDialog = true }
                     )
                 }
             }
@@ -293,6 +313,79 @@ fun SettingScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLanguageDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showItemLayoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showItemLayoutDialog = false },
+            title = {
+                Text("Select Item Layout", fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.setGridView(true)
+                                showItemLayoutDialog = false
+                            }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = isGridView,
+                            onClick = {
+                                viewModel.setGridView(true)
+                                showItemLayoutDialog = false
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text("Grid", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = "Compact responsive grid layout",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.setGridView(false)
+                                showItemLayoutDialog = false
+                            }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = !isGridView,
+                            onClick = {
+                                viewModel.setGridView(false)
+                                showItemLayoutDialog = false
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text("List", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = "Full-width vertical list layout",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showItemLayoutDialog = false }) {
                     Text("Close")
                 }
             }

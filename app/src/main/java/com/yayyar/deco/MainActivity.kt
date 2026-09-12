@@ -142,7 +142,7 @@ class MainActivity : Hilt_MainActivity() {
             val isDark = darkModePref ?: isSystemInDarkTheme()
 
             DecoTheme(darkTheme = isDark) {
-                DecoApp()
+                DecoApp(preferencesRepository = preferencesRepository)
             }
         }
     }
@@ -150,9 +150,11 @@ class MainActivity : Hilt_MainActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DecoApp() {
+fun DecoApp(
+    preferencesRepository: PreferencesRepository
+) {
+    val isGridView by preferencesRepository.isGridView.collectAsState()
     var appDestination by rememberSaveable { mutableStateOf<AppDestination>(AppDestination.Main(PosDestination.POS)) }
-    var isInventoryGridView by rememberSaveable { mutableStateOf(false) }
     var isPosSearchActive by rememberSaveable { mutableStateOf(false) }
 
     val posViewModel: PosViewModel = hiltViewModel()
@@ -258,8 +260,6 @@ fun DecoApp() {
                             onOpenDrawer = { scope.launch { drawerState.open() } },
                             draftOrdersCount = draftOrders.size,
                             onOpenDraftSales = { showDraftSalesDialog = true },
-                            isInventoryGridView = isInventoryGridView,
-                            onToggleInventoryGridView = { isInventoryGridView = !isInventoryGridView },
                             onExportCsv = {
                                 scope.launch {
                                     analyticsViewModel.exportOrdersCsv(context)
@@ -282,7 +282,7 @@ fun DecoApp() {
                             posViewModel = posViewModel,
                             inventoryViewModel = inventoryViewModel,
                             analyticsViewModel = analyticsViewModel,
-                            isInventoryGridView = isInventoryGridView,
+                            isGridView = isGridView,
                             onNavigateToProducts = { appDestination = AppDestination.ProductList },
                             onNavigateToCategories = { appDestination = AppDestination.CategoryList },
                             onNavigateToAllSellingProducts = { appDestination = AppDestination.AllSellingProducts },
@@ -375,8 +375,6 @@ private fun MainTopAppBar(
     onOpenDrawer: () -> Unit,
     draftOrdersCount: Int = 0,
     onOpenDraftSales: () -> Unit = {},
-    isInventoryGridView: Boolean,
-    onToggleInventoryGridView: () -> Unit,
     onExportCsv: () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
 ) {
@@ -457,14 +455,6 @@ private fun MainTopAppBar(
                     )
                 }
             }
-            if (destination == PosDestination.INVENTORY) {
-                IconButton(onClick = onToggleInventoryGridView) {
-                    Icon(
-                        imageVector = if (isInventoryGridView) Icons.AutoMirrored.Outlined.ViewList else Icons.Outlined.GridView,
-                        contentDescription = if (isInventoryGridView) "Switch to List View" else "Switch to Grid View"
-                    )
-                }
-            }
             if (destination == PosDestination.ANALYTICS) {
                 var showAnalyticsMenu by remember { mutableStateOf(false) }
                 Box {
@@ -504,7 +494,7 @@ private fun AppScreenContent(
     posViewModel: PosViewModel,
     inventoryViewModel: InventoryViewModel,
     analyticsViewModel: AnalyticsViewModel,
-    isInventoryGridView: Boolean,
+    isGridView: Boolean,
     onNavigateToProducts: () -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToAllSellingProducts: () -> Unit = {},
@@ -517,12 +507,13 @@ private fun AppScreenContent(
     when (destination) {
         PosDestination.POS -> PosScreen(
             viewModel = posViewModel,
+            isGridView = isGridView,
             topBar = topBar,
             modifier = modifier
         )
         PosDestination.INVENTORY -> InventoryScreen(
             viewModel = inventoryViewModel,
-            isGridView = isInventoryGridView,
+            isGridView = isGridView,
             onNavigateToProducts = onNavigateToProducts,
             onNavigateToCategories = onNavigateToCategories,
             modifier = modifier

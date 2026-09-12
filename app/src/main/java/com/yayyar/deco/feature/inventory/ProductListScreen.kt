@@ -285,16 +285,18 @@ fun ProductListScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 14.dp, vertical = 12.dp),
                                 horizontalArrangement = Arrangement.spacedBy(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.Top
                             ) {
                                 // Product Thumbnail (with fallback to first variant's image)
                                 val firstVariantImg = item.variants.firstOrNull { !it.imageUri.isNullOrBlank() }?.imageUri
-                                ProductThumbnail(
-                                    imageUri = item.product.imageUri,
-                                    fallbackImageUri = firstVariantImg,
-                                    size = 52.dp,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
+                                if(!firstVariantImg.isNullOrBlank()){
+                                    ProductThumbnail(
+                                        imageUri = item.product.imageUri,
+                                        fallbackImageUri = firstVariantImg,
+                                        size = 52.dp,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                }
 
                                 Column(
                                     modifier = Modifier.weight(1f),
