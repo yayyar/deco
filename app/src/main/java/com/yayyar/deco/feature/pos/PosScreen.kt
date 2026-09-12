@@ -358,7 +358,7 @@ private fun ProductCatalogCard(
         ) {
             // Product Thumbnail (falls back to first variant photo)
             val firstVariantImg = productWithVariants.variants.firstOrNull { !it.imageUri.isNullOrBlank() }?.imageUri
-            if(!firstVariantImg.isNullOrBlank()){
+            if(!productWithVariants.product.imageUri.isNullOrBlank() || !firstVariantImg.isNullOrBlank()){
                 ProductThumbnail(
                     imageUri = productWithVariants.product.imageUri,
                     fallbackImageUri = firstVariantImg,
@@ -700,12 +700,14 @@ private fun CartPane(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Variant/Product Thumbnail
-                                ProductThumbnail(
-                                    imageUri = item.variant.imageUri,
-                                    fallbackImageUri = item.product.imageUri,
-                                    size = 44.dp,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
+                                if(!item.variant.imageUri.isNullOrBlank() || !item.product.imageUri.isNullOrBlank()){
+                                    ProductThumbnail(
+                                        imageUri = item.variant.imageUri,
+                                        fallbackImageUri = item.product.imageUri,
+                                        size = 44.dp,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                }
 
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
@@ -893,7 +895,7 @@ private fun CartPane(
                         onClick = onSaveDraft,
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
-                            .weight(0.35f)
+                            .weight(0.2f)
                             .height(48.dp),
                         shape = RoundedCornerShape(10.dp)
                     ) {
@@ -902,15 +904,15 @@ private fun CartPane(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Spacer(Modifier.width(4.dp))
-                        Text("Draft", fontWeight = FontWeight.SemiBold)
+//                        Spacer(Modifier.width(4.dp))
+//                        Text("Draft", fontWeight = FontWeight.SemiBold)
                     }
 
                     Button(
                         onClick = onInitiateCheckout,
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
-                            .weight(0.65f)
+                            .weight(0.8f)
                             .height(48.dp),
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
