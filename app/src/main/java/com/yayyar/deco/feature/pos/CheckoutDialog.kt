@@ -107,7 +107,7 @@ fun CheckoutDialog(
                         color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
                     ) {
                         Text(
-                            text = if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail",
+                            text = if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail Sale",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
@@ -311,7 +311,7 @@ fun CheckoutDialog(
                 enabled = selectedPaymentType != "CASH" || cashReceived >= grandTotal,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Confirm Sale")
+                Text("Confirm ${if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail Sale"}")
             }
         },
         dismissButton = {

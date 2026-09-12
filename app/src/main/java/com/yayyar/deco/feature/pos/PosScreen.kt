@@ -848,7 +848,7 @@ private fun CartPane(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { onSetSaleType(SaleType.RETAIL) }
-                                .padding(vertical = 8.dp)
+//                                .padding(vertical = 8.dp)
                         ) {
                             Text(
                                 text = "Retail Sale",
@@ -857,6 +857,7 @@ private fun CartPane(
                                 color = if (isRetail) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
+                                    .padding(vertical = 4.dp)
                             )
                         }
 
@@ -868,7 +869,7 @@ private fun CartPane(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { onSetSaleType(SaleType.WHOLESALE) }
-                                .padding(vertical = 8.dp)
+//                                .padding(vertical = 8.dp)
                         ) {
                             Text(
                                 text = "Whole Sale",
@@ -877,6 +878,7 @@ private fun CartPane(
                                 color = if (isWholesale) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
+                                    .padding(vertical = 4.dp)
                             )
                         }
                     }
