@@ -60,7 +60,7 @@
     <string name="pos_low_stock_badge">လက်ကျန်နည်း</string>
 
     <!-- Checkout Modal -->
-    <string name="checkout_title">ငွေချေမှုစနစ်</string>
+    <string name="checkout_title">ငွေရှင်းမည်</string>
     <string name="checkout_grand_total_label">ကျသင့်ငွေ စုစုပေါင်း</string>
     <string name="checkout_payment_method">ငွေပေးချေမှု နည်းလမ်း</string>
     <string name="checkout_cash_received">လက်ခံရရှိငွေ</string>
@@ -75,6 +75,14 @@
     <string name="checkout_discount_type_percent">ရာခိုင်နှုန်း (%)</string>
     <string name="checkout_complete_sale">အရောင်း အပြီးသတ်မည်</string>
     <string name="checkout_insufficient_cash">လက်ခံငွေသည် ကျသင့်ငွေထက် လျော့နည်းနေပါသည်</string>
+    <string name="checkout_items_summary">အော်ဒါ အနှစ်ချုပ် (%1$d မျိုး)</string>
+    <string name="checkout_amount_due">ကျသင့်ငွေ</string>
+    <string name="checkout_change_due">ပြန်အမ်းငွေ</string>
+    <string name="checkout_merchant_account">ငွေလက်ခံမည့် အကောင့်အချက်အလက်</string>
+    <string name="checkout_copy_account">ကူးယူမည်</string>
+    <string name="checkout_account_copied">အကောင့်နံပါတ် ကူးယူပြီးပါပြီ</string>
+    <string name="checkout_quick_cash">ငွေအမြန်ရွေးမည်</string>
+    <string name="checkout_items_details">ပစ္စည်း အသေးစိတ်</string>
 
     <!-- Draft / Parked Sales -->
     <string name="drafts_title">ဆိုင်းငံ့ထားသော အရောင်းများ</string>

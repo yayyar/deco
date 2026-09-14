@@ -37,7 +37,7 @@
     <string name="pos_all_categories">All</string>
     <string name="pos_retail_mode">Retail</string>
     <string name="pos_wholesale_mode">Wholesale</string>
-    <string name="pos_order_cart">Order Cart</string>
+    <string name="pos_order_cart">Order</string>
     <string name="pos_cart_empty">Cart is empty</string>
     <string name="pos_cart_empty_sub">Select products to add to current order</string>
     <string name="pos_clear_cart">Clear</string>
@@ -74,9 +74,17 @@
     <string name="checkout_discount_type_percent">Percent (%)</string>
     <string name="checkout_complete_sale">Complete Sale</string>
     <string name="checkout_insufficient_cash">Cash received is less than total amount</string>
+    <string name="checkout_items_summary">Order Summary (%1$d items)</string>
+    <string name="checkout_amount_due">Amount Due</string>
+    <string name="checkout_change_due">Change Due</string>
+    <string name="checkout_merchant_account">Merchant Account Details</string>
+    <string name="checkout_copy_account">Copy</string>
+    <string name="checkout_account_copied">Account number copied</string>
+    <string name="checkout_quick_cash">Quick Cash</string>
+    <string name="checkout_items_details">Item Details</string>
 
     <!-- Draft / Parked Sales -->
-    <string name="drafts_title">Parked Sales / Drafts</string>
+    <string name="drafts_title">Drafts</string>
     <string name="drafts_empty">No parked sales</string>
     <string name="drafts_empty_sub">Sales parked from checkout will appear here</string>
     <string name="drafts_resume">Resume Sale</string>

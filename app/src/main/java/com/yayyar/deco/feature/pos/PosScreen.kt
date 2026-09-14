@@ -648,11 +648,11 @@ private fun CartPane(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(3.dp))
-//                    Text(
-//                        text = "${stringResource(R.string.pos_order_cart)} (${cartState.totalItemCount})",
-//                        fontWeight = FontWeight.Bold,
-//                        fontSize = 17.sp
-//                    )
+                    Text(
+                        text = "${stringResource(R.string.pos_order_cart)} (${cartState.totalItemCount})",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
                 }
                 if (cartState.items.isNotEmpty()) {
                     TextButton(onClick = onClearCart) {
@@ -661,7 +661,7 @@ private fun CartPane(
                 }
             }
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(3.dp))
 
             if (cartState.items.isEmpty()) {
                 Box(
@@ -834,7 +834,7 @@ private fun CartPane(
                     )
                 }
 
-                // Whole Sale / Retail Sale Mode Switch
+                // Wholesale / Retail Mode Switch
                 Surface(
                     shape = RoundedCornerShape(10.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),

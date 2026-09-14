@@ -69,21 +69,21 @@ fun DraftSalesDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = stringResource(R.string.drafts_title),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-                }
-            }
-        },
+//        title = {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = stringResource(R.string.drafts_title),
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 18.sp
+//                    )
+//                }
+//            }
+//        },
         text = {
             if (draftOrders.isEmpty()) {
                 Box(
