@@ -784,36 +784,36 @@ private fun CartPane(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Subtotal:", fontSize = 13.sp)
-                    CurrencyText(amount = cartState.subtotal, fontSize = 13.sp)
-                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Text("Subtotal:", fontSize = 13.sp)
+//                    CurrencyText(amount = cartState.subtotal, fontSize = 13.sp)
+//                }
 
-                if (cartState.discountAmount > 0) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Discount:", fontSize = 13.sp, color = AccentGreen)
-                        CurrencyText(amount = cartState.discountAmount, fontSize = 13.sp, color = AccentGreen)
-                    }
-                }
+//                if (cartState.discountAmount > 0) {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Text("Discount:", fontSize = 13.sp, color = AccentGreen)
+//                        CurrencyText(amount = cartState.discountAmount, fontSize = 13.sp, color = AccentGreen)
+//                    }
+//                }
 
-                if (cartState.deliFee > 0) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Delivery Fee:", fontSize = 13.sp)
-                        CurrencyText(amount = cartState.deliFee, fontSize = 13.sp)
-                    }
-                }
+//                if (cartState.deliFee > 0) {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Text("Delivery Fee:", fontSize = 13.sp)
+//                        CurrencyText(amount = cartState.deliFee, fontSize = 13.sp)
+//                    }
+//                }
 
                 HorizontalDivider()
 
@@ -822,7 +822,7 @@ private fun CartPane(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Grand Total:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Total:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     CurrencyText(
                         amount = cartState.grandTotal,
                         color = MaterialTheme.colorScheme.primary,
@@ -856,7 +856,7 @@ private fun CartPane(
                                 text = "Retail Sale",
                                 fontSize = 12.sp,
                                 fontWeight = if (isRetail) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isRetail) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (isRetail) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(vertical = 4.dp)
@@ -866,7 +866,7 @@ private fun CartPane(
                         val isWholesale = cartState.saleType == SaleType.WHOLESALE
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = if (isWholesale) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            color = if (isWholesale) MaterialTheme.colorScheme.background else Color.Transparent,
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
@@ -877,7 +877,7 @@ private fun CartPane(
                                 text = "Whole Sale",
                                 fontSize = 12.sp,
                                 fontWeight = if (isWholesale) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isWholesale) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (isWholesale) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(vertical = 4.dp)
@@ -896,7 +896,7 @@ private fun CartPane(
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
                             .weight(0.2f)
-                            .height(48.dp),
+                            .height(40.dp),
                         shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(0.dp)
                     ) {
@@ -912,7 +912,7 @@ private fun CartPane(
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
                             .weight(0.8f)
-                            .height(48.dp),
+                            .height(40.dp),
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
