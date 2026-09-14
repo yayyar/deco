@@ -97,17 +97,20 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import com.yayyar.deco.feature.pos.DraftSalesDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.core.common.LocaleHelper
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 enum class PosDestination(
-    val title: String,
+    val titleRes: Int,
     val icon: ImageVector
 ) {
-    POS("Sales", Icons.Outlined.LocalMall),
-    INVENTORY("Items", Icons.Outlined.Checkroom),
-    ANALYTICS("Reports", Icons.Outlined.Analytics),
-    SETTINGS("Settings", Icons.Outlined.Settings)
+    POS(R.string.nav_sales, Icons.Outlined.LocalMall),
+    INVENTORY(R.string.nav_items, Icons.Outlined.Checkroom),
+    ANALYTICS(R.string.nav_reports, Icons.Outlined.Analytics),
+    SETTINGS(R.string.nav_settings, Icons.Outlined.Settings)
 }
 
 sealed interface AppDestination : java.io.Serializable {
@@ -139,10 +142,25 @@ class MainActivity : Hilt_MainActivity() {
         enableEdgeToEdge()
         setContent {
             val darkModePref by preferencesRepository.isDarkMode.collectAsState()
+            val languagePref by preferencesRepository.selectedLanguage.collectAsState()
             val isDark = darkModePref ?: isSystemInDarkTheme()
 
-            DecoTheme(darkTheme = isDark) {
-                DecoApp(preferencesRepository = preferencesRepository)
+            val baseContext = LocalContext.current
+            val localizedContext = remember(languagePref) {
+                LocaleHelper.applyLocale(baseContext, languagePref)
+            }
+            val baseConfiguration = LocalConfiguration.current
+            val localizedConfiguration = remember(languagePref, baseConfiguration) {
+                LocaleHelper.getLocalizedConfiguration(baseConfiguration, languagePref)
+            }
+
+            CompositionLocalProvider(
+                LocalContext provides localizedContext,
+                LocalConfiguration provides localizedConfiguration
+            ) {
+                DecoTheme(darkTheme = isDark) {
+                    DecoApp(preferencesRepository = preferencesRepository)
+                }
             }
         }
     }
@@ -205,15 +223,16 @@ fun DecoApp(
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "DeCo",
+                            text = stringResource(R.string.nav_drawer_title),
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                         )
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         PosDestination.entries.filter { it != PosDestination.SETTINGS }.forEach { dest ->
+                            val destTitle = stringResource(dest.titleRes)
                             NavigationDrawerItem(
-                                icon = { Icon(dest.icon, contentDescription = dest.title) },
-                                label = { Text(dest.title) },
+                                icon = { Icon(dest.icon, contentDescription = destTitle) },
+                                label = { Text(destTitle) },
                                 selected = current.destination == dest,
                                 onClick = {
                                     if (dest != PosDestination.POS) {
@@ -227,9 +246,10 @@ fun DecoApp(
                             )
                         }
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        val settingsTitle = stringResource(R.string.nav_settings)
                         NavigationDrawerItem(
-                            icon = { Icon(Icons.Outlined.Settings, contentDescription = "Settings") },
-                            label = { Text("Settings") },
+                            icon = { Icon(Icons.Outlined.Settings, contentDescription = settingsTitle) },
+                            label = { Text(settingsTitle) },
                             selected = current.destination == PosDestination.SETTINGS,
                             onClick = {
                                 isPosSearchActive = false
@@ -385,7 +405,7 @@ private fun MainTopAppBar(
                 OutlinedTextField(
                     value = posSearchQuery,
                     onValueChange = onPosSearchQueryChange,
-                    placeholder = { Text("Search products") },
+                    placeholder = { Text(stringResource(R.string.pos_search_hint)) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
@@ -397,13 +417,13 @@ private fun MainTopAppBar(
                     trailingIcon = {
                         if (posSearchQuery.isNotEmpty()) {
                             IconButton(onClick = { onPosSearchQueryChange("") }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                             }
                         }
                     }
                 )
             } else {
-                Text(destination.title)
+                Text(stringResource(destination.titleRes))
             }
         },
         navigationIcon = {
@@ -414,14 +434,14 @@ private fun MainTopAppBar(
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Exit search"
+                        contentDescription = stringResource(R.string.action_back)
                     )
                 }
             } else {
                 IconButton(onClick = onOpenDrawer) {
                     Icon(
                         imageVector = Icons.Default.Menu,
-                        contentDescription = "Open navigation menu"
+                        contentDescription = stringResource(R.string.nav_drawer_title)
                     )
                 }
             }
@@ -443,7 +463,7 @@ private fun MainTopAppBar(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Draft sales",
+                            contentDescription = stringResource(R.string.drafts_title),
                         )
                     }
                 }
@@ -451,7 +471,7 @@ private fun MainTopAppBar(
                     onClick = { onPosSearchActiveChange(true) }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search Products",
+                        contentDescription = stringResource(R.string.action_search),
                     )
                 }
             }
@@ -461,7 +481,7 @@ private fun MainTopAppBar(
                     IconButton(onClick = { showAnalyticsMenu = true }) {
                         Icon(
                             imageVector = Icons.Outlined.MoreVert,
-                            contentDescription = "More options",
+                            contentDescription = null,
                         )
                     }
                     DropdownMenu(
@@ -469,7 +489,7 @@ private fun MainTopAppBar(
                         onDismissRequest = { showAnalyticsMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Export CSV") },
+                            text = { Text(stringResource(R.string.analytics_export_csv)) },
                             onClick = {
                                 showAnalyticsMenu = false
                                 onExportCsv()

@@ -58,10 +58,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yayyar.deco.R
 import com.yayyar.deco.core.database.entity.PaymentMethodEntity
 import com.yayyar.deco.ui.theme.AccentBlue
 import com.yayyar.deco.ui.theme.AccentGreen
@@ -92,14 +94,14 @@ fun PaymentMethodScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Payment Methods"
+                        text = stringResource(R.string.payment_method_title)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -114,7 +116,7 @@ fun PaymentMethodScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Payment Method")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.payment_method_add))
             }
         }
     ) { innerPadding ->
@@ -136,13 +138,13 @@ fun PaymentMethodScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Text(
-                        text = "No Payment Methods Found",
+                        text = stringResource(R.string.payment_method_empty_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Tap the '+' button below to add your first payment method",
+                        text = stringResource(R.string.payment_method_empty_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -198,8 +200,8 @@ fun PaymentMethodScreen(
     deletingMethod?.let { method ->
         AlertDialog(
             onDismissRequest = { deletingMethod = null },
-            title = { Text("Delete Payment Method") },
-            text = { Text("Are you sure you want to delete '${method.name}'? This cannot be undone.") },
+            title = { Text(stringResource(R.string.payment_method_delete_title)) },
+            text = { Text(stringResource(R.string.payment_method_delete_msg, method.name)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -210,12 +212,12 @@ fun PaymentMethodScreen(
                         containerColor = AccentRed
                     )
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.action_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deletingMethod = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -331,11 +333,11 @@ private fun PaymentMethodCard(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit",
+                        contentDescription = stringResource(R.string.action_edit),
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Edit", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.action_edit), style = MaterialTheme.typography.labelMedium)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -346,7 +348,7 @@ private fun PaymentMethodCard(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.action_delete),
                         tint = AccentRed.copy(alpha = 0.8f),
                         modifier = Modifier.size(18.dp)
                     )
@@ -388,7 +390,7 @@ private fun PaymentMethodEditDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (initialMethod == null) "Add Payment Method" else "Edit Payment Method"
+                text = if (initialMethod == null) stringResource(R.string.payment_method_add) else stringResource(R.string.payment_method_edit)
             )
         },
         text = {
@@ -402,8 +404,8 @@ private fun PaymentMethodEditDialog(
                         name = it
                         nameError = false
                     },
-                    label = { Text("Display Name *") },
-                    placeholder = { Text("e.g. KBZPay / Cash / AYA Pay") },
+                    label = { Text(stringResource(R.string.payment_method_name_label)) },
+                    placeholder = { Text(stringResource(R.string.payment_method_name_hint)) },
                     isError = nameError,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -415,8 +417,8 @@ private fun PaymentMethodEditDialog(
                         code = it.uppercase()
                         codeError = false
                     },
-                    label = { Text("Identifier Code *") },
-                    placeholder = { Text("e.g. KPAY, CASH, AYAPAY") },
+                    label = { Text(stringResource(R.string.payment_method_code_label)) },
+                    placeholder = { Text(stringResource(R.string.payment_method_code_hint)) },
                     isError = codeError,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -425,8 +427,8 @@ private fun PaymentMethodEditDialog(
                 OutlinedTextField(
                     value = accountName,
                     onValueChange = { accountName = it },
-                    label = { Text("Account Name (Optional)") },
-                    placeholder = { Text("e.g. Store Merchant") },
+                    label = { Text(stringResource(R.string.payment_method_acc_name_label)) },
+                    placeholder = { Text(stringResource(R.string.payment_method_acc_name_hint)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -434,8 +436,8 @@ private fun PaymentMethodEditDialog(
                 OutlinedTextField(
                     value = accountNumber,
                     onValueChange = { accountNumber = it },
-                    label = { Text("Account / Phone No. (Optional)") },
-                    placeholder = { Text("e.g. 09123456789") },
+                    label = { Text(stringResource(R.string.payment_method_acc_no_label)) },
+                    placeholder = { Text(stringResource(R.string.payment_method_acc_no_hint)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -448,7 +450,7 @@ private fun PaymentMethodEditDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Active Channel",
+                        text = stringResource(R.string.payment_method_active_channel),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )
@@ -473,12 +475,12 @@ private fun PaymentMethodEditDialog(
                     onSave(name, code, accountName, accountNumber, qrCodeData, isActive)
                 }
             ) {
-                Text("Save")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

@@ -35,6 +35,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yayyar.deco.core.database.entity.CategoryEntity
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun CategoryManageDialog(
     categories: List<CategoryEntity>,
@@ -47,7 +50,7 @@ fun CategoryManageDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Manage Categories", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.category_list_title), fontWeight = FontWeight.Bold)
         },
         text = {
             Column(
@@ -63,7 +66,7 @@ fun CategoryManageDialog(
                     OutlinedTextField(
                         value = newCategoryName,
                         onValueChange = { newCategoryName = it },
-                        label = { Text("New Category Name") },
+                        label = { Text(stringResource(R.string.category_name_label)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -77,12 +80,12 @@ fun CategoryManageDialog(
                         },
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
+                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.action_add))
                     }
                 }
 
                 Text(
-                    text = "Existing Categories (${categories.size})",
+                    text = "${stringResource(R.string.category_list_title)} (${categories.size})",
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -108,7 +111,7 @@ fun CategoryManageDialog(
                                 IconButton(onClick = { onDeleteCategory(cat) }) {
                                     Icon(
                                         Icons.Default.Delete,
-                                        contentDescription = "Delete",
+                                        contentDescription = stringResource(R.string.action_delete),
                                         tint = MaterialTheme.colorScheme.error
                                     )
                                 }
@@ -120,7 +123,7 @@ fun CategoryManageDialog(
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Done")
+                Text(stringResource(R.string.action_done))
             }
         }
     )

@@ -46,6 +46,9 @@ import com.yayyar.deco.ui.theme.AccentBlue
 import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentPurple
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun CheckoutDialog(
     cartState: CartState,
@@ -101,13 +104,13 @@ fun CheckoutDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Checkout", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(stringResource(R.string.checkout_title), fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Surface(
                         shape = RoundedCornerShape(6.dp),
                         color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
                     ) {
                         Text(
-                            text = if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail Sale",
+                            text = if (cartState.saleType == SaleType.WHOLESALE) stringResource(R.string.pos_wholesale_mode) else stringResource(R.string.pos_retail_mode),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (cartState.saleType == SaleType.WHOLESALE) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
@@ -132,7 +135,7 @@ fun CheckoutDialog(
                 // Payment Method Selector
                 item {
                     Text(
-                        text = "Payment Method",
+                        text = stringResource(R.string.checkout_payment_method),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
@@ -174,7 +177,7 @@ fun CheckoutDialog(
                                 OutlinedTextField(
                                     value = cashReceivedText,
                                     onValueChange = { cashReceivedText = it },
-                                    label = { Text("Cash Amount (Ks)") },
+                                    label = { Text(stringResource(R.string.checkout_cash_received)) },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true
@@ -212,7 +215,7 @@ fun CheckoutDialog(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Change Return (ပြန်အမ်းငွေ):", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text(stringResource(R.string.checkout_change_returned), fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                     CurrencyText(
                                         amount = change,
                                         fontSize = 12.sp,
@@ -234,14 +237,13 @@ fun CheckoutDialog(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Text(
-                                    text = "${currentMethod?.name ?: selectedPaymentType} Transfer",
+                                    text = "${currentMethod?.name ?: selectedPaymentType}",
                                     fontWeight = FontWeight.Bold,
                                     color = color
                                 )
                                 if (!currentMethod?.accountName.isNullOrBlank() || !currentMethod?.accountNumber.isNullOrBlank()) {
                                     Text(
                                         text = buildString {
-                                            append("Account: ")
                                             currentMethod?.accountName?.let { append(it) }
                                             if (!currentMethod?.accountName.isNullOrBlank() && !currentMethod?.accountNumber.isNullOrBlank()) {
                                                 append(" • ")
@@ -253,15 +255,10 @@ fun CheckoutDialog(
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
-                                Text(
-                                    text = "Please verify payment transfer for ${Formatters.formatMmk(grandTotal)}",
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
                                 OutlinedTextField(
                                     value = paymentNote,
                                     onValueChange = { paymentNote = it },
-                                    label = { Text("Transaction ID / Note") },
+                                    label = { Text(stringResource(R.string.checkout_payment_notes)) },
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true
                                 )
@@ -281,16 +278,16 @@ fun CheckoutDialog(
                             modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Text("Items Count: ${cartState.totalItemCount}", fontSize = 13.sp)
-                            Text("Subtotal: ${Formatters.formatMmk(cartState.subtotal)}", fontSize = 13.sp)
+                            Text("${stringResource(R.string.pos_items_count, cartState.totalItemCount)}", fontSize = 13.sp)
+                            Text("${stringResource(R.string.pos_subtotal)}: ${Formatters.formatMmk(cartState.subtotal)}", fontSize = 13.sp)
                             if (cartState.discountAmount > 0) {
-                                Text("Discount: -${Formatters.formatMmk(cartState.discountAmount)}", fontSize = 13.sp, color = AccentGreen)
+                                Text("${stringResource(R.string.pos_discount)}: -${Formatters.formatMmk(cartState.discountAmount)}", fontSize = 13.sp, color = AccentGreen)
                             }
                             if (cartState.deliFee > 0) {
-                                Text("Delivery Fee: +${Formatters.formatMmk(cartState.deliFee)}", fontSize = 13.sp)
+                                Text("${stringResource(R.string.pos_delivery_fee)}: +${Formatters.formatMmk(cartState.deliFee)}", fontSize = 13.sp)
                             }
                             if (!cartState.customerName.isNullOrBlank()) {
-                                Text("Customer: ${cartState.customerName} (${cartState.customerPhone ?: ""})", fontSize = 13.sp)
+                                Text("${cartState.customerName} (${cartState.customerPhone ?: ""})", fontSize = 13.sp)
                             }
                         }
                     }
@@ -311,12 +308,12 @@ fun CheckoutDialog(
                 enabled = selectedPaymentType != "CASH" || cashReceived >= grandTotal,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Confirm ${if (cartState.saleType == SaleType.WHOLESALE) "Whole Sale" else "Retail Sale"}")
+                Text(stringResource(R.string.checkout_complete_sale))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Back")
+                Text(stringResource(R.string.action_back))
             }
         }
     )

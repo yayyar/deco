@@ -66,6 +66,9 @@ import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentPurple
 import com.yayyar.deco.ui.theme.PrimaryLight
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
@@ -97,7 +100,7 @@ fun SettingScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // General Settings Section
-            SettingsSectionHeader(title = "General")
+            SettingsSectionHeader(title = stringResource(R.string.settings_section_appearance))
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
@@ -111,8 +114,8 @@ fun SettingScreen(
                     SettingsSwitchItem(
                         icon = Icons.Outlined.DarkMode,
                         iconBackground = Color(0xFF6366F1),
-                        title = "Dark Mode",
-                        subtitle = if (isDarkEffective) "Dark theme enabled" else "Light theme enabled",
+                        title = stringResource(R.string.settings_dark_mode),
+                        subtitle = if (isDarkEffective) stringResource(R.string.settings_dark_enabled) else stringResource(R.string.settings_light_enabled),
                         checked = isDarkEffective,
                         onCheckedChange = { isChecked ->
                             viewModel.setDarkMode(isChecked)
@@ -128,8 +131,8 @@ fun SettingScreen(
                     SettingsClickableItem(
                         icon = Icons.Outlined.Language,
                         iconBackground = AccentBlue,
-                        title = "Language",
-                        subtitle = if (selectedLanguage == "my") "Myanmar (မြန်မာ)" else "English (US)",
+                        title = stringResource(R.string.settings_language),
+                        subtitle = if (selectedLanguage == "my") stringResource(R.string.settings_lang_my) else stringResource(R.string.settings_lang_en),
                         valueText = if (selectedLanguage == "my") "မြန်မာ" else "English",
                         onClick = { showLanguageDialog = true }
                     )
@@ -143,16 +146,16 @@ fun SettingScreen(
                     SettingsClickableItem(
                         icon = if (isGridView) Icons.Outlined.GridView else Icons.AutoMirrored.Outlined.ViewList,
                         iconBackground = AccentBlue,
-                        title = "Item layout",
-                        subtitle = if (isGridView) "Grid" else "List",
-                        valueText = if (isGridView) "Grid" else "List",
+                        title = stringResource(R.string.settings_item_layout),
+                        subtitle = if (isGridView) stringResource(R.string.settings_item_layout_grid) else stringResource(R.string.settings_item_layout_list),
+                        valueText = if (isGridView) stringResource(R.string.settings_item_layout_grid) else stringResource(R.string.settings_item_layout_list),
                         onClick = { showItemLayoutDialog = true }
                     )
                 }
             }
 
             // Control & Management Section
-            SettingsSectionHeader(title = "Control")
+            SettingsSectionHeader(title = stringResource(R.string.settings_section_control))
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
@@ -166,9 +169,9 @@ fun SettingScreen(
                     SettingsClickableItem(
                         icon = Icons.Outlined.Payments,
                         iconBackground = AccentGreen,
-                        title = "Payment Method",
-                        subtitle = if (activePaymentCount > 0) "$activePaymentCount active payment methods" else "Configure payment channels",
-                        valueText = "$activePaymentCount Active",
+                        title = stringResource(R.string.settings_payment_methods),
+                        subtitle = if (activePaymentCount > 0) stringResource(R.string.settings_payment_methods_sub, activePaymentCount) else stringResource(R.string.settings_payment_methods),
+                        valueText = "$activePaymentCount",
                         onClick = onNavigateToPaymentMethods
                     )
 
@@ -181,9 +184,9 @@ fun SettingScreen(
                     SettingsClickableItem(
                         icon = Icons.Outlined.Print,
                         iconBackground = AccentPurple,
-                        title = "Printer",
-                        subtitle = selectedPrinterName?.let { "Connected: $it" } ?: "ESC/POS Bluetooth Receipt Printer",
-                        valueText = selectedPrinterName ?: "Setup",
+                        title = stringResource(R.string.settings_printer),
+                        subtitle = selectedPrinterName?.let { stringResource(R.string.settings_printer_sub_connected, it) } ?: stringResource(R.string.settings_printer_sub_none),
+                        valueText = selectedPrinterName ?: stringResource(R.string.action_select),
                         onClick = onNavigateToPrinters
                     )
                 }
@@ -209,7 +212,7 @@ fun SettingScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "DeCo • Version 1.0.0",
+                        text = stringResource(R.string.app_version),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -228,7 +231,7 @@ fun SettingScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Settings",
+                            text = stringResource(R.string.settings_title),
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.titleLarge
                         )
@@ -237,7 +240,7 @@ fun SettingScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = stringResource(R.string.action_back)
                             )
                         }
                     },
@@ -257,7 +260,7 @@ fun SettingScreen(
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
             title = {
-                Text("Select Language", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings_lang_dialog_title), fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -279,7 +282,7 @@ fun SettingScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("English (Default)", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.settings_lang_en), style = MaterialTheme.typography.bodyLarge)
                     }
 
                     Row(
@@ -301,9 +304,9 @@ fun SettingScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
-                            Text("Myanmar (မြန်မာ)", style = MaterialTheme.typography.bodyLarge)
+                            Text(stringResource(R.string.settings_lang_my), style = MaterialTheme.typography.bodyLarge)
                             Text(
-                                text = "Full localization coming in next update",
+                                text = stringResource(R.string.settings_lang_my_sub),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -313,7 +316,7 @@ fun SettingScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLanguageDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(R.string.action_close))
                 }
             }
         )
@@ -323,7 +326,7 @@ fun SettingScreen(
         AlertDialog(
             onDismissRequest = { showItemLayoutDialog = false },
             title = {
-                Text("Select Item Layout", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings_item_layout), fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -345,14 +348,7 @@ fun SettingScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text("Grid", style = MaterialTheme.typography.bodyLarge)
-                            Text(
-                                text = "Compact responsive grid layout",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        Text(stringResource(R.string.settings_item_layout_grid), style = MaterialTheme.typography.bodyLarge)
                     }
 
                     Row(
@@ -373,20 +369,13 @@ fun SettingScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text("List", style = MaterialTheme.typography.bodyLarge)
-                            Text(
-                                text = "Full-width vertical list layout",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        Text(stringResource(R.string.settings_item_layout_list), style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showItemLayoutDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(R.string.action_close))
                 }
             }
         )

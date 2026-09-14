@@ -39,6 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryAddScreen(
@@ -72,14 +75,14 @@ fun CategoryAddScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Add New Category",
+                        text = stringResource(R.string.category_add_title),
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -89,7 +92,7 @@ fun CategoryAddScreen(
                         enabled = isValid
                     ) {
                         Text(
-                            text = "SAVE",
+                            text = stringResource(R.string.action_save),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
@@ -97,26 +100,7 @@ fun CategoryAddScreen(
                     }
                 }
             )
-        },
-//        bottomBar = {
-//            Button(
-//                onClick = handleSave,
-//                enabled = isValid,
-//                shape = RoundedCornerShape(12.dp),
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp)
-//                    .height(50.dp)
-//            ) {
-//                Icon(Icons.Default.Save, contentDescription = null)
-//                Spacer(Modifier.width(8.dp))
-//                Text(
-//                    text = "Save Category",
-//                    fontSize = 16.sp,
-//                    fontWeight = FontWeight.SemiBold
-//                )
-//            }
-//        }
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -125,33 +109,10 @@ fun CategoryAddScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "Category Details",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Organize fashion apparel, fabrics & accessory items into clear catalog groups.",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
             OutlinedTextField(
                 value = categoryName,
                 onValueChange = { categoryName = it },
-                label = { Text("Category Name *") },
+                label = { Text("${stringResource(R.string.category_name_label)} *") },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier

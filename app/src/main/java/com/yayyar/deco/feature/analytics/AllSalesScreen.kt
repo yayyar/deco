@@ -54,11 +54,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yayyar.deco.R
 import com.yayyar.deco.core.common.Formatters
 import com.yayyar.deco.core.database.model.OrderWithItems
 import com.yayyar.deco.core.ui.components.CurrencyText
@@ -124,12 +126,12 @@ fun AllSalesScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setSearchQuery(it) },
-                            placeholder = { Text("Search receipt, customer, item...", fontSize = 16.sp) },
+                            placeholder = { Text(stringResource(R.string.sales_search_hint), fontSize = 16.sp) },
                             singleLine = true,
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                     }
                                 }
                             },
@@ -143,7 +145,7 @@ fun AllSalesScreen(
                         )
                     } else {
                         Text(
-                            text = "All Sales"
+                            text = stringResource(R.string.sales_ledger_title)
                         )
                     }
                 },
@@ -160,7 +162,7 @@ fun AllSalesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -169,7 +171,7 @@ fun AllSalesScreen(
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
+                                contentDescription = stringResource(R.string.action_search)
                             )
                         }
                     }
@@ -196,7 +198,7 @@ fun AllSalesScreen(
                         FilterChip(
                             selected = timeRange == range,
                             onClick = { viewModel.setTimeRange(range) },
-                            label = { Text(range.displayName) },
+                            label = { Text(stringResource(range.titleRes)) },
                             shape = RoundedCornerShape(8.dp)
                         )
                     }
@@ -230,9 +232,9 @@ fun AllSalesScreen(
                             )
                             Text(
                                 text = if (searchQuery.isNotBlank())
-                                    "No sales match \"$searchQuery\""
+                                    stringResource(R.string.sales_no_match, searchQuery)
                                 else
-                                    "No sales recorded for this period",
+                                    stringResource(R.string.sales_no_orders),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 15.sp
@@ -267,12 +269,12 @@ fun AllSalesScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            text = "Orders Loaded",
+                                            text = stringResource(R.string.sales_orders_loaded),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Text(
-                                            text = "$totalSalesCount orders",
+                                            text = stringResource(R.string.sales_orders_count, totalSalesCount),
                                             fontSize = 16.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = AccentBlue
@@ -280,7 +282,7 @@ fun AllSalesScreen(
                                     }
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text(
-                                            text = "Total Revenue",
+                                            text = stringResource(R.string.sales_total_revenue),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -317,7 +319,7 @@ fun AllSalesScreen(
                                     ) {
                                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                                         Text(
-                                            text = "Loading more sales...",
+                                            text = stringResource(R.string.sales_loading_more),
                                             fontSize = 13.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -331,7 +333,7 @@ fun AllSalesScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Showing all ${orders.size} sales",
+                                        text = stringResource(R.string.sales_showing_all, orders.size),
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                     )
@@ -388,7 +390,7 @@ private fun SaleOrderCard(
                             color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Text(
-                                text = "Whole Sale",
+                                text = stringResource(R.string.pos_wholesale_mode),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -413,7 +415,7 @@ private fun SaleOrderCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${Formatters.formatDateTime(o.createdAt)} • ${orderWithItems.items.size} items",
+                    text = "${Formatters.formatDateTime(o.createdAt)} • ${stringResource(R.string.sales_items_count, orderWithItems.items.size)}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -471,7 +473,7 @@ private fun SaleOrderCard(
                 ) {
                     if (o.discountAmount > 0) {
                         Text(
-                            text = "Disc: -${Formatters.formatMmk(o.discountAmount)}",
+                            text = stringResource(R.string.sales_disc_format, Formatters.formatMmk(o.discountAmount)),
                             fontSize = 11.sp,
                             color = AccentGreen,
                             fontWeight = FontWeight.Medium
@@ -482,7 +484,7 @@ private fun SaleOrderCard(
                     }
                     if (o.deliFee > 0) {
                         Text(
-                            text = "Deli: +${Formatters.formatMmk(o.deliFee)}",
+                            text = stringResource(R.string.sales_deli_format, Formatters.formatMmk(o.deliFee)),
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium

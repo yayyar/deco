@@ -51,6 +51,9 @@ import com.yayyar.deco.ui.theme.AccentBlue
 import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentPurple
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun AnalyticsScreen(
     viewModel: AnalyticsViewModel,
@@ -80,7 +83,7 @@ fun AnalyticsScreen(
                 FilterChip(
                     selected = timeRange == range,
                     onClick = { viewModel.setTimeRange(range) },
-                    label = { Text(range.displayName) },
+                    label = { Text(stringResource(range.titleRes)) },
                     shape = RoundedCornerShape(8.dp)
                 )
             }
@@ -98,14 +101,14 @@ fun AnalyticsScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     KpiCard(
-                        title = "Total Revenue",
+                        title = stringResource(R.string.analytics_total_revenue),
                         amount = salesSummary.totalSales,
                         icon = Icons.AutoMirrored.Filled.TrendingUp,
                         iconColor = AccentGreen,
                         modifier = Modifier.weight(1f)
                     )
                     KpiCard(
-                        title = "Total Sales",
+                        title = stringResource(R.string.analytics_total_orders),
                         count = salesSummary.totalOrders,
                         icon = Icons.Default.Receipt,
                         iconColor = AccentBlue,
@@ -117,7 +120,7 @@ fun AnalyticsScreen(
             // Payment Breakdown Card
             item {
                 Text(
-                    text = "Payment",
+                    text = stringResource(R.string.analytics_payment_breakdown),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -160,14 +163,14 @@ fun AnalyticsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Total Discounts Given:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.analytics_total_discounts), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 CurrencyText(amount = salesSummary.totalDiscount, fontSize = 12.sp, color = AccentGreen)
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Total Delivery Collected:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.analytics_total_deli), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 CurrencyText(amount = salesSummary.totalDeli, fontSize = 12.sp)
                             }
                         }
@@ -183,12 +186,12 @@ fun AnalyticsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Top Selling",
+                        text = stringResource(R.string.analytics_top_products),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
                     IconButton(onClick = onNavigateToAllSellingProducts) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos ,contentDescription = "View all top selling products", modifier = Modifier.size(12.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = stringResource(R.string.analytics_view_all_top), modifier = Modifier.size(12.dp))
                     }
                 }
                 Card(
@@ -203,7 +206,7 @@ fun AnalyticsScreen(
 
                         if (topItems.isEmpty()) {
                             Text(
-                                text = "No sales recorded in this period",
+                                text = stringResource(R.string.state_no_data),
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -236,7 +239,7 @@ fun AnalyticsScreen(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Text(
-                                                text = "${item.totalQuantitySold} units sold",
+                                                text = stringResource(R.string.top_sellers_units_sold, item.totalQuantitySold),
                                                 fontSize = 11.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -265,12 +268,12 @@ fun AnalyticsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Recent Sales",
+                        text = stringResource(R.string.sales_ledger_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
                     IconButton(onClick = onNavigateToAllSales) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "View all sales", modifier = Modifier.size(12.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = stringResource(R.string.analytics_view_all_sales), modifier = Modifier.size(12.dp))
                     }
                 }
                 Card(
@@ -284,7 +287,7 @@ fun AnalyticsScreen(
                     ) {
                         if (allOrders.isEmpty()) {
                             Text(
-                                text = "No sales recorded yet",
+                                text = stringResource(R.string.sales_no_orders),
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

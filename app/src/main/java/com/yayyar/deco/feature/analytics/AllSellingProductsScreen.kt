@@ -54,11 +54,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yayyar.deco.R
 import com.yayyar.deco.core.database.model.TopSellingItem
 import com.yayyar.deco.core.ui.components.CurrencyText
 import com.yayyar.deco.ui.theme.AccentBlue
@@ -122,12 +124,12 @@ fun AllSellingProductsScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setSearchQuery(it) },
-                            placeholder = { Text("Search top selling...", fontSize = 16.sp) },
+                            placeholder = { Text(stringResource(R.string.top_sellers_search_hint), fontSize = 16.sp) },
                             singleLine = true,
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                     }
                                 }
                             },
@@ -141,7 +143,7 @@ fun AllSellingProductsScreen(
                         )
                     } else {
                         Text(
-                            text = "Top Selling Products",
+                            text = stringResource(R.string.top_sellers_title),
                         )
                     }
                 },
@@ -158,7 +160,7 @@ fun AllSellingProductsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -167,7 +169,7 @@ fun AllSellingProductsScreen(
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
+                                contentDescription = stringResource(R.string.action_search)
                             )
                         }
                     }
@@ -194,7 +196,7 @@ fun AllSellingProductsScreen(
                         FilterChip(
                             selected = timeRange == range,
                             onClick = { viewModel.setTimeRange(range) },
-                            label = { Text(range.displayName) },
+                            label = { Text(stringResource(range.titleRes)) },
                             shape = RoundedCornerShape(8.dp)
                         )
                     }
@@ -228,9 +230,9 @@ fun AllSellingProductsScreen(
                             )
                             Text(
                                 text = if (searchQuery.isNotBlank())
-                                    "No products match \"$searchQuery\""
+                                    stringResource(R.string.top_sellers_no_match, searchQuery)
                                 else
-                                    "No sales recorded for this period",
+                                    stringResource(R.string.sales_no_orders),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 15.sp
@@ -265,12 +267,12 @@ fun AllSellingProductsScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            text = "Total Units Sold",
+                                            text = stringResource(R.string.top_sellers_total_units),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Text(
-                                            text = "$totalUnits units",
+                                            text = stringResource(R.string.top_sellers_units_count, totalUnits),
                                             fontSize = 16.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = AccentBlue
@@ -278,7 +280,7 @@ fun AllSellingProductsScreen(
                                     }
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text(
-                                            text = "Total Revenue",
+                                            text = stringResource(R.string.sales_total_revenue),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -315,7 +317,7 @@ fun AllSellingProductsScreen(
                                     ) {
                                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                                         Text(
-                                            text = "Loading more products...",
+                                            text = stringResource(R.string.top_sellers_loading_more),
                                             fontSize = 13.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -329,7 +331,7 @@ fun AllSellingProductsScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Showing all ${items.size} top selling items",
+                                        text = stringResource(R.string.top_sellers_showing_all, items.size),
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                     )
@@ -430,7 +432,7 @@ private fun TopSellingItemCard(
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
-                        text = "${item.totalQuantitySold} sold",
+                        text = stringResource(R.string.top_sellers_sold_count, item.totalQuantitySold),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer

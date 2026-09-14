@@ -66,11 +66,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yayyar.deco.R
 import com.yayyar.deco.ui.theme.AccentBlue
 import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentPurple
@@ -133,14 +135,14 @@ fun PrinterScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Printers"
+                        text = stringResource(R.string.printer_title)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -166,7 +168,7 @@ fun PrinterScreen(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         } else {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh Bluetooth Devices")
+                            Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.printer_scan_btn))
                         }
                     }
                 },
@@ -191,8 +193,8 @@ fun PrinterScreen(
                     StatusCard(
                         icon = Icons.Outlined.Print,
                         iconColor = AccentBlue,
-                        title = "Printing in progress...",
-                        subtitle = "Rasterizing receipt bitmap and sending ESC/POS commands.",
+                        title = stringResource(R.string.printer_status_printing_title),
+                        subtitle = stringResource(R.string.printer_status_printing_sub),
                         isLoading = true
                     )
                 }
@@ -200,7 +202,7 @@ fun PrinterScreen(
                     StatusCard(
                         icon = Icons.Outlined.CheckCircle,
                         iconColor = AccentGreen,
-                        title = "Print Test Succeeded",
+                        title = stringResource(R.string.printer_status_success_title),
                         subtitle = state.message,
                         onDismiss = { viewModel.clearTestPrintStatus() }
                     )
@@ -209,7 +211,7 @@ fun PrinterScreen(
                     StatusCard(
                         icon = Icons.Outlined.ErrorOutline,
                         iconColor = AccentRed,
-                        title = "Print Test Failed",
+                        title = stringResource(R.string.printer_status_error_title),
                         subtitle = state.errorMessage,
                         onDismiss = { viewModel.clearTestPrintStatus() }
                     )
@@ -217,98 +219,9 @@ fun PrinterScreen(
                 is PrintTestState.Idle -> Unit
             }
 
-            // Active / Test Action Header Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(AccentPurple.copy(alpha = 0.15f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ReceiptLong,
-                                contentDescription = null,
-                                tint = AccentPurple,
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(14.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "ESC/POS Thermal Printer",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = selectedName?.let { "Active: $it ($selectedAddress)" }
-                                    ?: "No hardware printer selected (Simulated mode)",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (selectedAddress != null) AccentGreen else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                viewModel.runTestPrint(context)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Print,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Test Print", fontWeight = FontWeight.SemiBold)
-                        }
-
-                        OutlinedButton(
-                            onClick = { showAddDialog = true },
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Add Custom")
-                        }
-                    }
-                }
-            }
-
             // Paired / Discovered Printers Section
             Text(
-                text = "AVAILABLE PRINTERS",
+                text = stringResource(R.string.printer_available_header),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -338,13 +251,13 @@ fun PrinterScreen(
                             modifier = Modifier.size(40.dp)
                         )
                         Text(
-                            text = "No Bluetooth Printers Paired",
+                            text = stringResource(R.string.printer_no_paired_title),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Pair your Bluetooth thermal printer in Android Settings, or add manually above.",
+                            text = stringResource(R.string.printer_no_paired_sub),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -383,14 +296,14 @@ fun PrinterScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Receipt Capabilities",
+                        text = stringResource(R.string.printer_capabilities_title),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "• 58mm / 80mm ESC/POS Thermal protocol supported\n• Crisp Burmese Zawgyi & Myanmar3 Unicode bitmap rendering\n• High-contrast typography optimized for fast retail checkout",
+                        text = stringResource(R.string.printer_capabilities_sub),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 20.sp
@@ -476,7 +389,7 @@ private fun PrinterDeviceCard(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "ACTIVE",
+                                text = stringResource(R.string.printer_active_badge),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = AccentGreen,
@@ -498,7 +411,7 @@ private fun PrinterDeviceCard(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                 modifier = Modifier.height(34.dp)
             ) {
-                Text("Test", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.printer_test_short), style = MaterialTheme.typography.labelMedium)
             }
         }
     }
@@ -557,7 +470,7 @@ private fun StatusCard(
 
             if (onDismiss != null) {
                 TextButton(onClick = onDismiss) {
-                    Text("OK")
+                    Text(stringResource(R.string.action_ok))
                 }
             }
         }
@@ -576,7 +489,7 @@ private fun AddPrinterDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Printer Manually", fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.printer_add_manual_title), fontWeight = FontWeight.Bold) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -588,8 +501,8 @@ private fun AddPrinterDialog(
                         name = it
                         nameError = false
                     },
-                    label = { Text("Printer Name *") },
-                    placeholder = { Text("e.g. MPT-II POS Printer") },
+                    label = { Text(stringResource(R.string.printer_name_label)) },
+                    placeholder = { Text(stringResource(R.string.printer_name_hint)) },
                     isError = nameError,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -601,8 +514,8 @@ private fun AddPrinterDialog(
                         address = it
                         addressError = false
                     },
-                    label = { Text("Bluetooth MAC Address *") },
-                    placeholder = { Text("e.g. 00:11:22:33:44:55") },
+                    label = { Text(stringResource(R.string.printer_mac_label)) },
+                    placeholder = { Text(stringResource(R.string.printer_mac_hint)) },
                     isError = addressError,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -623,12 +536,12 @@ private fun AddPrinterDialog(
                     onAdd(name.trim(), address.trim())
                 }
             ) {
-                Text("Add & Select")
+                Text(stringResource(R.string.printer_add_select_btn))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

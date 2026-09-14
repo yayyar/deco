@@ -22,6 +22,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yayyar.deco.core.database.entity.ProductVariantEntity
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun StockAdjustmentDialog(
     productName: String,
@@ -34,7 +37,7 @@ fun StockAdjustmentDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Adjust Stock Quantity", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.stock_adj_title), fontWeight = FontWeight.Bold)
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -44,13 +47,13 @@ fun StockAdjustmentDialog(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Current Stock: ${variant.stockQty}",
+                    text = stringResource(R.string.stock_adj_current, variant.stockQty),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 OutlinedTextField(
                     value = stockText,
                     onValueChange = { stockText = it },
-                    label = { Text("New Stock Quantity") },
+                    label = { Text(stringResource(R.string.inv_stock_qty)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
@@ -64,12 +67,12 @@ fun StockAdjustmentDialog(
                     onSaveStock(newStock)
                 }
             ) {
-                Text("Update Stock")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

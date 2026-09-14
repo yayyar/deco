@@ -64,6 +64,9 @@ import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.database.model.ProductWithVariants
 import com.yayyar.deco.core.ui.components.ProductThumbnail
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ProductListScreen(
@@ -106,12 +109,12 @@ fun ProductListScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setSearchQuery(it) },
-                            placeholder = { Text("Search products...", fontSize = 16.sp) },
+                            placeholder = { Text(stringResource(R.string.inv_search_hint), fontSize = 16.sp) },
                             singleLine = true,
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                     }
                                 }
                             },
@@ -125,7 +128,7 @@ fun ProductListScreen(
                         )
                     } else {
                         Text(
-                            text = "Products"
+                            text = stringResource(R.string.inv_tab_products)
                         )
                     }
                 },
@@ -142,7 +145,7 @@ fun ProductListScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -151,7 +154,7 @@ fun ProductListScreen(
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
+                                contentDescription = stringResource(R.string.action_search)
                             )
                         }
                     }
@@ -161,7 +164,7 @@ fun ProductListScreen(
                         IconButton(onClick = { menuExpanded = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
-                                contentDescription = "More Options"
+                                contentDescription = null
                             )
                         }
                         DropdownMenu(
@@ -178,7 +181,7 @@ fun ProductListScreen(
                                             checked = showOnlyLowStock,
                                             onCheckedChange = null
                                         )
-                                        Text("Low Stock Only")
+                                        Text(stringResource(R.string.inv_filter_low_stock))
                                     }
                                 },
                                 onClick = {
@@ -198,7 +201,7 @@ fun ProductListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Product",
+                    contentDescription = stringResource(R.string.inv_add_product),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -220,7 +223,7 @@ fun ProductListScreen(
                     FilterChip(
                         selected = selectedCatId == null,
                         onClick = { viewModel.selectCategory(null) },
-                        label = { Text("All") },
+                        label = { Text(stringResource(R.string.pos_all_categories)) },
                         shape = RoundedCornerShape(8.dp)
                     )
                 }
@@ -256,10 +259,7 @@ fun ProductListScreen(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
                         Text(
-                            text = if (searchQuery.isNotBlank() || selectedCatId != null || showOnlyLowStock)
-                                "No products match your filters"
-                            else
-                                "No products available",
+                            text = stringResource(R.string.inv_no_products),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium
                         )

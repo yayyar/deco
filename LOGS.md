@@ -1,0 +1,223 @@
+---------------------------- PROCESS STARTED (15092) for package com.yayyar.deco ----------------------------
+2026-09-14 11:27:28.477 15092-15092 ApplicationLoaders      com.yayyar.deco                      D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+2026-09-14 11:27:28.477 15092-15092 ApplicationLoaders      com.yayyar.deco                      D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+2026-09-14 11:27:29.139 15092-15092 nativeloader            com.yayyar.deco                      D  Configuring clns-7 for other apk /data/app/~~0MEv4X5SKxvGW_8rU6hqZg==/com.yayyar.deco-wRL4wGY5GvwuzbT0NrKYcQ==/base.apk. target_sdk_version=37, uses_libraries=, library_path=/data/app/~~0MEv4X5SKxvGW_8rU6hqZg==/com.yayyar.deco-wRL4wGY5GvwuzbT0NrKYcQ==/lib/arm64:/data/app/~~0MEv4X5SKxvGW_8rU6hqZg==/com.yayyar.deco-wRL4wGY5GvwuzbT0NrKYcQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.yayyar.deco
+2026-09-14 11:27:29.157 15092-15092 GraphicsEnvironment     com.yayyar.deco                      V  Currently set values for:
+2026-09-14 11:27:29.158 15092-15092 GraphicsEnvironment     com.yayyar.deco                      V    angle_gl_driver_selection_pkgs=[]
+2026-09-14 11:27:29.158 15092-15092 GraphicsEnvironment     com.yayyar.deco                      V    angle_gl_driver_selection_values=[]
+2026-09-14 11:27:29.158 15092-15092 GraphicsEnvironment     com.yayyar.deco                      V  Global.Settings values are invalid: number of packages: 0, number of values: 0
+2026-09-14 11:27:29.158 15092-15092 GraphicsEnvironment     com.yayyar.deco                      V  Neither updatable production driver nor prerelease driver is supported.
+2026-09-14 11:27:29.255  2063-5394  AppWidgetSupplier       com.android.systemui                 E  Couldn't find any provider services packageName=com.yayyar.deco
+2026-09-14 11:27:29.274 15092-15092 ActivityThread          com.yayyar.deco                      D  com.yayyar.deco will use render engine as VK
+2026-09-14 11:27:29.275 15092-15092 HWUI                    com.yayyar.deco                      D  HWUI - treat SMPTE_170M as sRGB
+2026-09-14 11:27:29.279 15092-15114 HWUI                    com.yayyar.deco                      D  CacheManager constructor. deviceInfo=(1080, 1920)
+2026-09-14 11:27:29.279 15092-15114 libMEOW                 com.yayyar.deco                      D  meow new tls: 0xb400006ff4329ac0
+2026-09-14 11:27:29.280 15092-15114 libc                    com.yayyar.deco                      W  Access denied finding property "ro.vendor.mtk.gpu.glt"
+2026-09-14 11:27:29.280 15092-15114 libMEOW                 com.yayyar.deco                      D  meow reload base cfg path: na
+2026-09-14 11:27:29.280 15092-15114 libMEOW                 com.yayyar.deco                      D  meow reload overlay cfg path: na
+2026-09-14 11:27:29.284 15092-15114 QT                      com.yayyar.deco                      E  [QT]file does not exist
+2026-09-14 11:27:29.285 15092-15114 libMEOW                 com.yayyar.deco                      D  applied 1 plugins for [com.yayyar.deco]:
+2026-09-14 11:27:29.285 15092-15114 libMEOW                 com.yayyar.deco                      D    plugin 1: [libMEOW_gift.so]: 0xb400007053b3dc40
+2026-09-14 11:27:29.286 15092-15114 libMEOW                 com.yayyar.deco                      D  rebuild call chain: 0xb400006ff4342000
+2026-09-14 11:27:29.352 15092-15092 DecorView               com.yayyar.deco                      I  setWindowBackground: isPopOver=false color=fffafafa d=android.graphics.drawable.ColorDrawable@1c5c91d
+2026-09-14 11:27:29.355 15092-15092 PhoneWindow             com.yayyar.deco                      D  forceLight changed to false [] from com.android.internal.policy.PhoneWindow.updateForceLightNavigationBar:4536 com.android.internal.policy.PhoneWindow.setNavigationBarColor:4227 androidx.activity.EdgeToEdgeApi29.setUp:290 androidx.activity.EdgeToEdge.enable:89 androidx.activity.EdgeToEdge.enable$default:71 
+2026-09-14 11:27:29.383 15092-15092 ViewRootImpl            com.yayyar.deco                      I  dVRR is disabled
+2026-09-14 11:27:29.383 15092-15092 HardwareRenderer        com.yayyar.deco                      D  onDisplayChanged. displayId=0 current wxh=1080x2340 mLargest wxh=0x0
+2026-09-14 11:27:29.383 15092-15092 HWUI                    com.yayyar.deco                      W  Unknown dataspace 0
+2026-09-14 11:27:29.383 15092-15092 HardwareRenderer        com.yayyar.deco                      D  Set largestWidth and largestHeight as logical resolution. (1080x2340)
+2026-09-14 11:27:29.383 15092-15114 HWUI                    com.yayyar.deco                      D  setMaxSurfaceArea requested wxh=(1080,2340) requestedSurfaceArea(2527200) mMaxSurfaceArea(2073600)
+2026-09-14 11:27:29.384 15092-15114 NativeCust...ncyManager com.yayyar.deco                      D  [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+2026-09-14 11:27:29.395 15092-15092 InputTransport          com.yayyar.deco                      D  Input channel constructed: '9550d56', fd=131
+2026-09-14 11:27:29.396 15092-15092 InsetsController        com.yayyar.deco                      I  onStateChanged: host=com.yayyar.deco/com.yayyar.deco.MainActivity, from=android.view.ViewRootImpl.setView:1999, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 96 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(472, 0 - 608, 96), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 H -24.177777778 V 34.13333333333333 H 24.177777778 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 96) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {a24f0001 mType=navigationBars mFrame=[0,2298][1080,2340] mVisible=true mFlags=SUPPRESS_SCRIM mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {a24f0004 mType=systemGestures mFrame=[0,0][84,2340] mVisible=true mFlags= mSideHint=LEFT mBoundingRects=null}, InsetsSource: {a24f0005 mType=mandatorySystemGestures mFrame=[0,2250][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {a24f0006 mType=tappableElement mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {a24f0024 mType=systemGestures mFrame=[996,0][1080,2340] mVisible=true mFlags= mSideHint=RIGHT mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,96] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {67ef0000 mType=statusBars mFrame=[0,0][1080,96] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {67ef0005 mType=mandatorySystemGestures mFrame=[0,0][1080,130] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {67ef0006 mType=tappableElement mFrame=[0,0][1080,96] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+2026-09-14 11:27:29.398 15092-15092 VRI[MainAc...y]@5b7bddb com.yayyar.deco                      I  synced displayState. AttachInfo displayState=2
+2026-09-14 11:27:29.398 15092-15092 VRI[MainAc...y]@5b7bddb com.yayyar.deco                      I  setView = com.android.internal.policy.DecorView@bea5cb7 IsHRR=false TM=true
+2026-09-14 11:27:29.399 15092-15092 IDS_TAG                 com.yayyar.deco                      I  Starting IDS observe window
+2026-09-14 11:27:29.399 15092-15092 IDS_TAG                 com.yayyar.deco                      I  Getting Shared Preference for com.yayyar.deco.DecoApplication@a48fe1b uid = 10771
+2026-09-14 11:27:29.400 15092-15092 IDS_TAG                 com.yayyar.deco                      I  App com.yayyar.deco.DecoApplication@a48fe1b has not finished training
+2026-09-14 11:27:29.401 15092-15114 HWUI                    com.yayyar.deco                      D  HWUI - treat SMPTE_170M as sRGB
+2026-09-14 11:27:29.401 15092-15092 IDS_TAG                 com.yayyar.deco                      I  Closing IDS observe window
+2026-09-14 11:27:29.401 15092-15092 IDS_TAG                 com.yayyar.deco                      I  Getting Shared Preference for com.yayyar.deco.DecoApplication@a48fe1b uid = 10771
+2026-09-14 11:27:29.402 15092-15092 IDS_TAG                 com.yayyar.deco                      I  IDS count updated to 1 for com.yayyar.deco.DecoApplication@a48fe1b
+2026-09-14 11:27:29.609 15092-15092 com.yayyar.deco         com.yayyar.deco                      I  hiddenapi: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/compose/ui/platform/AndroidComposeView$Companion; (domain=app, TargetSdkVersion=37) using reflection: allowed
+2026-09-14 11:27:29.670 15092-15092 ComposeInternal         com.yayyar.deco                      E  Error was captured in composition. (Fix with AI)
+                                                                                                    java.lang.IllegalStateException: Expected an activity context for creating a HiltViewModelFactory but instead found: android.app.ContextImpl@2b27575
+                                                                                                    	at androidx.hilt.navigation.HiltViewModelFactory.create(HiltNavBackStackEntry.kt:70)
+                                                                                                    	at androidx.hilt.navigation.compose.HiltViewModelKt.createHiltViewModelFactory(HiltViewModel.kt:95)
+                                                                                                    	at com.yayyar.deco.MainActivityKt.DecoApp(MainActivity.kt:572)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6$lambda$5$lambda$4(MainActivity.kt:162)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda2.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:398)
+                                                                                                    	at androidx.compose.material3.TextKt.ProvideTextStyle(Text.kt:462)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt$MaterialTheme$2.invoke(MaterialTheme.kt:107)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt$MaterialTheme$2.invoke(MaterialTheme.kt:106)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt.MaterialTheme(MaterialTheme.kt:99)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt.MaterialTheme(MaterialTheme.kt:60)
+                                                                                                    	at com.yayyar.deco.ui.theme.ThemeKt.DecoTheme(Theme.kt:49)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6$lambda$5(MainActivity.kt:161)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6(MainActivity.kt:157)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.ui.platform.ComposeView.Content(ComposeView.android.kt:446)
+                                                                                                    	at androidx.compose.ui.platform.AbstractComposeView$ensureCompositionCreated$1.invoke(ComposeView.android.kt:265)
+                                                                                                    	at androidx.compose.ui.platform.AbstractComposeView$ensureCompositionCreated$1.invoke(ComposeView.android.kt:265)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.ui.platform.CompositionLocalsKt.ProvideCommonCompositionLocals(CompositionLocals.kt:217)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$ProvideAndroidCompositionLocals$2.invoke(AndroidCompositionLocals.android.kt:138)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$ProvideAndroidCompositionLocals$2.invoke(AndroidCompositionLocals.android.kt:137)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt.ProvideAndroidCompositionLocals(AndroidCompositionLocals.android.kt:126)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1$3.invoke(Wrapper.android.kt:142)
+2026-09-14 11:27:29.671 15092-15092 ComposeInternal         com.yayyar.deco                      E  	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1$3.invoke(Wrapper.android.kt:141) (Fix with AI)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:398)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1.invoke(Wrapper.android.kt:141)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1.invoke(Wrapper.android.kt:125)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.internal.Expect_jvmKt.invokeComposable(Expect.jvm.kt:24)
+                                                                                                    	at androidx.compose.runtime.ComposerImpl.doCompose-aFTiNEg(ComposerImpl.kt:2647)
+                                                                                                    	at androidx.compose.runtime.ComposerImpl.composeContent--ZbOJvo$runtime(ComposerImpl.kt:2551)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.composeContent(Composition.kt:835)
+                                                                                                    	at androidx.compose.runtime.Recomposer.composeInitial$runtime(Recomposer.kt:1266)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.composeInitial(Composition.kt:672)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.setContent(Composition.kt:639)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:125)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.setOnViewTreeOwnersAvailable(AndroidComposeView.android.kt:2153)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition.setContent(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition.onStateChanged(Wrapper.android.kt:170)
+                                                                                                    	at androidx.lifecycle.LifecycleRegistry$ObserverWithState.dispatchEvent(LifecycleRegistry.jvm.kt:313)
+                                                                                                    	at androidx.lifecycle.LifecycleRegistry.addObserver(LifecycleRegistry.jvm.kt:191)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:123)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.onAttachedToWindow(AndroidComposeView.android.kt:2248)
+                                                                                                    	at android.view.View.dispatchAttachedToWindow(View.java:24133)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3723)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewRootImpl.performTraversals(ViewRootImpl.java:4320)
+                                                                                                    	at android.view.ViewRootImpl.doTraversal(ViewRootImpl.java:3708)
+                                                                                                    	at android.view.ViewRootImpl$TraversalRunnable.run(ViewRootImpl.java:12542)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1751)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1760)
+                                                                                                    	at android.view.Choreographer.doCallbacks(Choreographer.java:1216)
+                                                                                                    	at android.view.Choreographer.doFrame(Choreographer.java:1142)
+                                                                                                    	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1707)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:959)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:100)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:257)
+                                                                                                    	at android.os.Looper.loop(Looper.java:342)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:9638)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:619)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:929)
+2026-09-14 11:27:29.671 15092-15092 AndroidRuntime          com.yayyar.deco                      D  Shutting down VM
+2026-09-14 11:27:29.673 15092-15092 AndroidRuntime          com.yayyar.deco                      E  FATAL EXCEPTION: main (Fix with AI)
+                                                                                                    Process: com.yayyar.deco, PID: 15092
+                                                                                                    java.lang.IllegalStateException: Expected an activity context for creating a HiltViewModelFactory but instead found: android.app.ContextImpl@2b27575
+                                                                                                    	at androidx.hilt.navigation.HiltViewModelFactory.create(HiltNavBackStackEntry.kt:70)
+                                                                                                    	at androidx.hilt.navigation.compose.HiltViewModelKt.createHiltViewModelFactory(HiltViewModel.kt:95)
+                                                                                                    	at com.yayyar.deco.MainActivityKt.DecoApp(MainActivity.kt:572)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6$lambda$5$lambda$4(MainActivity.kt:162)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda2.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:398)
+                                                                                                    	at androidx.compose.material3.TextKt.ProvideTextStyle(Text.kt:462)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt$MaterialTheme$2.invoke(MaterialTheme.kt:107)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt$MaterialTheme$2.invoke(MaterialTheme.kt:106)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt.MaterialTheme(MaterialTheme.kt:99)
+                                                                                                    	at androidx.compose.material3.MaterialThemeKt.MaterialTheme(MaterialTheme.kt:60)
+                                                                                                    	at com.yayyar.deco.ui.theme.ThemeKt.DecoTheme(Theme.kt:49)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6$lambda$5(MainActivity.kt:161)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at com.yayyar.deco.MainActivity.onCreate$lambda$6(MainActivity.kt:157)
+                                                                                                    	at com.yayyar.deco.MainActivity$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.ui.platform.ComposeView.Content(ComposeView.android.kt:446)
+                                                                                                    	at androidx.compose.ui.platform.AbstractComposeView$ensureCompositionCreated$1.invoke(ComposeView.android.kt:265)
+                                                                                                    	at androidx.compose.ui.platform.AbstractComposeView$ensureCompositionCreated$1.invoke(ComposeView.android.kt:265)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.ui.platform.CompositionLocalsKt.ProvideCommonCompositionLocals(CompositionLocals.kt:217)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$ProvideAndroidCompositionLocals$2.invoke(AndroidCompositionLocals.android.kt:138)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$ProvideAndroidCompositionLocals$2.invoke(AndroidCompositionLocals.android.kt:137)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:378)
+                                                                                                    	at androidx.compose.ui.platform.AndroidCompositionLocals_androidKt.ProvideAndroidCompositionLocals(AndroidCompositionLocals.android.kt:126)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1$3.invoke(Wrapper.android.kt:142)
+2026-09-14 11:27:29.674 15092-15092 AndroidRuntime          com.yayyar.deco                      E  	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1$3.invoke(Wrapper.android.kt:141) (Fix with AI)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.CompositionLocalKt.CompositionLocalProvider(CompositionLocal.kt:398)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1.invoke(Wrapper.android.kt:141)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1$1.invoke(Wrapper.android.kt:125)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:122)
+                                                                                                    	at androidx.compose.runtime.internal.ComposableLambdaImpl.invoke(ComposableLambda.kt:52)
+                                                                                                    	at androidx.compose.runtime.internal.Expect_jvmKt.invokeComposable(Expect.jvm.kt:24)
+                                                                                                    	at androidx.compose.runtime.ComposerImpl.doCompose-aFTiNEg(ComposerImpl.kt:2647)
+                                                                                                    	at androidx.compose.runtime.ComposerImpl.composeContent--ZbOJvo$runtime(ComposerImpl.kt:2551)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.composeContent(Composition.kt:835)
+                                                                                                    	at androidx.compose.runtime.Recomposer.composeInitial$runtime(Recomposer.kt:1266)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.composeInitial(Composition.kt:672)
+                                                                                                    	at androidx.compose.runtime.CompositionImpl.setContent(Composition.kt:639)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:125)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.setOnViewTreeOwnersAvailable(AndroidComposeView.android.kt:2153)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition.setContent(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition.onStateChanged(Wrapper.android.kt:170)
+                                                                                                    	at androidx.lifecycle.LifecycleRegistry$ObserverWithState.dispatchEvent(LifecycleRegistry.jvm.kt:313)
+                                                                                                    	at androidx.lifecycle.LifecycleRegistry.addObserver(LifecycleRegistry.jvm.kt:191)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:123)
+                                                                                                    	at androidx.compose.ui.platform.WrappedComposition$setContent$1.invoke(Wrapper.android.kt:116)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.onAttachedToWindow(AndroidComposeView.android.kt:2248)
+                                                                                                    	at android.view.View.dispatchAttachedToWindow(View.java:24133)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3723)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewGroup.dispatchAttachedToWindow(ViewGroup.java:3730)
+                                                                                                    	at android.view.ViewRootImpl.performTraversals(ViewRootImpl.java:4320)
+                                                                                                    	at android.view.ViewRootImpl.doTraversal(ViewRootImpl.java:3708)
+                                                                                                    	at android.view.ViewRootImpl$TraversalRunnable.run(ViewRootImpl.java:12542)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1751)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1760)
+                                                                                                    	at android.view.Choreographer.doCallbacks(Choreographer.java:1216)
+                                                                                                    	at android.view.Choreographer.doFrame(Choreographer.java:1142)
+                                                                                                    	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1707)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:959)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:100)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:257)
+                                                                                                    	at android.os.Looper.loop(Looper.java:342)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:9638)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:619)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:929)
+2026-09-14 11:27:29.692 15092-15092 Process                 com.yayyar.deco                      I  Sending signal. PID: 15092 SIG: 9
+---------------------------- PROCESS ENDED (15092) for package com.yayyar.deco ----------------------------

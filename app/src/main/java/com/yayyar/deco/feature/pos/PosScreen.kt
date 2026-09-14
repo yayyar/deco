@@ -87,6 +87,8 @@ import com.yayyar.deco.core.printer.ReceiptData
 import com.yayyar.deco.core.ui.components.CurrencyText
 import com.yayyar.deco.core.ui.components.ProductThumbnail
 import com.yayyar.deco.core.ui.components.StockBadge
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
 import com.yayyar.deco.ui.theme.AccentGreen
 import com.yayyar.deco.ui.theme.AccentRed
 import kotlinx.coroutines.launch
@@ -225,7 +227,7 @@ fun PosScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                        Text("Deducting inventory and completing sale...")
+                        Text(stringResource(R.string.state_loading))
                     }
                 }
             }
@@ -243,11 +245,11 @@ fun PosScreen(
         is Resource.Error -> {
             androidx.compose.material3.AlertDialog(
                 onDismissRequest = { viewModel.dismissCheckoutState() },
-                title = { Text("Checkout Error", fontWeight = FontWeight.Bold, color = AccentRed) },
+                title = { Text(stringResource(R.string.receipt_print_error), fontWeight = FontWeight.Bold, color = AccentRed) },
                 text = { Text(state.message) },
                 confirmButton = {
                     Button(onClick = { viewModel.dismissCheckoutState() }) {
-                        Text("OK")
+                        Text(stringResource(R.string.action_confirm))
                     }
                 }
             )
@@ -281,7 +283,7 @@ private fun CatalogPane(
                     FilterChip(
                         selected = selectedCatId == null,
                         onClick = { onSelectCategory(null) },
-                        label = { Text("All / အားလုံး") },
+                        label = { Text(stringResource(R.string.pos_all_categories)) },
                         shape = RoundedCornerShape(8.dp)
                     )
                 }
@@ -508,7 +510,7 @@ private fun ProductVariantSelectionDialog(
                             shape = RoundedCornerShape(6.dp)
                         ) {
                             Text(
-                                text = "Whole Sale",
+                                text = stringResource(R.string.pos_wholesale_mode),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -527,7 +529,7 @@ private fun ProductVariantSelectionDialog(
                             .padding(vertical = 24.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("No variants available for this product", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.state_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 } else {
                     // Variant Buttons for Quick Tap Entry
@@ -604,7 +606,7 @@ private fun ProductVariantSelectionDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             }
@@ -645,14 +647,14 @@ private fun CartPane(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(3.dp))
                     Text(
-                        text = "Cart (${cartState.totalItemCount})",
+                        text = "${stringResource(R.string.pos_order_cart)} (${cartState.totalItemCount})",
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp
                     )
                 }
                 if (cartState.items.isNotEmpty()) {
                     TextButton(onClick = onClearCart) {
-                        Text("CLEAN", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.pos_clear_cart), color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -675,7 +677,7 @@ private fun CartPane(
                         )
                         Spacer(Modifier.height(3.dp))
                         Text(
-                            text = "Cart is empty",
+                            text = stringResource(R.string.pos_cart_empty),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -735,7 +737,7 @@ private fun CartPane(
                                                 shape = RoundedCornerShape(4.dp)
                                             ) {
                                                 Text(
-                                                    text = "Whole",
+                                                    text = stringResource(R.string.pos_wholesale_mode),
                                                     fontSize = 9.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -822,7 +824,7 @@ private fun CartPane(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Total:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.pos_grand_total), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     CurrencyText(
                         amount = cartState.grandTotal,
                         color = MaterialTheme.colorScheme.primary,
@@ -850,13 +852,12 @@ private fun CartPane(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { onSetSaleType(SaleType.RETAIL) }
-//                                .padding(vertical = 8.dp)
                         ) {
                             Text(
-                                text = "Retail Sale",
+                                text = stringResource(R.string.pos_retail_mode),
                                 fontSize = 12.sp,
                                 fontWeight = if (isRetail) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isRetail) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (isRetail) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(vertical = 4.dp)
@@ -866,18 +867,17 @@ private fun CartPane(
                         val isWholesale = cartState.saleType == SaleType.WHOLESALE
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = if (isWholesale) MaterialTheme.colorScheme.background else Color.Transparent,
+                            color = if (isWholesale) MaterialTheme.colorScheme.primary else Color.Transparent,
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { onSetSaleType(SaleType.WHOLESALE) }
-//                                .padding(vertical = 8.dp)
                         ) {
                             Text(
-                                text = "Whole Sale",
+                                text = stringResource(R.string.pos_wholesale_mode),
                                 fontSize = 12.sp,
                                 fontWeight = if (isWholesale) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isWholesale) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (isWholesale) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(vertical = 4.dp)
@@ -902,7 +902,7 @@ private fun CartPane(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.BookmarkAdd,
-                            contentDescription = "Draft",
+                            contentDescription = stringResource(R.string.pos_save_draft),
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -916,7 +916,7 @@ private fun CartPane(
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text("Place Order", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.checkout_title), fontWeight = FontWeight.Bold)
                     }
                 }
             }

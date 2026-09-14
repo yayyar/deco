@@ -27,16 +27,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
+import com.yayyar.deco.R
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Calendar
 import javax.inject.Inject
 
-enum class TimeRange(val displayName: String) {
-    TODAY("Today"),
-    THIS_WEEK("This Week"),
-    THIS_MONTH("This Month"),
-    ALL_TIME("All Time");
+enum class TimeRange(val displayName: String, val titleRes: Int) {
+    TODAY("Today", R.string.analytics_period_today),
+    THIS_WEEK("This Week", R.string.analytics_period_week),
+    THIS_MONTH("This Month", R.string.analytics_period_month),
+    ALL_TIME("All Time", R.string.analytics_period_all);
 
     fun getTimestamps(): Pair<Long, Long> {
         val cal = Calendar.getInstance()

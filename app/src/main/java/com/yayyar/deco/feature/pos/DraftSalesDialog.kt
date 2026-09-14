@@ -55,6 +55,9 @@ import com.yayyar.deco.ui.theme.AccentGold
 import com.yayyar.deco.ui.theme.AccentRed
 import com.yayyar.deco.ui.theme.PrimaryLight
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun DraftSalesDialog(
     draftOrders: List<OrderWithItems>,
@@ -74,7 +77,7 @@ fun DraftSalesDialog(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Draft Sales",
+                        text = stringResource(R.string.drafts_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
@@ -100,13 +103,13 @@ fun DraftSalesDialog(
                             modifier = Modifier.size(48.dp)
                         )
                         Text(
-                            text = "No Draft Sales Saved",
+                            text = stringResource(R.string.drafts_empty),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "You can park a sale by tapping 'Draft' during checkout",
+                            text = stringResource(R.string.drafts_empty_sub),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -135,7 +138,7 @@ fun DraftSalesDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.action_close))
             }
         }
     )
@@ -143,8 +146,8 @@ fun DraftSalesDialog(
     deletingDraftId?.let { draftId ->
         AlertDialog(
             onDismissRequest = { deletingDraftId = null },
-            title = { Text("Delete Draft Sale") },
-            text = { Text("Are you sure you want to discard this draft sale? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.drafts_delete)) },
+            text = { Text(stringResource(R.string.drafts_delete_confirm)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -153,12 +156,12 @@ fun DraftSalesDialog(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.action_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deletingDraftId = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )

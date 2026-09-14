@@ -40,6 +40,9 @@ import com.yayyar.deco.core.printer.ReceiptData
 import com.yayyar.deco.core.ui.components.CurrencyText
 import com.yayyar.deco.ui.theme.AccentGreen
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun ReceiptSuccessDialog(
     receiptData: ReceiptData,
@@ -70,12 +73,12 @@ fun ReceiptSuccessDialog(
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = "Payment Completed!",
+                    text = stringResource(R.string.receipt_success_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
                 Text(
-                    text = receiptData.receiptNumber,
+                    text = "${stringResource(R.string.receipt_number_label)}: ${receiptData.receiptNumber}",
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -95,7 +98,7 @@ fun ReceiptSuccessDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Items (${receiptData.items.size}):")
+                        Text("${stringResource(R.string.pos_items_count, receiptData.items.size)}:")
                         Text("${receiptData.items.sumOf { it.quantity }} pcs", fontWeight = FontWeight.SemiBold)
                     }
 
@@ -103,7 +106,7 @@ fun ReceiptSuccessDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Grand Total:", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.checkout_grand_total_label), fontWeight = FontWeight.Bold)
                         CurrencyText(
                             amount = receiptData.grandTotal,
                             color = MaterialTheme.colorScheme.primary,
@@ -115,7 +118,7 @@ fun ReceiptSuccessDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Payment:", fontSize = 13.sp)
+                        Text(stringResource(R.string.checkout_payment_method), fontSize = 13.sp)
                         Text(receiptData.paymentType, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                     }
 
@@ -124,7 +127,7 @@ fun ReceiptSuccessDialog(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Change Returned:", fontSize = 13.sp)
+                            Text(stringResource(R.string.checkout_change_returned), fontSize = 13.sp)
                             CurrencyText(amount = receiptData.changeReturned, fontSize = 13.sp, color = AccentGreen)
                         }
                     }
@@ -143,7 +146,7 @@ fun ReceiptSuccessDialog(
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Share", fontSize = 12.sp)
+                    Text(stringResource(R.string.action_share), fontSize = 12.sp)
                 }
 
                 OutlinedButton(
@@ -153,7 +156,7 @@ fun ReceiptSuccessDialog(
                 ) {
                     Icon(Icons.Default.Print, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Print", fontSize = 12.sp)
+                    Text(stringResource(R.string.action_print), fontSize = 12.sp)
                 }
             }
         },
@@ -163,7 +166,7 @@ fun ReceiptSuccessDialog(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Start New Sale")
+                Text(stringResource(R.string.receipt_new_sale_btn))
             }
         }
     )

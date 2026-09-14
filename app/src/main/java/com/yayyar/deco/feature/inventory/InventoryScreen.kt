@@ -44,6 +44,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @Composable
 fun InventoryScreen(
     viewModel: InventoryViewModel,
@@ -72,17 +75,17 @@ fun InventoryScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 HubGridCard(
-                    title = "Products",
-                    itemCount = "${allProducts.size} Items",
+                    title = stringResource(R.string.inv_tab_products),
+                    itemCount = "${allProducts.size}",
                     icon = Icons.Default.Checkroom,
-                    badgeText =  null, // if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    badgeText =  null,
                     onClick = onNavigateToProducts,
                     modifier = Modifier.weight(1f)
                 )
 
                 HubGridCard(
-                    title = "Categories",
-                    itemCount = "${categories.size} Groups",
+                    title = stringResource(R.string.inv_tab_categories),
+                    itemCount = "${categories.size}",
                     icon = Icons.Default.Style,
                     badgeText = null,
                     onClick = onNavigateToCategories,
@@ -96,17 +99,17 @@ fun InventoryScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 HubListCard(
-                    title = "Products",
-                    subtitle = "Manage inventory items, barcodes, sizes, patterns & stock",
+                    title = stringResource(R.string.inv_tab_products),
+                    subtitle = "${allProducts.size} items",
                     itemCount = "${allProducts.size}",
                     icon = Icons.Default.Checkroom,
-                    badgeText = null, //if (lowStockCount > 0) "$lowStockCount Low Stock" else null,
+                    badgeText = null,
                     onClick = onNavigateToProducts
                 )
 
                 HubListCard(
-                    title = "Categories",
-                    subtitle = "Organize fashion apparel, fabrics & accessory collections",
+                    title = stringResource(R.string.inv_tab_categories),
+                    subtitle = "${categories.size} categories",
                     itemCount = "${categories.size}",
                     icon = Icons.Default.Style,
                     badgeText = null,

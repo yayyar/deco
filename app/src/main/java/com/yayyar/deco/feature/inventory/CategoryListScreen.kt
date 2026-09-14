@@ -56,6 +56,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yayyar.deco.core.database.entity.CategoryEntity
 
+import androidx.compose.ui.res.stringResource
+import com.yayyar.deco.R
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryListScreen(
@@ -97,7 +100,7 @@ fun CategoryListScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setCategorySearchQuery(it) },
-                            placeholder = { Text("Search categories...") },
+                            placeholder = { Text(stringResource(R.string.action_search)) },
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent,
@@ -109,14 +112,14 @@ fun CategoryListScreen(
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setCategorySearchQuery("") }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                     }
                                 }
                             }
                         )
                     } else {
                         Text(
-                            text = "Categories"
+                            text = stringResource(R.string.category_list_title)
                         )
                     }
                 },
@@ -131,7 +134,7 @@ fun CategoryListScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -140,7 +143,7 @@ fun CategoryListScreen(
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search Categories"
+                                contentDescription = stringResource(R.string.action_search)
                             )
                         }
                     }
@@ -153,7 +156,7 @@ fun CategoryListScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Category")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.category_add_title))
             }
         }
     ) { innerPadding ->
@@ -181,10 +184,7 @@ fun CategoryListScreen(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
                         Text(
-                            text = if (searchQuery.isNotBlank())
-                                "No categories match '$searchQuery'"
-                            else
-                                "No categories yet",
+                            text = stringResource(R.string.category_no_categories),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium
                         )
@@ -240,7 +240,7 @@ fun CategoryListScreen(
                                             fontWeight = FontWeight.SemiBold
                                         )
                                         Text(
-                                            text = "$productCount ${if (productCount == 1) "Product" else "Products"}",
+                                            text = "$productCount ${stringResource(R.string.inv_tab_products)}",
                                             fontSize = 13.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -250,7 +250,7 @@ fun CategoryListScreen(
                                 IconButton(onClick = { categoryToDelete = cat }) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete Category",
+                                        contentDescription = stringResource(R.string.action_delete),
                                         tint = MaterialTheme.colorScheme.error
                                     )
                                 }
@@ -264,16 +264,12 @@ fun CategoryListScreen(
 
     // Delete Confirmation Dialog
     categoryToDelete?.let { cat ->
-        val associatedCount = allProducts.count { it.product.categoryId == cat.id }
         AlertDialog(
             onDismissRequest = { categoryToDelete = null },
-            title = { Text("Delete Category") },
+            title = { Text(stringResource(R.string.action_delete)) },
             text = {
                 Text(
-                    text = if (associatedCount > 0)
-                        "Deleting '${cat.name}' will unassign $associatedCount products in this category. Continue?"
-                    else
-                        "Are you sure you want to delete category '${cat.name}'?"
+                    text = stringResource(R.string.category_delete_confirm, cat.name)
                 )
             },
             confirmButton = {
@@ -283,12 +279,12 @@ fun CategoryListScreen(
                         categoryToDelete = null
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
