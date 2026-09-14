@@ -15,11 +15,14 @@ interface PreferencesRepository {
     val selectedPrinterAddress: StateFlow<String?>
     val selectedPrinterName: StateFlow<String?>
     val isGridView: StateFlow<Boolean>
+    val selectedThemeSeed: StateFlow<String>
+    val selectedThemeStyle: StateFlow<String>
 
     fun setDarkMode(enabled: Boolean?)
     fun setSelectedLanguage(lang: String)
     fun setSelectedPrinter(address: String?, name: String?)
     fun setGridView(isGrid: Boolean)
+    fun setSelectedTheme(seed: String, style: String)
 }
 
 @Singleton
@@ -45,6 +48,12 @@ class PreferencesRepositoryImpl @Inject constructor(
     private val _isGridView = MutableStateFlow(readGridView())
     override val isGridView: StateFlow<Boolean> = _isGridView.asStateFlow()
 
+    private val _selectedThemeSeed = MutableStateFlow(readThemeSeed())
+    override val selectedThemeSeed: StateFlow<String> = _selectedThemeSeed.asStateFlow()
+
+    private val _selectedThemeStyle = MutableStateFlow(readThemeStyle())
+    override val selectedThemeStyle: StateFlow<String> = _selectedThemeStyle.asStateFlow()
+
     private fun readDarkMode(): Boolean? {
         if (!prefs.contains(KEY_DARK_MODE)) return null // Follow system
         return prefs.getBoolean(KEY_DARK_MODE, false)
@@ -64,6 +73,14 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     private fun readGridView(): Boolean {
         return prefs.getBoolean(KEY_ITEM_LAYOUT_GRID, true)
+    }
+
+    private fun readThemeSeed(): String {
+        return prefs.getString(KEY_THEME_SEED, "TEAL") ?: "TEAL"
+    }
+
+    private fun readThemeStyle(): String {
+        return prefs.getString(KEY_THEME_STYLE, "TONAL_SPOT") ?: "TONAL_SPOT"
     }
 
     override fun setDarkMode(enabled: Boolean?) {
@@ -98,11 +115,23 @@ class PreferencesRepositoryImpl @Inject constructor(
         _isGridView.value = isGrid
     }
 
+    override fun setSelectedTheme(seed: String, style: String) {
+        prefs.edit().apply {
+            putString(KEY_THEME_SEED, seed)
+            putString(KEY_THEME_STYLE, style)
+            apply()
+        }
+        _selectedThemeSeed.value = seed
+        _selectedThemeStyle.value = style
+    }
+
     companion object {
         private const val KEY_DARK_MODE = "pref_dark_mode"
         private const val KEY_LANGUAGE = "pref_language"
         private const val KEY_PRINTER_ADDRESS = "pref_printer_address"
         private const val KEY_PRINTER_NAME = "pref_printer_name"
         private const val KEY_ITEM_LAYOUT_GRID = "pref_item_layout_grid"
+        private const val KEY_THEME_SEED = "pref_theme_seed"
+        private const val KEY_THEME_STYLE = "pref_theme_style"
     }
 }

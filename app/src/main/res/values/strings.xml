@@ -34,7 +34,7 @@
 
     <!-- POS Screen & Cart -->
     <string name="pos_search_hint">Search product name or barcode…</string>
-    <string name="pos_all_categories">All Items</string>
+    <string name="pos_all_categories">All</string>
     <string name="pos_retail_mode">Retail</string>
     <string name="pos_wholesale_mode">Wholesale</string>
     <string name="pos_order_cart">Order Cart</string>
@@ -196,6 +196,8 @@
     <string name="settings_dark_mode">Dark Mode</string>
     <string name="settings_dark_enabled">Dark theme enabled</string>
     <string name="settings_light_enabled">Light theme enabled</string>
+    <string name="settings_theme_title">Theme &amp; Colors</string>
+    <string name="settings_theme_sub">%1$s • %2$s</string>
     <string name="settings_language">Language</string>
     <string name="settings_item_layout">Item Layout</string>
     <string name="settings_item_layout_grid">Grid</string>
@@ -210,6 +212,44 @@
     <string name="settings_lang_en">English (US)</string>
     <string name="settings_lang_my">Myanmar (မြန်မာ)</string>
     <string name="settings_lang_my_sub">မြန်မာဘာသာ (Unicode)</string>
+
+    <!-- Theme Customization Screen -->
+    <string name="theme_screen_title">App Theme</string>
+    <string name="theme_preview_title">Live Theme Preview</string>
+    <string name="theme_preview_pos_sample">DeCo POS • Fashion Store</string>
+    <string name="theme_preview_item_sample">Premium Linen Shirt (M) • 1x</string>
+    <string name="theme_preview_badge">Active Scheme</string>
+    <string name="theme_seed_section_title">Primary Accent Palette</string>
+    <string name="theme_seed_section_sub">Select the core color for branding and buttons</string>
+    <string name="theme_style_section_title">Material 3 Color Scheme Style</string>
+    <string name="theme_style_section_sub">Select algorithmic tonal harmony and contrast profile</string>
+    <string name="theme_seed_teal">Emerald Teal</string>
+    <string name="theme_seed_blue">Sapphire Blue</string>
+    <string name="theme_seed_indigo">Royal Indigo</string>
+    <string name="theme_seed_purple">Amethyst Purple</string>
+    <string name="theme_seed_rose">Crimson Rose</string>
+    <string name="theme_seed_orange">Sunset Amber</string>
+    <string name="theme_seed_emerald">Botanical Green</string>
+    <string name="theme_seed_slate">Corporate Slate</string>
+    <string name="theme_seed_monochrome">Obsidian Charcoal</string>
+    <string name="theme_style_tonal_spot">Tonal Spot</string>
+    <string name="theme_style_tonal_spot_desc">Material 3 balanced default with harmonious tonal shifts</string>
+    <string name="theme_style_fidelity">Fidelity</string>
+    <string name="theme_style_fidelity_desc">Maintains exact seed hue with true color fidelity</string>
+    <string name="theme_style_vibrant">Vibrant</string>
+    <string name="theme_style_vibrant_desc">High saturation and energetic complementary accents</string>
+    <string name="theme_style_expressive">Expressive</string>
+    <string name="theme_style_expressive_desc">Warm, playful contrast with punchy secondary tones</string>
+    <string name="theme_style_neutral">Neutral</string>
+    <string name="theme_style_neutral_desc">Calm, low-chroma styling for a focused workspace</string>
+    <string name="theme_style_monochrome">Monochrome</string>
+    <string name="theme_style_monochrome_desc">Pure minimalist grayscale with high-contrast accents</string>
+    <string name="theme_style_rainbow">Rainbow</string>
+    <string name="theme_style_rainbow_desc">Multi-hued vivid palette across primary, secondary &amp; tertiary</string>
+    <string name="theme_style_fruit_salad">Fruit Salad</string>
+    <string name="theme_style_fruit_salad_desc">Zesty two-tone contrast with spirited citrus and berry tones</string>
+    <string name="theme_style_content">Content</string>
+    <string name="theme_style_content_desc">Soft, content-first palette letting your products shine</string>
 
     <!-- Payment Methods Screen -->
     <string name="payment_method_title">Payment Methods</string>

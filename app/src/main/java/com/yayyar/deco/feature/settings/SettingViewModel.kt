@@ -22,6 +22,8 @@ class SettingViewModel @Inject constructor(
     val selectedLanguage: StateFlow<String> = preferencesRepository.selectedLanguage
     val selectedPrinterName: StateFlow<String?> = preferencesRepository.selectedPrinterName
     val isGridView: StateFlow<Boolean> = preferencesRepository.isGridView
+    val selectedThemeSeed: StateFlow<String> = preferencesRepository.selectedThemeSeed
+    val selectedThemeStyle: StateFlow<String> = preferencesRepository.selectedThemeStyle
 
     val activePaymentMethodsCount: StateFlow<Int> = paymentMethodRepository.getActivePaymentMethodsFlow()
         .map { it.size }
@@ -41,5 +43,9 @@ class SettingViewModel @Inject constructor(
 
     fun setGridView(isGrid: Boolean) {
         preferencesRepository.setGridView(isGrid)
+    }
+
+    fun setTheme(seed: String, style: String) {
+        preferencesRepository.setSelectedTheme(seed, style)
     }
 }

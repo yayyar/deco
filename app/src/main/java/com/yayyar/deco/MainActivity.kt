@@ -103,6 +103,8 @@ import com.yayyar.deco.core.common.LocaleHelper
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
+import com.yayyar.deco.feature.settings.ThemeScreen
+
 enum class PosDestination(
     val titleRes: Int,
     val icon: ImageVector
@@ -124,6 +126,7 @@ sealed interface AppDestination : java.io.Serializable {
     data object Settings : AppDestination
     data object PaymentMethods : AppDestination
     data object Printers : AppDestination
+    data object ThemeSettings : AppDestination
 }
 
 @AndroidEntryPoint(ComponentActivity::class)
@@ -143,6 +146,8 @@ class MainActivity : Hilt_MainActivity() {
         setContent {
             val darkModePref by preferencesRepository.isDarkMode.collectAsState()
             val languagePref by preferencesRepository.selectedLanguage.collectAsState()
+            val themeSeed by preferencesRepository.selectedThemeSeed.collectAsState()
+            val themeStyle by preferencesRepository.selectedThemeStyle.collectAsState()
             val isDark = darkModePref ?: isSystemInDarkTheme()
 
             val baseContext = LocalContext.current
@@ -158,7 +163,11 @@ class MainActivity : Hilt_MainActivity() {
                 LocalContext provides localizedContext,
                 LocalConfiguration provides localizedConfiguration
             ) {
-                DecoTheme(darkTheme = isDark) {
+                DecoTheme(
+                    darkTheme = isDark,
+                    themeSeed = themeSeed,
+                    themeStyle = themeStyle
+                ) {
                     DecoApp(preferencesRepository = preferencesRepository)
                 }
             }
@@ -309,6 +318,7 @@ fun DecoApp(
                             onNavigateToAllSales = { appDestination = AppDestination.AllSales },
                             onNavigateToPaymentMethods = { appDestination = AppDestination.PaymentMethods },
                             onNavigateToPrinters = { appDestination = AppDestination.Printers },
+                            onNavigateToThemeSettings = { appDestination = AppDestination.ThemeSettings },
                             topBar = if (isPosTablet) topBarContent else ({}),
                             modifier = if (isPosTablet) Modifier.fillMaxSize() else Modifier.padding(innerPadding)
                         )
@@ -367,7 +377,8 @@ fun DecoApp(
             SettingScreen(
                 onBack = { appDestination = AppDestination.Main(PosDestination.POS) },
                 onNavigateToPaymentMethods = { appDestination = AppDestination.PaymentMethods },
-                onNavigateToPrinters = { appDestination = AppDestination.Printers }
+                onNavigateToPrinters = { appDestination = AppDestination.Printers },
+                onNavigateToThemeSettings = { appDestination = AppDestination.ThemeSettings }
             )
         }
         is AppDestination.PaymentMethods -> {
@@ -377,6 +388,11 @@ fun DecoApp(
         }
         is AppDestination.Printers -> {
             PrinterScreen(
+                onBack = { appDestination = AppDestination.Main(PosDestination.SETTINGS) }
+            )
+        }
+        is AppDestination.ThemeSettings -> {
+            ThemeScreen(
                 onBack = { appDestination = AppDestination.Main(PosDestination.SETTINGS) }
             )
         }
@@ -521,6 +537,7 @@ private fun AppScreenContent(
     onNavigateToAllSales: () -> Unit = {},
     onNavigateToPaymentMethods: () -> Unit = {},
     onNavigateToPrinters: () -> Unit = {},
+    onNavigateToThemeSettings: () -> Unit = {},
     topBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -547,6 +564,7 @@ private fun AppScreenContent(
         PosDestination.SETTINGS -> SettingScreen(
             onNavigateToPaymentMethods = onNavigateToPaymentMethods,
             onNavigateToPrinters = onNavigateToPrinters,
+            onNavigateToThemeSettings = onNavigateToThemeSettings,
             showTopBar = false,
             modifier = modifier
         )

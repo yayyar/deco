@@ -69,21 +69,31 @@ import com.yayyar.deco.ui.theme.PrimaryLight
 import androidx.compose.ui.res.stringResource
 import com.yayyar.deco.R
 
+import androidx.compose.material.icons.outlined.Palette
+import com.yayyar.deco.ui.theme.ThemeSeed
+import com.yayyar.deco.ui.theme.ThemeStyle
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
     onBack: () -> Unit = {},
     onNavigateToPaymentMethods: () -> Unit,
     onNavigateToPrinters: () -> Unit,
+    onNavigateToThemeSettings: () -> Unit = {},
     viewModel: SettingViewModel = hiltViewModel(),
     showTopBar: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val isDarkModePref by viewModel.isDarkMode.collectAsState()
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
+    val selectedThemeSeed by viewModel.selectedThemeSeed.collectAsState()
+    val selectedThemeStyle by viewModel.selectedThemeStyle.collectAsState()
     val activePaymentCount by viewModel.activePaymentMethodsCount.collectAsState()
     val selectedPrinterName by viewModel.selectedPrinterName.collectAsState()
     val isGridView by viewModel.isGridView.collectAsState()
+
+    val currentSeed = ThemeSeed.fromId(selectedThemeSeed)
+    val currentStyle = ThemeStyle.fromId(selectedThemeStyle)
 
     val systemInDark = isSystemInDarkTheme()
     val isDarkEffective = isDarkModePref ?: systemInDark
@@ -120,6 +130,25 @@ fun SettingScreen(
                         onCheckedChange = { isChecked ->
                             viewModel.setDarkMode(isChecked)
                         }
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    )
+
+                    // Theme & Color Scheme
+                    SettingsClickableItem(
+                        icon = Icons.Outlined.Palette,
+                        iconBackground = currentSeed.seedColor,
+                        title = stringResource(R.string.settings_theme_title),
+                        subtitle = stringResource(
+                            R.string.settings_theme_sub,
+                            stringResource(currentSeed.titleRes),
+                            stringResource(currentStyle.titleRes)
+                        ),
+                        valueText = stringResource(currentSeed.titleRes),
+                        onClick = onNavigateToThemeSettings
                     )
 
                     HorizontalDivider(

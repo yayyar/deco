@@ -35,7 +35,7 @@
 
     <!-- POS Screen & Cart -->
     <string name="pos_search_hint">ပစ္စည်းအမည် သို့မဟုတ် ဘားကုဒ် ရှာရန်…</string>
-    <string name="pos_all_categories">ပစ္စည်းအားလုံး</string>
+    <string name="pos_all_categories">အားလုံး</string>
     <string name="pos_retail_mode">လက်လီ</string>
     <string name="pos_wholesale_mode">လက္ကား</string>
     <string name="pos_order_cart">ခြင်းတောင်း</string>
@@ -197,6 +197,8 @@
     <string name="settings_dark_mode">ညဘက်မုဒ် (Dark Mode)</string>
     <string name="settings_dark_enabled">Dark theme ဖွင့်ထားသည်</string>
     <string name="settings_light_enabled">Light theme ဖွင့်ထားသည်</string>
+    <string name="settings_theme_title">အသွင်အပြင်နှင့် အရောင်</string>
+    <string name="settings_theme_sub">%1$s • %2$s</string>
     <string name="settings_language">ဘာသာစကား (Language)</string>
     <string name="settings_item_layout">ပစ္စည်းများ ပြသမှုပုံစံ</string>
     <string name="settings_item_layout_grid">အကွက်လိုက် (Grid)</string>
@@ -211,6 +213,44 @@
     <string name="settings_lang_en">English (အင်္ဂလိပ်)</string>
     <string name="settings_lang_my">Myanmar (မြန်မာ)</string>
     <string name="settings_lang_my_sub">မြန်မာဘာသာ (Unicode)</string>
+
+    <!-- Theme Customization Screen -->
+    <string name="theme_screen_title">အသွင်အပြင် အရောင်</string>
+    <string name="theme_preview_title">လက်တွေ့ အသွင်အပြင် နမူနာ</string>
+    <string name="theme_preview_pos_sample">DeCo POS • အဝတ်အထည်အရောင်းဆိုင်</string>
+    <string name="theme_preview_item_sample">ပရီမီယံ ချည်ရှပ်အင်္ကျီ (M) • ၁ ထည်</string>
+    <string name="theme_preview_badge">အသုံးပြုနေသော စနစ်</string>
+    <string name="theme_seed_section_title">အဓိက အမှတ်တံဆိပ်အရောင်</string>
+    <string name="theme_seed_section_sub">ခလုတ်များနှင့် အဓိကနေရာများတွင် အသုံးပြုမည့် အရောင်ကို ရွေးချယ်ပါ</string>
+    <string name="theme_style_section_title">Material 3 အရောင်စနစ်ပုံစံ (Color Scheme Style)</string>
+    <string name="theme_style_section_sub">အရောင်စပ်ဟပ်မှုနှင့် တောက်ပမှု စနစ်ကို ရွေးချယ်ပါ</string>
+    <string name="theme_seed_teal">မြစိမ်းရောင် (Emerald Teal)</string>
+    <string name="theme_seed_blue">နီလာပြာရောင် (Sapphire Blue)</string>
+    <string name="theme_seed_indigo">တော်ဝင်အပြာရင့် (Royal Indigo)</string>
+    <string name="theme_seed_purple">သလင်းခရမ်းရောင် (Amethyst Purple)</string>
+    <string name="theme_seed_rose">နှင်းဆီနီရောင် (Crimson Rose)</string>
+    <string name="theme_seed_orange">နေဝင်ရွှေဝါရောင် (Sunset Amber)</string>
+    <string name="theme_seed_emerald">သဘာဝသစ်တောစိမ်း (Botanical Green)</string>
+    <string name="theme_seed_slate">ကျောက်သင်ပုန်းပြာ (Corporate Slate)</string>
+    <string name="theme_seed_monochrome">ကျောက်မီးသွေးနက် (Obsidian Charcoal)</string>
+    <string name="theme_style_tonal_spot">Tonal Spot (မျှတညီညွတ်သောစနစ်)</string>
+    <string name="theme_style_tonal_spot_desc">Material 3 ၏ စံထားအဆင့်ဆင့်အရောင်စပ်ဟပ်မှုစနစ်</string>
+    <string name="theme_style_fidelity">Fidelity (မူရင်းအတိုင်း)</string>
+    <string name="theme_style_fidelity_desc">ရွေးချယ်ထားသော မူရင်းအရောင်အတိုင်း တိကျပြတ်သားစွာ ဖော်ပြသည်</string>
+    <string name="theme_style_vibrant">Vibrant (တောက်ပရွှင်လန်း)</string>
+    <string name="theme_style_vibrant_desc">အရောင်တောက်ပမှုမြင့်မားပြီး ဆွဲဆောင်မှုရှိသော အရောင်စပ်မှု</string>
+    <string name="theme_style_expressive">Expressive (ပေါ်လွင်ဆန်းသစ်)</string>
+    <string name="theme_style_expressive_desc">နွေးထွေးဆန်းသစ်ပြီး ထင်ရှားပေါ်လွင်သော တွဲဖက်အရောင်များ</string>
+    <string name="theme_style_neutral">Neutral (ငြိမ်သက်အေးချမ်း)</string>
+    <string name="theme_style_neutral_desc">အေးဆေးငြိမ်သက်ပြီး အာရုံစူးစိုက်မှုကောင်းစေသော အရောင်အနုစား</string>
+    <string name="theme_style_monochrome">Monochrome (အနက်/အဖြူ အနုပညာ)</string>
+    <string name="theme_style_monochrome_desc">ရိုးရှင်းသန့်ရှင်းပြီး ခေတ်ဆန်သော အမည်း/အဖြူ/မီးခိုးစနစ်</string>
+    <string name="theme_style_rainbow">Rainbow (သက်တံရောင်စုံ)</string>
+    <string name="theme_style_rainbow_desc">ရောင်စုံသက်တံကဲ့သို့ ကွဲပြားဆန်းသစ်သော တွဲဖက်အရောင်စုံ</string>
+    <string name="theme_style_fruit_salad">Fruit Salad (သစ်သီးစုံ သရုပ်ဖော်)</string>
+    <string name="theme_style_fruit_salad_desc">လန်းဆန်းတက်ကြွစေသော ဘယ်ရီနှင့် သံပုရာရောင်စုံ တွဲစပ်မှု</string>
+    <string name="theme_style_content">Content (ပစ္စည်းကို အသားပေး)</string>
+    <string name="theme_style_content_desc">ရောင်းကုန်ပစ္စည်းများ ထင်ရှားစေရန် နူးညံ့စွာ ချိန်ညှိထားသောစနစ်</string>
 
     <!-- Payment Methods Screen -->
     <string name="payment_method_title">ငွေပေးချေမှုစနစ်များ</string>

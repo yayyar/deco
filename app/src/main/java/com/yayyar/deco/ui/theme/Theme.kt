@@ -42,9 +42,13 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun DecoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    themeSeed: String = "TEAL",
+    themeStyle: String = "TONAL_SPOT",
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val seed = ThemeSeed.fromId(themeSeed)
+    val style = ThemeStyle.fromId(themeStyle)
+    val colorScheme = ThemePalette.generateColorScheme(seed, style, darkTheme)
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -1,5 +1,6 @@
 package com.yayyar.deco.feature.pos
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -646,11 +648,11 @@ private fun CartPane(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(3.dp))
-                    Text(
-                        text = "${stringResource(R.string.pos_order_cart)} (${cartState.totalItemCount})",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp
-                    )
+//                    Text(
+//                        text = "${stringResource(R.string.pos_order_cart)} (${cartState.totalItemCount})",
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 17.sp
+//                    )
                 }
                 if (cartState.items.isNotEmpty()) {
                     TextButton(onClick = onClearCart) {
@@ -786,7 +788,7 @@ private fun CartPane(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 //                Row(
@@ -817,7 +819,7 @@ private fun CartPane(
 //                    }
 //                }
 
-                HorizontalDivider()
+//                HorizontalDivider()
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
