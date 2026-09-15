@@ -288,9 +288,9 @@ fun SettingScreen(
     if (showLanguageDialog) {
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
-            title = {
-                Text(stringResource(R.string.settings_lang_dialog_title), fontWeight = FontWeight.Bold)
-            },
+//            title = {
+//                Text(stringResource(R.string.settings_lang_dialog_title), fontWeight = FontWeight.Bold)
+//            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(
@@ -354,9 +354,9 @@ fun SettingScreen(
     if (showItemLayoutDialog) {
         AlertDialog(
             onDismissRequest = { showItemLayoutDialog = false },
-            title = {
-                Text(stringResource(R.string.settings_item_layout), fontWeight = FontWeight.Bold)
-            },
+//            title = {
+//                Text(stringResource(R.string.settings_item_layout), fontWeight = FontWeight.Bold)
+//            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(

@@ -30,7 +30,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -54,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -101,11 +101,7 @@ fun PrinterScreen(
         viewModel.refreshPairedPrinters(context)
     }
 
-    BackHandler {
-        onBack()
-    }
-
-    LaunchedEffect(Unit) {
+    val refreshPrinters: () -> Unit = {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val hasConnect = ContextCompat.checkSelfPermission(
                 context, Manifest.permission.BLUETOOTH_CONNECT
@@ -129,6 +125,14 @@ fun PrinterScreen(
         }
     }
 
+    BackHandler {
+        onBack()
+    }
+
+    LaunchedEffect(Unit) {
+        refreshPrinters()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -146,47 +150,27 @@ fun PrinterScreen(
                         )
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                permissionLauncher.launch(
-                                    arrayOf(
-                                        Manifest.permission.BLUETOOTH_CONNECT,
-                                        Manifest.permission.BLUETOOTH_SCAN
-                                    )
-                                )
-                            } else {
-                                viewModel.refreshPairedPrinters(context)
-                            }
-                        }
-                    ) {
-                        if (isScanning) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        } else {
-                            Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.printer_scan_btn))
-                        }
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
     ) { innerPadding ->
-        Column(
+        PullToRefreshBox(
+            isRefreshing = isScanning,
+            onRefresh = { refreshPrinters() },
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
             // Test Print Feedback Banner
             when (val state = testPrintState) {
                 is PrintTestState.Printing -> {
@@ -311,6 +295,7 @@ fun PrinterScreen(
 //                }
 //            }
         }
+    }
     }
 
     if (showAddDialog) {
