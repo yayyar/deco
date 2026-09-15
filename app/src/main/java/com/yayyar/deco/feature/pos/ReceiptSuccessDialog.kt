@@ -98,7 +98,7 @@ fun ReceiptSuccessDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("${stringResource(R.string.pos_items_count, receiptData.items.size)}:")
+//                        Text("${stringResource(R.string.pos_items_count, receiptData.items.size)}:")
                         Text("${receiptData.items.sumOf { it.quantity }} pcs", fontWeight = FontWeight.SemiBold)
                     }
 

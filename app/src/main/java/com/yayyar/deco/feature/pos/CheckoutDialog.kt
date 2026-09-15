@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -286,7 +288,7 @@ fun CheckoutDialog(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    PaymentMethodGrid(
+                    PaymentMethodRow(
                         methods = paymentMethodsToDisplay,
                         selectedMethodCode = selectedPaymentType,
                         onSelectMethod = { code ->
@@ -477,19 +479,17 @@ private fun CustomerInfoCard(name: String?, phone: String?, address: String?) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PaymentMethodGrid(
+private fun PaymentMethodRow(
     methods: List<PaymentMethodEntity>,
     selectedMethodCode: String,
     onSelectMethod: (String) -> Unit
 ) {
-    FlowRow(
+    LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        methods.forEach { method ->
+        items(methods, key = { it.code }) { method ->
             val isSelected = selectedMethodCode == method.code
             val color = getPaymentMethodColor(method.code)
             val icon = getPaymentMethodIcon(method.code)
