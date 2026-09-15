@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.yayyar.deco"
+    namespace = "com.yayyar.teahouse"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.yayyar.deco"
+        applicationId = "com.yayyar.teahouse"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

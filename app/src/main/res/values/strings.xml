@@ -1,14 +1,14 @@
 <resources>
     <!-- App & General -->
-    <string name="app_name">DeCo</string>
-    <string name="app_version">DeCo • Version 1.0.0</string>
+    <string name="app_name">SMART</string>
+    <string name="app_version">SMART • Version 1.0.0</string>
 
     <!-- Navigation & Shell -->
-    <string name="nav_sales">Sales</string>
-    <string name="nav_items">Items</string>
+    <string name="nav_sales">Orders</string>
+    <string name="nav_items">Menus</string>
     <string name="nav_reports">Reports</string>
     <string name="nav_settings">Settings</string>
-    <string name="nav_drawer_title">DeCo</string>
+    <string name="nav_drawer_title">SMART</string>
 
     <!-- Common Actions & States -->
     <string name="action_save">Save</string>
@@ -209,7 +209,7 @@
     <string name="settings_theme_title">Theme &amp; Colors</string>
     <string name="settings_theme_sub">%1$s • %2$s</string>
     <string name="settings_language">Language</string>
-    <string name="settings_item_layout">Item Layout</string>
+    <string name="settings_item_layout">Layout</string>
     <string name="settings_item_layout_grid">Grid</string>
     <string name="settings_item_layout_list">List</string>
     <string name="settings_section_control">Control &amp; Hardware</string>

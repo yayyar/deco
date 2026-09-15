@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App & General -->
-    <string name="app_name">DeCo</string>
-    <string name="app_version">DeCo • ဗားရှင်း ၁.၀.၀</string>
+    <string name="app_name">SMART</string>
+    <string name="app_version">SMART • ဗားရှင်း ၁.၀.၀</string>
 
     <!-- Navigation & Shell -->
     <string name="nav_sales">အရောင်း</string>
     <string name="nav_items">ကုန်ပစ္စည်း</string>
     <string name="nav_reports">အစီရင်ခံစာ</string>
     <string name="nav_settings">ဆက်တင်</string>
-    <string name="nav_drawer_title">DeCo</string>
+    <string name="nav_drawer_title">SMART</string>
 
     <!-- Common Actions & States -->
     <string name="action_save">သိမ်းမည်</string>
@@ -210,7 +210,7 @@
     <string name="settings_theme_title">အသွင်အပြင်နှင့် အရောင်</string>
     <string name="settings_theme_sub">%1$s • %2$s</string>
     <string name="settings_language">ဘာသာစကား</string>
-    <string name="settings_item_layout">ပစ္စည်းများ ပြသမှုပုံစံ</string>
+    <string name="settings_item_layout">ပြသမှုပုံစံ</string>
     <string name="settings_item_layout_grid">အကွက်လိုက်</string>
     <string name="settings_item_layout_list">အတန်းလိုက်</string>
     <string name="settings_section_control">ထိန်းချုပ်မှုနှင့် ချိတ်ဆက်စနစ်များ</string>
