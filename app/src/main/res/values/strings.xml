@@ -33,7 +33,7 @@
     <string name="state_empty">No items found</string>
 
     <!-- POS Screen & Cart -->
-    <string name="pos_search_hint">Search product name or barcode…</string>
+    <string name="pos_search_hint">Search...</string>
     <string name="pos_all_categories">All</string>
     <string name="pos_retail_mode">Retail</string>
     <string name="pos_wholesale_mode">Wholesale</string>
@@ -111,7 +111,7 @@
     <string name="inv_add_product">Add Product</string>
     <string name="inv_edit_product">Edit Product</string>
     <string name="inv_add_category">Add Category</string>
-    <string name="inv_search_hint">Search products by name or SKU…</string>
+    <string name="inv_search_hint">Search...</string>
     <string name="inv_no_products">No products found</string>
     <string name="inv_no_products_sub">Tap + to add your first product or adjust search filters</string>
     <string name="inv_product_name">Product Name</string>
@@ -177,7 +177,7 @@
 
     <!-- All Sales Ledger & Top Sellers -->
     <string name="sales_ledger_title">Sales Ledger</string>
-    <string name="sales_search_hint">Search receipt, customer, item...</string>
+    <string name="sales_search_hint">Search...</string>
     <string name="sales_no_orders">No sales recorded for this period</string>
     <string name="sales_no_match">No sales match \"%1$s\"</string>
     <string name="sales_orders_loaded">Orders Loaded</string>
@@ -189,7 +189,7 @@
     <string name="sales_disc_format">Disc: -%1$s</string>
     <string name="sales_deli_format">Deli: +%1$s</string>
     <string name="top_sellers_title">Top Selling Products</string>
-    <string name="top_sellers_search_hint">Search top selling...</string>
+    <string name="top_sellers_search_hint">Search...</string>
     <string name="top_sellers_total_units">Total Units Sold</string>
     <string name="top_sellers_units_sold">%1$d units sold</string>
     <string name="top_sellers_units_count">%1$d units</string>
@@ -215,7 +215,7 @@
     <string name="settings_payment_methods_sub">%1$d active payment methods</string>
     <string name="settings_printer">Receipt Printer</string>
     <string name="settings_printer_sub_connected">Connected: %1$s</string>
-    <string name="settings_printer_sub_none">ESC/POS Bluetooth Receipt Printer</string>
+    <string name="settings_printer_sub_none">Bluetooth Receipt Printer</string>
     <string name="settings_lang_dialog_title">Select Language</string>
     <string name="settings_lang_en">English (US)</string>
     <string name="settings_lang_my">Myanmar (မြန်မာ)</string>
@@ -298,8 +298,8 @@
     <string name="printer_connected_badge">Connected</string>
     <string name="printer_set_default">Set as Default</string>
     <string name="printer_no_devices">No Bluetooth devices found. Make sure printer is turned on and discoverable.</string>
-    <string name="printer_status_printing_title">Printing in progress...</string>
-    <string name="printer_status_printing_sub">Rasterizing receipt bitmap and sending ESC/POS commands.</string>
+    <string name="printer_status_printing_title">Printing</string>
+    <string name="printer_status_printing_sub">Printing in progress...</string>
     <string name="printer_status_success_title">Print Test Succeeded</string>
     <string name="printer_status_error_title">Print Test Failed</string>
     <string name="printer_available_header">AVAILABLE PRINTERS</string>

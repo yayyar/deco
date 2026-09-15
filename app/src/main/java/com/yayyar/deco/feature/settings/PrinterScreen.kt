@@ -287,29 +287,29 @@ fun PrinterScreen(
             }
 
             // Paper format & rendering specs card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = stringResource(R.string.printer_capabilities_title),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.printer_capabilities_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 20.sp
-                    )
-                }
-            }
+//            Card(
+//                shape = RoundedCornerShape(16.dp),
+//                colors = CardDefaults.cardColors(
+//                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+//                ),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Column(modifier = Modifier.padding(16.dp)) {
+//                    Text(
+//                        text = stringResource(R.string.printer_capabilities_title),
+//                        style = MaterialTheme.typography.labelLarge,
+//                        fontWeight = FontWeight.Bold,
+//                        color = MaterialTheme.colorScheme.onSurface
+//                    )
+//                    Spacer(modifier = Modifier.height(6.dp))
+//                    Text(
+//                        text = stringResource(R.string.printer_capabilities_sub),
+//                        style = MaterialTheme.typography.bodySmall,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                        lineHeight = 20.sp
+//                    )
+//                }
+//            }
         }
     }
 

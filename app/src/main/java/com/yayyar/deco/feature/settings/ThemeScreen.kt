@@ -84,7 +84,7 @@ fun ThemeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.theme_screen_title)
+                        text = stringResource(R.string.settings_theme_title)
                     )
                 },
                 navigationIcon = {

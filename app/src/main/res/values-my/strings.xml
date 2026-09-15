@@ -34,15 +34,15 @@
     <string name="state_empty">မည်သည့်ပစ္စည်းမျှ မတွေ့ရှိပါ</string>
 
     <!-- POS Screen & Cart -->
-    <string name="pos_search_hint">ပစ္စည်းအမည် သို့မဟုတ် ဘားကုဒ် ရှာရန်…</string>
+    <string name="pos_search_hint">ရှာရန်...</string>
     <string name="pos_all_categories">အားလုံး</string>
     <string name="pos_retail_mode">လက်လီ</string>
     <string name="pos_wholesale_mode">လက္ကား</string>
-    <string name="pos_order_cart">ခြင်းတောင်း</string>
-    <string name="pos_cart_empty">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိပါ</string>
+    <string name="pos_order_cart">အော်ဒါ</string>
+    <string name="pos_cart_empty">ပစ္စည်းမရှိပါ</string>
     <string name="pos_cart_empty_sub">အော်ဒါမှာယူရန် ကုန်ပစ္စည်းများကို ရွေးချယ်ပါ</string>
-    <string name="pos_clear_cart">ရှင်းထုတ်မည်</string>
-    <string name="pos_clear_cart_confirm">ခြင်းတောင်းထဲရှိ ပစ္စည်းအားလုံးကို ရှင်းထုတ်မှာ သေချာပါသလား?</string>
+    <string name="pos_clear_cart">ဖျက်မည်</string>
+    <string name="pos_clear_cart_confirm">ရှင်းထုတ်မှာ သေချာပါသလား?</string>
     <string name="pos_items_count">%1$d ခု</string>
     <string name="pos_item_single">၁ ခု</string>
     <string name="pos_subtotal">ကျသင့်ငွေ</string>
@@ -52,12 +52,12 @@
     <string name="pos_charge">ငွေချေမည် %1$s</string>
     <string name="pos_save_draft">အရောင်းဆိုင်းငံ့မည်</string>
     <string name="pos_variant_dialog_title">ဆိုဒ်/အရောင် ရွေးချယ်ရန်</string>
-    <string name="pos_add_to_cart">ခြင်းတောင်းထဲထည့်မည်</string>
-    <string name="pos_size_label">ဆိုဒ် (Size)</string>
+    <string name="pos_add_to_cart">ကုန်ပစ္စည်းကိုထည့်မည်</string>
+    <string name="pos_size_label">ဆိုဒ်</string>
     <string name="pos_color_label">အရောင် / ဒီဇိုင်း</string>
     <string name="pos_stock_available">လက်ကျန် %1$d ခု</string>
     <string name="pos_out_of_stock">ပစ္စည်းပြတ်နေသည်</string>
-    <string name="pos_low_stock_badge">လက်ကျန်နည်း</string>
+    <string name="pos_low_stock_badge">လက်ကျန်နည်းနေသည်</string>
 
     <!-- Checkout Modal -->
     <string name="checkout_title">ငွေရှင်းမည်</string>
@@ -95,13 +95,13 @@
     <string name="drafts_badge_active">%1$d ခု ဆိုင်းငံ့ထားသည်</string>
 
     <!-- Post Checkout / Receipt Dialog -->
-    <string name="receipt_success_title">အရောင်း အောင်မြင်ပါသည်!</string>
+    <string name="receipt_success_title">အရောင်း အောင်မြင်ပါသည်</string>
     <string name="receipt_number_label">ဘောက်ချာ အမှတ် #</string>
-    <string name="receipt_print_btn">ဘောက်ချာ ပရင့်ထုတ်မည်</string>
-    <string name="receipt_share_btn">ဘောက်ချာ မျှဝေမည်</string>
+    <string name="receipt_print_btn">ပရင့်ထုတ်မည်</string>
+    <string name="receipt_share_btn">မျှဝေမည်</string>
     <string name="receipt_new_sale_btn">အရောင်းအသစ် စတင်မည်</string>
     <string name="receipt_printing">ပရင့်ထုတ်နေပါသည်…</string>
-    <string name="receipt_print_success">ဘောက်ချာ ပရင့်ထုတ်ပြီးပါပြီ</string>
+    <string name="receipt_print_success">ပရင့်ထုတ်ပြီးပါပြီ</string>
     <string name="receipt_print_error">ပရင့်ထုတ်၍ မရပါ။ ပရင်တာ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</string>
 
     <!-- Inventory & Products -->
@@ -112,7 +112,7 @@
     <string name="inv_add_product">ပစ္စည်းအသစ်ထည့်မည်</string>
     <string name="inv_edit_product">ပစ္စည်းပြင်ဆင်မည်</string>
     <string name="inv_add_category">အမျိုးအစား အသစ်ထည့်မည်</string>
-    <string name="inv_search_hint">ပစ္စည်းအမည် သို့မဟုတ် SKU ဖြင့် ရှာရန်…</string>
+    <string name="inv_search_hint">ရှာရန်...</string>
     <string name="inv_no_products">ကုန်ပစ္စည်း မရှိသေးပါ</string>
     <string name="inv_no_products_sub">+ ခလုတ်ကို နှိပ်ပြီး ပစ္စည်းအသစ် ထည့်သွင်းပါ</string>
     <string name="inv_product_name">ပစ္စည်း အမည်</string>
@@ -178,7 +178,7 @@
 
     <!-- All Sales Ledger & Top Sellers -->
     <string name="sales_ledger_title">အရောင်းမှတ်တမ်း စာရင်း</string>
-    <string name="sales_search_hint">ဘောက်ချာ၊ ဝယ်သူ၊ ပစ္စည်း ရှာရန်...</string>
+    <string name="sales_search_hint">ရှာရန်...</string>
     <string name="sales_no_orders">ဤကာလအတွက် အရောင်းမှတ်တမ်း မရှိပါ</string>
     <string name="sales_no_match">\"%1$s\" နှင့် ကိုက်ညီသော အရောင်းမရှိပါ</string>
     <string name="sales_orders_loaded">ရရှိထားသော အော်ဒါများ</string>
@@ -202,21 +202,21 @@
     <!-- Settings Screen -->
     <string name="settings_title">ဆက်တင်များ</string>
     <string name="settings_section_appearance">အသွင်အပြင်</string>
-    <string name="settings_dark_mode">ညဘက်မုဒ် (Dark Mode)</string>
+    <string name="settings_dark_mode">ညဘက်မုဒ်</string>
     <string name="settings_dark_enabled">Dark theme ဖွင့်ထားသည်</string>
     <string name="settings_light_enabled">Light theme ဖွင့်ထားသည်</string>
     <string name="settings_theme_title">အသွင်အပြင်နှင့် အရောင်</string>
     <string name="settings_theme_sub">%1$s • %2$s</string>
-    <string name="settings_language">ဘာသာစကား (Language)</string>
+    <string name="settings_language">ဘာသာစကား</string>
     <string name="settings_item_layout">ပစ္စည်းများ ပြသမှုပုံစံ</string>
-    <string name="settings_item_layout_grid">အကွက်လိုက် (Grid)</string>
-    <string name="settings_item_layout_list">အတန်းလိုက် (List)</string>
+    <string name="settings_item_layout_grid">အကွက်လိုက်</string>
+    <string name="settings_item_layout_list">အတန်းလိုက်</string>
     <string name="settings_section_control">ထိန်းချုပ်မှုနှင့် ချိတ်ဆက်စနစ်များ</string>
     <string name="settings_payment_methods">ငွေပေးချေမှုစနစ်များ</string>
     <string name="settings_payment_methods_sub">အသုံးပြုနိုင်သော ငွေချေနည်းလမ်း %1$d ခု</string>
-    <string name="settings_printer">ဘောက်ချာ ပရင်တာ</string>
+    <string name="settings_printer">ပရင်တာ</string>
     <string name="settings_printer_sub_connected">ချိတ်ဆက်ထားသည်: %1$s</string>
-    <string name="settings_printer_sub_none">ESC/POS ဘလူးတုသ် ဘောက်ချာပရင်တာ</string>
+    <string name="settings_printer_sub_none">ဘလူးတုသ် ပရင်တာ</string>
     <string name="settings_lang_dialog_title">ဘာသာစကား ရွေးချယ်ရန်</string>
     <string name="settings_lang_en">English (အင်္ဂလိပ်)</string>
     <string name="settings_lang_my">Myanmar (မြန်မာ)</string>
@@ -226,38 +226,38 @@
     <string name="theme_screen_title">အသွင်အပြင် အရောင်</string>
     <string name="theme_preview_title">လက်တွေ့ အသွင်အပြင် နမူနာ</string>
     <string name="theme_preview_pos_sample">DeCo POS • အဝတ်အထည်အရောင်းဆိုင်</string>
-    <string name="theme_preview_item_sample">ပရီမီယံ ချည်ရှပ်အင်္ကျီ (M) • ၁ ထည်</string>
+    <string name="theme_preview_item_sample">အင်္ကျီ (M) • ၁ ထည်</string>
     <string name="theme_preview_badge">အသုံးပြုနေသော စနစ်</string>
     <string name="theme_seed_section_title">အဓိက အမှတ်တံဆိပ်အရောင်</string>
-    <string name="theme_seed_section_sub">ခလုတ်များနှင့် အဓိကနေရာများတွင် အသုံးပြုမည့် အရောင်ကို ရွေးချယ်ပါ</string>
-    <string name="theme_style_section_title">Material 3 အရောင်စနစ်ပုံစံ (Color Scheme Style)</string>
+    <string name="theme_seed_section_sub">အဓိကနေရာများတွင် အသုံးပြုမည့် အရောင်ကို ရွေးချယ်ပါ</string>
+    <string name="theme_style_section_title">အရောင်စနစ်ပုံစံ</string>
     <string name="theme_style_section_sub">အရောင်စပ်ဟပ်မှုနှင့် တောက်ပမှု စနစ်ကို ရွေးချယ်ပါ</string>
-    <string name="theme_seed_teal">မြစိမ်းရောင် (Emerald Teal)</string>
-    <string name="theme_seed_blue">နီလာပြာရောင် (Sapphire Blue)</string>
-    <string name="theme_seed_indigo">တော်ဝင်အပြာရင့် (Royal Indigo)</string>
-    <string name="theme_seed_purple">သလင်းခရမ်းရောင် (Amethyst Purple)</string>
-    <string name="theme_seed_rose">နှင်းဆီနီရောင် (Crimson Rose)</string>
-    <string name="theme_seed_orange">နေဝင်ရွှေဝါရောင် (Sunset Amber)</string>
-    <string name="theme_seed_emerald">သဘာဝသစ်တောစိမ်း (Botanical Green)</string>
-    <string name="theme_seed_slate">ကျောက်သင်ပုန်းပြာ (Corporate Slate)</string>
-    <string name="theme_seed_monochrome">ကျောက်မီးသွေးနက် (Obsidian Charcoal)</string>
-    <string name="theme_style_tonal_spot">Tonal Spot (မျှတညီညွတ်သောစနစ်)</string>
-    <string name="theme_style_tonal_spot_desc">Material 3 ၏ စံထားအဆင့်ဆင့်အရောင်စပ်ဟပ်မှုစနစ်</string>
-    <string name="theme_style_fidelity">Fidelity (မူရင်းအတိုင်း)</string>
+    <string name="theme_seed_teal">မြစိမ်းရောင်</string>
+    <string name="theme_seed_blue">နီလာပြာရောင်</string>
+    <string name="theme_seed_indigo">တော်ဝင်အပြာရင့်</string>
+    <string name="theme_seed_purple">သလင်းခရမ်းရောင်</string>
+    <string name="theme_seed_rose">နှင်းဆီနီရောင်</string>
+    <string name="theme_seed_orange">နေဝင်ရွှေဝါရောင်</string>
+    <string name="theme_seed_emerald">သဘာဝသစ်တောစိမ်း</string>
+    <string name="theme_seed_slate">ကျောက်သင်ပုန်းပြာ</string>
+    <string name="theme_seed_monochrome">ကျောက်မီးသွေးနက်</string>
+    <string name="theme_style_tonal_spot">Tonal Spot</string>
+    <string name="theme_style_tonal_spot_desc">အရောင်စပ်ဟပ်မှုစနစ်</string>
+    <string name="theme_style_fidelity">မူရင်းအရောင်</string>
     <string name="theme_style_fidelity_desc">ရွေးချယ်ထားသော မူရင်းအရောင်အတိုင်း တိကျပြတ်သားစွာ ဖော်ပြသည်</string>
-    <string name="theme_style_vibrant">Vibrant (တောက်ပရွှင်လန်း)</string>
+    <string name="theme_style_vibrant">တောက်ပရွှင်လန်း</string>
     <string name="theme_style_vibrant_desc">အရောင်တောက်ပမှုမြင့်မားပြီး ဆွဲဆောင်မှုရှိသော အရောင်စပ်မှု</string>
-    <string name="theme_style_expressive">Expressive (ပေါ်လွင်ဆန်းသစ်)</string>
-    <string name="theme_style_expressive_desc">နွေးထွေးဆန်းသစ်ပြီး ထင်ရှားပေါ်လွင်သော တွဲဖက်အရောင်များ</string>
-    <string name="theme_style_neutral">Neutral (ငြိမ်သက်အေးချမ်း)</string>
-    <string name="theme_style_neutral_desc">အေးဆေးငြိမ်သက်ပြီး အာရုံစူးစိုက်မှုကောင်းစေသော အရောင်အနုစား</string>
-    <string name="theme_style_monochrome">Monochrome (အနက်/အဖြူ အနုပညာ)</string>
-    <string name="theme_style_monochrome_desc">ရိုးရှင်းသန့်ရှင်းပြီး ခေတ်ဆန်သော အမည်း/အဖြူ/မီးခိုးစနစ်</string>
-    <string name="theme_style_rainbow">Rainbow (သက်တံရောင်စုံ)</string>
-    <string name="theme_style_rainbow_desc">ရောင်စုံသက်တံကဲ့သို့ ကွဲပြားဆန်းသစ်သော တွဲဖက်အရောင်စုံ</string>
-    <string name="theme_style_fruit_salad">Fruit Salad (သစ်သီးစုံ သရုပ်ဖော်)</string>
+    <string name="theme_style_expressive">ပေါ်လွင်ဆန်းသစ်</string>
+    <string name="theme_style_expressive_desc">တွဲဖက်အရောင်များ</string>
+    <string name="theme_style_neutral">ငြိမ်သက်အေးချမ်း</string>
+    <string name="theme_style_neutral_desc">အရောင်အနုစား</string>
+    <string name="theme_style_monochrome">အဖြူ/အမဲ</string>
+    <string name="theme_style_monochrome_desc">ခေတ်ဆန်သော အမည်း/အဖြူ/မီးခိုးစနစ်</string>
+    <string name="theme_style_rainbow">သက်တံ့ရောင်စုံ</string>
+    <string name="theme_style_rainbow_desc">ရောင်စုံသက်တံ့ကဲ့သို့ ကွဲပြားဆန်းသစ်သော တွဲဖက်အရောင်စုံ</string>
+    <string name="theme_style_fruit_salad">သစ်သီးစုံအရောင်</string>
     <string name="theme_style_fruit_salad_desc">လန်းဆန်းတက်ကြွစေသော ဘယ်ရီနှင့် သံပုရာရောင်စုံ တွဲစပ်မှု</string>
-    <string name="theme_style_content">Content (ပစ္စည်းကို အသားပေး)</string>
+    <string name="theme_style_content">ပစ္စည်းကို အသားပေး</string>
     <string name="theme_style_content_desc">ရောင်းကုန်ပစ္စည်းများ ထင်ရှားစေရန် နူးညံ့စွာ ချိန်ညှိထားသောစနစ်</string>
 
     <!-- Payment Methods Screen -->
@@ -299,14 +299,14 @@
     <string name="printer_connected_badge">ချိတ်ဆက်ထားသည်</string>
     <string name="printer_set_default">အမြဲတမ်းသုံးအဖြစ် သတ်မှတ်မည်</string>
     <string name="printer_no_devices">ဘလူးတုသ် ပရင်တာ မတွေ့ရှိပါ။ ပရင်တာ ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ။</string>
-    <string name="printer_status_printing_title">ပရင့်ထုတ်နေပါသည်...</string>
-    <string name="printer_status_printing_sub">ဘောက်ချာပုံရိပ်ကို ESC/POS ညွှန်ကြားချက်များဖြင့် ပရင့်ထုတ်နေပါသည်။</string>
+    <string name="printer_status_printing_title">ပရင့်ထုတ်နေပါသည်</string>
+    <string name="printer_status_printing_sub">ပရင့်ထုတ်ခြင်းပြုလုပ်နေပါသည်...</string>
     <string name="printer_status_success_title">စမ်းသပ်ပရင့် အောင်မြင်ပါသည်</string>
     <string name="printer_status_error_title">စမ်းသပ်ပရင့် မအောင်မြင်ပါ</string>
     <string name="printer_available_header">ရရှိနိုင်သော ပရင်တာများ</string>
     <string name="printer_no_paired_title">တွဲချိတ်ထားသော ဘလူးတုသ် ပရင်တာ မရှိပါ</string>
     <string name="printer_no_paired_sub">ဖုန်း Settings ထဲတွင် ဘလူးတုသ် ပရင်တာ တွဲချိတ်ပါ သို့မဟုတ် ကိုယ်တိုင် ထည့်သွင်းပါ။</string>
-    <string name="printer_capabilities_title">ဘောက်ချာ ပရင်တာ စွမ်းဆောင်ရည်</string>
+    <string name="printer_capabilities_title">ပရင်တာ စွမ်းဆောင်ရည်</string>
     <string name="printer_capabilities_sub">• 58mm / 80mm ESC/POS အပူပေးစက္ကူ ပရင်တာများ အသုံးပြုနိုင်သည်\n• မြန်မာယူနီကုဒ် / ဇော်ဂျီ ဘောက်ချာပုံရိပ်များ ကြည်လင်ပြတ်သားစွာ ထုတ်ပေးနိုင်သည်\n• အရောင်းမြန်ဆန်စေရန် အထူးပြုလုပ်ထားသော စာလုံးပုံစံများ ပါဝင်သည်</string>
     <string name="printer_active_badge">အသုံးပြုနေသည်</string>
     <string name="printer_test_short">စမ်းသပ်</string>
