@@ -102,6 +102,8 @@
     <string name="receipt_new_sale_btn">အရောင်းအသစ် စတင်မည်</string>
     <string name="receipt_printing">ပရင့်ထုတ်နေပါသည်…</string>
     <string name="receipt_print_success">ပရင့်ထုတ်ပြီးပါပြီ</string>
+    <string name="receipt_preview_title">ဘောက်ချာ အစမ်းကြည့်ရှုခြင်း</string>
+    <string name="receipt_preview_close">ပိတ်မည်</string>
     <string name="receipt_print_error">ပရင့်ထုတ်၍ မရပါ။ ပရင်တာ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</string>
 
     <!-- Inventory & Products -->

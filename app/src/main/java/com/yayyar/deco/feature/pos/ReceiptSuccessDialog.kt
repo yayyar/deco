@@ -28,6 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +54,18 @@ fun ReceiptSuccessDialog(
     onPrint: (ReceiptData) -> Unit,
     onShareSlip: (ReceiptData) -> Unit
 ) {
+    var previewAction by remember { mutableStateOf<ReceiptPreviewAction?>(null) }
+
+    if (previewAction != null) {
+        ReceiptPreviewDialog(
+            receiptData = receiptData,
+            initialAction = previewAction ?: ReceiptPreviewAction.PRINT,
+            onDismiss = { previewAction = null },
+            onPrint = { onPrint(it) },
+            onShare = { onShareSlip(it) }
+        )
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -140,7 +156,7 @@ fun ReceiptSuccessDialog(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 OutlinedButton(
-                    onClick = { onShareSlip(receiptData) },
+                    onClick = { previewAction = ReceiptPreviewAction.SHARE },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -150,7 +166,7 @@ fun ReceiptSuccessDialog(
                 }
 
                 OutlinedButton(
-                    onClick = { onPrint(receiptData) },
+                    onClick = { previewAction = ReceiptPreviewAction.PRINT },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {

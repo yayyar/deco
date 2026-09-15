@@ -898,7 +898,7 @@ private fun CartPane(
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
                             .weight(0.2f)
-                            .height(40.dp),
+                            .height(45.dp),
                         shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(0.dp)
                     ) {
@@ -914,7 +914,7 @@ private fun CartPane(
                         enabled = cartState.items.isNotEmpty(),
                         modifier = Modifier
                             .weight(0.8f)
-                            .height(40.dp),
+                            .height(45.dp),
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
@@ -954,7 +954,7 @@ private fun MobilePosLayout(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetPeekHeight = if (cartState.items.isNotEmpty()) 80.dp else 30.dp,
+        sheetPeekHeight = if (cartState.items.isNotEmpty()) 99.dp else 30.dp,
         sheetContent = {
             CartPane(
                 cartState = cartState,
@@ -968,7 +968,7 @@ private fun MobilePosLayout(
                 onSaveDraft = onSaveDraft,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.9f)
+                    .fillMaxHeight(0.99f)
                     .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp)
             )
         }

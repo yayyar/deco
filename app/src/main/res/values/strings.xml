@@ -101,6 +101,8 @@
     <string name="receipt_new_sale_btn">New Sale</string>
     <string name="receipt_printing">Printing receipt…</string>
     <string name="receipt_print_success">Receipt printed successfully</string>
+    <string name="receipt_preview_title">Receipt Preview</string>
+    <string name="receipt_preview_close">Close</string>
     <string name="receipt_print_error">Failed to print receipt. Check printer connection.</string>
 
     <!-- Inventory & Products -->
