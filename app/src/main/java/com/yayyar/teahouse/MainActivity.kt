@@ -117,7 +117,7 @@ enum class PosDestination(
     val titleRes: Int,
     val icon: ImageVector
 ) {
-    POS(R.string.nav_sales, Icons.Outlined.TableRestaurant),
+    POS(R.string.nav_sales, Icons.Outlined.LocalCafe),
     INVENTORY(R.string.nav_items, Icons.Outlined.DinnerDining),
     ANALYTICS(R.string.nav_reports, Icons.Outlined.BarChart),
     SETTINGS(R.string.nav_settings, Icons.Outlined.Settings)
@@ -464,7 +464,7 @@ private fun MainTopAppBar(
             } else {
                 IconButton(onClick = onOpenDrawer) {
                     Icon(
-                        imageVector = Icons.Outlined.LocalCafe,
+                        imageVector = destination.icon,
                         contentDescription = stringResource(R.string.nav_drawer_title)
                     )
                 }
